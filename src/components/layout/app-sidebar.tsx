@@ -2,92 +2,300 @@
 
 import {
   Award,
+  BarChart3,
   Bell,
+  CheckCircle,
+  ChevronDown,
+  Clock,
+  CreditCard,
   FolderTree,
+  Globe,
+  History,
   Image,
+  ImagePlus,
+  Layers,
   LayoutDashboard,
+  LogOut,
+  Megaphone,
   Package,
+  PackagePlus,
+  Phone,
+  PlusCircle,
+  Search,
+  Send,
+  Settings,
+  Share2,
   ShoppingCart,
+  Tag,
+  TrendingUp,
+  UserCheck,
+  UserCircle,
+  Users,
+  XCircle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import * as React from 'react';
 
+import { Badge } from '@/components/ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
+import { authUtils } from '@/utils/auth';
 
-const menuItems = [
+type MenuItem = {
+  title: string;
+  href?: string;
+  icon: React.ComponentType<{ className?: string }>;
+  badge?: string;
+  items?: {
+    title: string;
+    href: string;
+    icon: React.ComponentType<{ className?: string }>;
+  }[];
+};
+
+const menuItems: MenuItem[] = [
   {
     title: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
   },
   {
+    title: 'Orders',
+    icon: ShoppingCart,
+    badge: '12',
+    items: [
+      { title: 'All Orders', href: '/orders', icon: ShoppingCart },
+      { title: 'Pending', href: '/orders/pending', icon: Clock },
+      { title: 'Completed', href: '/orders/completed', icon: CheckCircle },
+      { title: 'Cancelled', href: '/orders/cancelled', icon: XCircle },
+    ],
+  },
+  {
     title: 'Products',
-    href: '/products',
     icon: Package,
+    items: [
+      { title: 'All Products', href: '/products', icon: Package },
+      { title: 'Add Product', href: '/products/add', icon: PackagePlus },
+      { title: 'Variants', href: '/products/variants', icon: Layers },
+      { title: 'Manage Stock', href: '/products/stock', icon: Tag },
+    ],
   },
   {
     title: 'Categories',
-    href: '/categories',
     icon: FolderTree,
-  },
-  {
-    title: 'Orders',
-    href: '/orders',
-    icon: ShoppingCart,
+    items: [
+      { title: 'Main Categories', href: '/categories', icon: FolderTree },
+      { title: 'Sub Categories', href: '/categories/sub', icon: Layers },
+      { title: 'Assign Categories', href: '/categories/assign', icon: Tag },
+    ],
   },
   {
     title: 'Brands',
-    href: '/brands',
     icon: Award,
+    items: [
+      { title: 'All Brands', href: '/brands', icon: Award },
+      { title: 'Add Brand', href: '/brands/add', icon: PlusCircle },
+    ],
   },
   {
     title: 'Banners',
-    href: '/banners',
     icon: Image,
+    items: [
+      { title: 'Homepage Banners', href: '/banners', icon: Image },
+      { title: 'Add Banner', href: '/banners/add', icon: ImagePlus },
+    ],
   },
   {
     title: 'Notifications',
-    href: '/notifications',
     icon: Bell,
+    badge: '3',
+    items: [
+      { title: 'Send Notification', href: '/notifications/send', icon: Send },
+      { title: 'History', href: '/notifications', icon: History },
+      { title: 'Announcements', href: '/notifications/announcements', icon: Megaphone },
+    ],
+  },
+  {
+    title: 'Users',
+    icon: Users,
+    items: [
+      { title: 'All Users', href: '/users', icon: Users },
+      { title: 'User Details', href: '/users/details', icon: UserCheck },
+    ],
+  },
+  {
+    title: 'Reports',
+    icon: BarChart3,
+    items: [
+      { title: 'Sales Report', href: '/reports/sales', icon: TrendingUp },
+      { title: 'Order Report', href: '/reports/orders', icon: ShoppingCart },
+      { title: 'User Growth', href: '/reports/users', icon: Users },
+      { title: 'Product Performance', href: '/reports/products', icon: Package },
+    ],
+  },
+  {
+    title: 'Settings',
+    icon: Settings,
+    items: [
+      { title: 'Website Settings', href: '/settings', icon: Globe },
+      { title: 'Contact Info', href: '/settings/contact', icon: Phone },
+      { title: 'Payment Settings', href: '/settings/payment', icon: CreditCard },
+      { title: 'Social Links', href: '/settings/social', icon: Share2 },
+      { title: 'SEO Settings', href: '/settings/seo', icon: Search },
+      { title: 'Admin Profile', href: '/settings/profile', icon: UserCircle },
+    ],
   },
 ];
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const [openSections, setOpenSections] = React.useState<string[]>([]);
+
+  // Auto-open section if current page is within it
+  React.useEffect(() => {
+    const currentSection = menuItems.find(item =>
+      item.items?.some(subItem => pathname.startsWith(subItem.href))
+    );
+    if (currentSection && !openSections.includes(currentSection.title)) {
+      setOpenSections(prev => [...prev, currentSection.title]);
+    }
+  }, [pathname]);
+
+  const toggleSection = (title: string) => {
+    setOpenSections(prev =>
+      prev.includes(title) ? prev.filter(t => t !== title) : [...prev, title]
+    );
+  };
+
+  const handleLogout = () => {
+    if (confirm('Are you sure you want to logout?')) {
+      authUtils.logout();
+    }
+  };
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="border-b px-6 py-4 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-3">
+        <div className="flex items-center gap-2">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black">
+            <span className="text-lg font-bold text-white">H</span>
+          </div>
+          <div className="flex flex-col group-data-[collapsible=icon]:hidden">
+            <span className="text-sm font-semibold">Hamfa Admin</span>
+            <span className="text-muted-foreground text-xs">Admin Panel</span>
+          </div>
+        </div>
+      </SidebarHeader>
+
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Admin Panel</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map(item => {
-                const isActive = pathname === item.href;
-                return (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton asChild isActive={isActive}>
-                      <Link href={item.href}>
-                        <item.icon className="h-4 w-4" />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        <ScrollArea className="h-[calc(100vh-8rem)]">
+          <SidebarGroup>
+            <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {menuItems.map(item => {
+                  // Simple menu item without children
+                  if (!item.items) {
+                    const isActive = pathname === item.href;
+                    return (
+                      <SidebarMenuItem key={item.title}>
+                        <SidebarMenuButton asChild isActive={isActive}>
+                          <Link href={item.href!}>
+                            <item.icon className="h-4 w-4" />
+                            <span>{item.title}</span>
+                            {item.badge && (
+                              <Badge variant="secondary" className="ml-auto">
+                                {item.badge}
+                              </Badge>
+                            )}
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    );
+                  }
+
+                  // Collapsible menu item with children
+                  const isOpen = openSections.includes(item.title);
+                  const hasActiveChild = item.items.some(subItem =>
+                    pathname.startsWith(subItem.href)
+                  );
+
+                  return (
+                    <Collapsible
+                      key={item.title}
+                      open={isOpen}
+                      onOpenChange={() => toggleSection(item.title)}
+                    >
+                      <SidebarMenuItem>
+                        <CollapsibleTrigger asChild>
+                          <SidebarMenuButton isActive={hasActiveChild}>
+                            <item.icon className="h-4 w-4" />
+                            <span>{item.title}</span>
+                            {item.badge && (
+                              <Badge variant="secondary" className="mr-2 ml-auto">
+                                {item.badge}
+                              </Badge>
+                            )}
+                            <ChevronDown
+                              className={`ml-auto h-4 w-4 transition-transform ${
+                                isOpen ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </SidebarMenuButton>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.items.map(subItem => {
+                              const isActive = pathname === subItem.href;
+                              return (
+                                <SidebarMenuSubItem key={subItem.href}>
+                                  <SidebarMenuSubButton asChild isActive={isActive}>
+                                    <Link href={subItem.href}>
+                                      <subItem.icon className="h-4 w-4" />
+                                      <span>{subItem.title}</span>
+                                    </Link>
+                                  </SidebarMenuSubButton>
+                                </SidebarMenuSubItem>
+                              );
+                            })}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </SidebarMenuItem>
+                    </Collapsible>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </ScrollArea>
       </SidebarContent>
+
+      <SidebarFooter className="border-t p-4 group-data-[collapsible=icon]:p-2">
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={handleLogout} tooltip="Logout">
+              <LogOut className="h-4 w-4" />
+              <span>Logout</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
     </Sidebar>
   );
 }

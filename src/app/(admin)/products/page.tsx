@@ -1,90 +1,220 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import * as React from 'react';
+import { ColumnDef } from '@tanstack/react-table';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { PageHeader } from '@/components/common/page-header';
+import { DataTable } from '@/components/common/data-table';
+import { TableActions } from '@/components/common/table-actions';
+import { DeleteDialog } from '@/components/common/delete-dialog';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
-// Mock data
-const products = [
-  { id: 1, name: 'Product 1', category: 'Electronics', price: '$299', stock: 45, status: 'Active' },
-  { id: 2, name: 'Product 2', category: 'Clothing', price: '$49', stock: 120, status: 'Active' },
-  { id: 3, name: 'Product 3', category: 'Home', price: '$159', stock: 30, status: 'Inactive' },
+// Sample Product Type
+export type Product = {
+  id: string;
+  name: string;
+  category: string;
+  brand: string;
+  price: number;
+  stock: number;
+  status: 'active' | 'inactive';
+  image?: string;
+  createdAt: string;
+};
+
+// Sample Data
+const sampleProducts: Product[] = [
+  {
+    id: '1',
+    name: 'Premium Cotton T-Shirt',
+    category: 'Clothing',
+    brand: 'Nike',
+    price: 2999,
+    stock: 50,
+    status: 'active',
+    image: '/placeholder-product.jpg',
+    createdAt: '2024-01-15',
+  },
+  {
+    id: '2',
+    name: 'Running Shoes Pro',
+    category: 'Footwear',
+    brand: 'Adidas',
+    price: 8999,
+    stock: 25,
+    status: 'active',
+    image: '/placeholder-product.jpg',
+    createdAt: '2024-01-14',
+  },
+  {
+    id: '3',
+    name: 'Sports Water Bottle',
+    category: 'Accessories',
+    brand: 'Puma',
+    price: 499,
+    stock: 0,
+    status: 'inactive',
+    image: '/placeholder-product.jpg',
+    createdAt: '2024-01-13',
+  },
 ];
 
 export default function ProductsPage() {
+  const router = useRouter();
+  const [products, setProducts] = React.useState<Product[]>(sampleProducts);
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = React.useState(false);
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    setIsDeleting(true);
+    // Simulate API call
+    setTimeout(() => {
+      setProducts(products.filter((p) => p.id !== deleteId));
+      setIsDeleting(false);
+      setDeleteId(null);
+    }, 1000);
+  };
+
+  const columns: ColumnDef<Product>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: 'image',
+      header: 'Image',
+      cell: ({ row }) => {
+        const image = row.getValue('image') as string;
+        return (
+          <div className="relative h-10 w-10 rounded-md overflow-hidden bg-gray-100">
+            {image ? (
+              <Image
+                src={image}
+                alt={row.getValue('name')}
+                fill
+                className="object-cover"
+                sizes="40px"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                No image
+              </div>
+            )}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'name',
+      header: 'Name',
+    },
+    {
+      accessorKey: 'category',
+      header: 'Category',
+    },
+    {
+      accessorKey: 'brand',
+      header: 'Brand',
+    },
+    {
+      accessorKey: 'price',
+      header: 'Price',
+      cell: ({ row }) => {
+        const price = parseFloat(row.getValue('price'));
+        const formatted = new Intl.NumberFormat('en-IN', {
+          style: 'currency',
+          currency: 'INR',
+        }).format(price);
+        return <div className="font-medium">{formatted}</div>;
+      },
+    },
+    {
+      accessorKey: 'stock',
+      header: 'Stock',
+      cell: ({ row }) => {
+        const stock = row.getValue('stock') as number;
+        return (
+          <div className={stock === 0 ? 'text-destructive font-medium' : ''}>
+            {stock === 0 ? 'Out of Stock' : stock}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const status = row.getValue('status') as string;
+        return (
+          <Badge variant={status === 'active' ? 'default' : 'secondary'}>
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Created',
+      cell: ({ row }) => {
+        const date = new Date(row.getValue('createdAt'));
+        return date.toLocaleDateString('en-IN');
+      },
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => {
+        const product = row.original;
+
+        return (
+          <TableActions
+            onView={() => router.push(`/products/${product.id}`)}
+            onEdit={() => router.push(`/products/${product.id}/edit`)}
+            onDelete={() => setDeleteId(product.id)}
+          />
+        );
+      },
+    },
+  ];
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">Products</h1>
-          <p className="text-muted-foreground">Manage your product inventory</p>
-        </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Product
-        </Button>
-      </div>
+      <PageHeader
+        title="Products"
+        description="Manage your products"
+        addNewLabel="Add Product"
+        addNewHref="/products/add"
+      />
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Product List</CardTitle>
-          <CardDescription>A list of all products in your store.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead>Price</TableHead>
-                <TableHead>Stock</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {products.map(product => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.category}</TableCell>
-                  <TableCell>{product.price}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
-                  <TableCell>
-                    <span
-                      className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                        product.status === 'Active'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {product.status}
-                    </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon">
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      <DataTable columns={columns} data={products} searchKey="name" searchPlaceholder="Search products..." />
+
+      <DeleteDialog
+        open={!!deleteId}
+        onOpenChange={(open) => !open && setDeleteId(null)}
+        onConfirm={handleDelete}
+        title="Delete Product"
+        description="Are you sure you want to delete this product? This action cannot be undone."
+        isLoading={isDeleting}
+      />
     </div>
   );
 }
-
