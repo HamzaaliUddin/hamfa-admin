@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Hamfa Admin Panel
 
-## Getting Started
+Modern, clean admin dashboard built with Next.js 16, TypeScript, and shadcn/ui.
 
-First, run the development server:
+## 🚀 Quick Start
 
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+**Login credentials:**
+- Email: `admin@hamfa.com`
+- Password: `admin123`
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📖 Full Documentation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+See [SETUP.md](./SETUP.md) for complete setup guide and documentation.
 
-## Learn More
+## 🛠️ Tech Stack
 
-To learn more about Next.js, take a look at the following resources:
+- **Framework:** Next.js 16 (App Router)
+- **Language:** TypeScript
+- **UI Library:** shadcn/ui
+- **Styling:** Tailwind CSS v4
+- **Forms:** React Hook Form + Zod
+- **HTTP Client:** Axios
+- **Icons:** Lucide React
+- **Notifications:** Sonner
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 📁 Project Structure
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+src/
+├── app/              # Next.js pages (App Router)
+├── components/       # React components
+├── api/             # API configuration
+├── utils/           # Utility functions
+├── constants/       # Constants & config
+├── hooks/           # Custom React hooks
+└── lib/             # Shared libraries
+```
 
-## Deploy on Vercel
+## 📜 Available Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run start` - Start production server
+- `npm run lint` - Lint code
+- `npm run format` - Format code with Prettier
+- `npm run format:check` - Check code formatting
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🎨 Features
+
+- ✅ Clean, modern UI with shadcn/ui
+- ✅ Responsive sidebar navigation
+- ✅ Protected routes with authentication
+- ✅ Toast notifications
+- ✅ Form validation
+- ✅ Dark mode ready
+- ✅ TypeScript support
+- ✅ ESLint + Prettier configured
+
+## 📄 License
+
+Private - Hamfa E-commerce Platform
