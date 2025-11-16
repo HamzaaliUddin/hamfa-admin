@@ -56,6 +56,20 @@ export const API_ENDPOINTS = {
   SOCIAL_SETTINGS: '/settings/social',
   SEO_SETTINGS: '/settings/seo',
   ADMIN_PROFILE: '/settings/profile',
+
+  // Collections
+  COLLECTIONS: '/collections',
+  COLLECTION_BY_ID: (id: string) => `/collections/${id}`,
+  ASSIGN_PRODUCTS: '/collections/assign',
+
+  // Terms & Conditions
+  TERMS: '/terms',
+  TERM_BY_ID: (id: string) => `/terms/${id}`,
+
+  // Admin Management
+  ADMINS: '/admins',
+  ADMIN_BY_ID: (id: string) => `/admins/${id}`,
+  ADMIN_PERMISSIONS: (id: string) => `/admins/${id}/permissions`,
 };
 
 export const ROUTES = {
@@ -117,6 +131,23 @@ export const ROUTES = {
   SETTINGS_SOCIAL: '/settings/social',
   SETTINGS_SEO: '/settings/seo',
   SETTINGS_PROFILE: '/settings/profile',
+
+  // Collections
+  COLLECTIONS: '/collections',
+  COLLECTIONS_ADD: '/collections/add',
+  COLLECTIONS_EDIT: (id: string) => `/collections/edit/${id}`,
+  COLLECTIONS_ASSIGN: '/collections/assign',
+
+  // Terms & Conditions
+  TERMS: '/terms',
+  TERMS_ADD: '/terms/add',
+  TERMS_EDIT: (id: string) => `/terms/edit/${id}`,
+
+  // Admin Management
+  ADMINS: '/admins',
+  ADMINS_ADD: '/admins/add',
+  ADMINS_EDIT: (id: string) => `/admins/edit/${id}`,
+  ADMINS_PERMISSIONS: (id: string) => `/admins/${id}/permissions`,
 };
 
 export const ORDER_STATUS = {

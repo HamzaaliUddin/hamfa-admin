@@ -10,60 +10,11 @@ import { TableActions } from '@/components/common/table-actions';
 import { DeleteDialog } from '@/components/common/delete-dialog';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-
-// Sample Product Type
-export type Product = {
-  id: string;
-  name: string;
-  category: string;
-  brand: string;
-  price: number;
-  stock: number;
-  status: 'active' | 'inactive';
-  image?: string;
-  createdAt: string;
-};
-
-// Sample Data
-const sampleProducts: Product[] = [
-  {
-    id: '1',
-    name: 'Premium Cotton T-Shirt',
-    category: 'Clothing',
-    brand: 'Nike',
-    price: 2999,
-    stock: 50,
-    status: 'active',
-    image: '/placeholder-product.jpg',
-    createdAt: '2024-01-15',
-  },
-  {
-    id: '2',
-    name: 'Running Shoes Pro',
-    category: 'Footwear',
-    brand: 'Adidas',
-    price: 8999,
-    stock: 25,
-    status: 'active',
-    image: '/placeholder-product.jpg',
-    createdAt: '2024-01-14',
-  },
-  {
-    id: '3',
-    name: 'Sports Water Bottle',
-    category: 'Accessories',
-    brand: 'Puma',
-    price: 499,
-    stock: 0,
-    status: 'inactive',
-    image: '/placeholder-product.jpg',
-    createdAt: '2024-01-13',
-  },
-];
+import { products as productsData, Product } from '@/data/products';
 
 export default function ProductsPage() {
   const router = useRouter();
-  const [products, setProducts] = React.useState<Product[]>(sampleProducts);
+  const [products, setProducts] = React.useState<Product[]>(productsData);
   const [deleteId, setDeleteId] = React.useState<string | null>(null);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
@@ -124,7 +75,7 @@ export default function ProductsPage() {
       },
     },
     {
-      accessorKey: 'name',
+      accessorKey: 'title',
       header: 'Name',
     },
     {
@@ -140,9 +91,9 @@ export default function ProductsPage() {
       header: 'Price',
       cell: ({ row }) => {
         const price = parseFloat(row.getValue('price'));
-        const formatted = new Intl.NumberFormat('en-IN', {
+        const formatted = new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'INR',
+          currency: 'USD',
         }).format(price);
         return <div className="font-medium">{formatted}</div>;
       },
@@ -205,7 +156,7 @@ export default function ProductsPage() {
         addNewHref="/products/add"
       />
 
-      <DataTable columns={columns} data={products} searchKey="name" searchPlaceholder="Search products..." />
+      <DataTable columns={columns} data={products} searchKey="title" searchPlaceholder="Search products..." />
 
       <DeleteDialog
         open={!!deleteId}

@@ -8,6 +8,7 @@ import {
   ChevronDown,
   Clock,
   CreditCard,
+  FileText,
   FolderTree,
   Globe,
   History,
@@ -25,6 +26,7 @@ import {
   Send,
   Settings,
   Share2,
+  Shield,
   ShoppingCart,
   Tag,
   TrendingUp,
@@ -56,12 +58,16 @@ import {
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
 import { authUtils } from '@/utils/auth';
+import { useIsSuperAdmin, useCanAccessModule } from '@/hooks/use-permissions';
+import { Module } from '@/types/permissions';
 
 type MenuItem = {
   title: string;
   href?: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string;
+  module?: Module; // For permission checking
+  superAdminOnly?: boolean;
   items?: {
     title: string;
     href: string;
@@ -74,11 +80,13 @@ const menuItems: MenuItem[] = [
     title: 'Dashboard',
     href: '/dashboard',
     icon: LayoutDashboard,
+    module: Module.DASHBOARD,
   },
   {
     title: 'Orders',
     icon: ShoppingCart,
     badge: '12',
+    module: Module.ORDERS,
     items: [
       { title: 'All Orders', href: '/orders', icon: ShoppingCart },
       { title: 'Pending', href: '/orders/pending', icon: Clock },
@@ -89,6 +97,7 @@ const menuItems: MenuItem[] = [
   {
     title: 'Products',
     icon: Package,
+    module: Module.PRODUCTS,
     items: [
       { title: 'All Products', href: '/products', icon: Package },
       { title: 'Add Product', href: '/products/add', icon: PackagePlus },
@@ -99,6 +108,7 @@ const menuItems: MenuItem[] = [
   {
     title: 'Categories',
     icon: FolderTree,
+    module: Module.CATEGORIES,
     items: [
       { title: 'Main Categories', href: '/categories', icon: FolderTree },
       { title: 'Sub Categories', href: '/categories/sub', icon: Layers },
@@ -106,8 +116,19 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
+    title: 'Collections',
+    icon: Layers,
+    module: Module.COLLECTIONS,
+    items: [
+      { title: 'All Collections', href: '/collections', icon: Layers },
+      { title: 'Add Collection', href: '/collections/add', icon: PlusCircle },
+      { title: 'Assign Products', href: '/collections/assign', icon: Tag },
+    ],
+  },
+  {
     title: 'Brands',
     icon: Award,
+    module: Module.BRANDS,
     items: [
       { title: 'All Brands', href: '/brands', icon: Award },
       { title: 'Add Brand', href: '/brands/add', icon: PlusCircle },
@@ -116,15 +137,26 @@ const menuItems: MenuItem[] = [
   {
     title: 'Banners',
     icon: Image,
+    module: Module.BANNERS,
     items: [
       { title: 'Homepage Banners', href: '/banners', icon: Image },
       { title: 'Add Banner', href: '/banners/add', icon: ImagePlus },
     ],
   },
   {
+    title: 'Users',
+    icon: Users,
+    module: Module.USERS,
+    items: [
+      { title: 'All Users', href: '/users', icon: Users },
+      { title: 'User Details', href: '/users/details', icon: UserCheck },
+    ],
+  },
+  {
     title: 'Notifications',
     icon: Bell,
     badge: '3',
+    module: Module.NOTIFICATIONS,
     items: [
       { title: 'Send Notification', href: '/notifications/send', icon: Send },
       { title: 'History', href: '/notifications', icon: History },
@@ -132,16 +164,28 @@ const menuItems: MenuItem[] = [
     ],
   },
   {
-    title: 'Users',
-    icon: Users,
+    title: 'Terms & Conditions',
+    icon: FileText,
+    module: Module.TERMS,
     items: [
-      { title: 'All Users', href: '/users', icon: Users },
-      { title: 'User Details', href: '/users/details', icon: UserCheck },
+      { title: 'All Terms', href: '/terms', icon: FileText },
+      { title: 'Add Terms', href: '/terms/add', icon: PlusCircle },
+    ],
+  },
+  {
+    title: 'Admin Management',
+    icon: Shield,
+    module: Module.ADMIN_MANAGEMENT,
+    superAdminOnly: true,
+    items: [
+      { title: 'All Admins', href: '/admins', icon: Shield },
+      { title: 'Add Admin', href: '/admins/add', icon: PlusCircle },
     ],
   },
   {
     title: 'Reports',
     icon: BarChart3,
+    module: Module.REPORTS,
     items: [
       { title: 'Sales Report', href: '/reports/sales', icon: TrendingUp },
       { title: 'Order Report', href: '/reports/orders', icon: ShoppingCart },
@@ -152,6 +196,7 @@ const menuItems: MenuItem[] = [
   {
     title: 'Settings',
     icon: Settings,
+    module: Module.SETTINGS,
     items: [
       { title: 'Website Settings', href: '/settings', icon: Globe },
       { title: 'Contact Info', href: '/settings/contact', icon: Phone },
@@ -166,16 +211,35 @@ const menuItems: MenuItem[] = [
 export function AppSidebar() {
   const pathname = usePathname();
   const [openSections, setOpenSections] = React.useState<string[]>([]);
+  const isSuperAdmin = useIsSuperAdmin();
+
+  // Filter menu items based on permissions
+  const visibleMenuItems = React.useMemo(() => {
+    return menuItems.filter(item => {
+      // SuperAdmin only items
+      if (item.superAdminOnly && !isSuperAdmin) {
+        return false;
+      }
+
+      // Check module access
+      if (item.module) {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        return useCanAccessModule(item.module);
+      }
+
+      return true;
+    });
+  }, [isSuperAdmin]);
 
   // Auto-open section if current page is within it
   React.useEffect(() => {
-    const currentSection = menuItems.find(item =>
+    const currentSection = visibleMenuItems.find(item =>
       item.items?.some(subItem => pathname.startsWith(subItem.href))
     );
     if (currentSection && !openSections.includes(currentSection.title)) {
       setOpenSections(prev => [...prev, currentSection.title]);
     }
-  }, [pathname]);
+  }, [pathname, visibleMenuItems, openSections]);
 
   const toggleSection = (title: string) => {
     setOpenSections(prev =>
@@ -190,7 +254,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="border-r sticky top-0 h-screen">
       <SidebarHeader className="border-b px-6 py-4 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-3">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black">
@@ -209,7 +273,7 @@ export function AppSidebar() {
             <SidebarGroupLabel>Main Menu</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {menuItems.map(item => {
+                {visibleMenuItems.map(item => {
                   // Simple menu item without children
                   if (!item.items) {
                     const isActive = pathname === item.href;

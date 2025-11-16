@@ -59,6 +59,31 @@
   }
 }
 
+/* Transparent components for background visibility */
+@layer components {
+  .card,
+  [class*="bg-card"] {
+    background-color: hsl(var(--card) / 0.7) !important;
+    backdrop-filter: blur(8px);
+  }
+  
+  .bg-background {
+    background-color: hsl(var(--background) / 0.7) !important;
+  }
+  
+  .bg-muted {
+    background-color: hsl(var(--muted) / 0.7) !important;
+  }
+  
+  /* Make popups and dropdowns more visible */
+  [role="dialog"],
+  [role="menu"],
+  .popover {
+    background-color: hsl(var(--background) / 0.95) !important;
+    backdrop-filter: blur(12px);
+  }
+}
+
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
