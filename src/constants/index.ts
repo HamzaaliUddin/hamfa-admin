@@ -85,6 +85,7 @@ export const ROUTES = {
   ORDERS_COMPLETED: '/orders/completed',
   ORDERS_CANCELLED: '/orders/cancelled',
   ORDER_DETAILS: (id: string) => `/orders/${id}`,
+  ORDERS_EDIT: (id: string) => `/orders/edit/${id}`,
 
   // Products
   PRODUCTS: '/products',
@@ -111,12 +112,14 @@ export const ROUTES = {
   // Notifications
   NOTIFICATIONS: '/notifications',
   NOTIFICATIONS_SEND: '/notifications/send',
+  NOTIFICATIONS_EDIT: (id: string) => `/notifications/edit/${id}`,
   NOTIFICATIONS_ANNOUNCEMENTS: '/notifications/announcements',
 
   // Users
   USERS: '/users',
   USERS_DETAILS: '/users/details',
   USER_PROFILE: (id: string) => `/users/${id}`,
+  USERS_EDIT: (id: string) => `/users/edit/${id}`,
 
   // Reports
   REPORTS_SALES: '/reports/sales',
