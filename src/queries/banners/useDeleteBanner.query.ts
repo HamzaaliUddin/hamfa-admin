@@ -1,12 +1,15 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
+
+interface DeleteBannerResponse {
+  message: string;
+}
 
 const deleteBanner = async (id: number | string): Promise<void> => {
-  return await axiosInstance.delete(`banners/${id}`);
+  await axiosInstance.delete<DeleteBannerResponse>(`/banner/${id}`);
 };
 
 export const useDeleteBanner = () => {
@@ -18,9 +21,9 @@ export const useDeleteBanner = () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });
       toast.success('Banner deleted successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to delete banner');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to delete banner';
+      toast.error(errorMessage);
     },
   });
 };
-

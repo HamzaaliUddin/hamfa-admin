@@ -1,10 +1,10 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/common/data-table';
-import { Package, Clock, CheckCircle, XCircle, TrendingUp } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { orders } from '@/data/orders';
+import { CheckCircle, Clock, Package, TrendingUp, XCircle } from 'lucide-react';
 
 // Calculate order statistics
 const calculateOrderStats = () => {
@@ -13,7 +13,7 @@ const calculateOrderStats = () => {
   const shipped = orders.filter(o => o.status === 'shipped').length;
   const delivered = orders.filter(o => o.status === 'delivered').length;
   const cancelled = orders.filter(o => o.status === 'cancelled').length;
-  
+
   return {
     total: orders.length,
     pending,
@@ -28,11 +28,36 @@ const stats = calculateOrderStats();
 
 // Order status distribution data
 const statusData = [
-  { status: 'Pending', count: stats.pending, color: 'bg-yellow-500', percentage: (stats.pending / stats.total) * 100 },
-  { status: 'Processing', count: stats.processing, color: 'bg-blue-500', percentage: (stats.processing / stats.total) * 100 },
-  { status: 'Shipped', count: stats.shipped, color: 'bg-purple-500', percentage: (stats.shipped / stats.total) * 100 },
-  { status: 'Delivered', count: stats.delivered, color: 'bg-green-500', percentage: (stats.delivered / stats.total) * 100 },
-  { status: 'Cancelled', count: stats.cancelled, color: 'bg-red-500', percentage: (stats.cancelled / stats.total) * 100 },
+  {
+    status: 'Pending',
+    count: stats.pending,
+    color: 'bg-yellow-500',
+    percentage: (stats.pending / stats.total) * 100,
+  },
+  {
+    status: 'Processing',
+    count: stats.processing,
+    color: 'bg-blue-500',
+    percentage: (stats.processing / stats.total) * 100,
+  },
+  {
+    status: 'Shipped',
+    count: stats.shipped,
+    color: 'bg-purple-500',
+    percentage: (stats.shipped / stats.total) * 100,
+  },
+  {
+    status: 'Delivered',
+    count: stats.delivered,
+    color: 'bg-green-500',
+    percentage: (stats.delivered / stats.total) * 100,
+  },
+  {
+    status: 'Cancelled',
+    count: stats.cancelled,
+    color: 'bg-red-500',
+    percentage: (stats.cancelled / stats.total) * 100,
+  },
 ];
 
 // Recent orders for table
@@ -67,9 +92,7 @@ export default function OrderReportPage() {
     {
       accessorKey: 'orderNumber',
       header: 'Order #',
-      cell: ({ row }: any) => (
-        <div className="font-medium">{row.original.orderNumber}</div>
-      ),
+      cell: ({ row }: any) => <div className="font-medium">{row.original.orderNumber}</div>,
     },
     {
       accessorKey: 'customer',
@@ -78,16 +101,12 @@ export default function OrderReportPage() {
     {
       accessorKey: 'items',
       header: 'Items',
-      cell: ({ row }: any) => (
-        <Badge variant="secondary">{row.original.items} items</Badge>
-      ),
+      cell: ({ row }: any) => <Badge variant="secondary">{row.original.items} items</Badge>,
     },
     {
       accessorKey: 'total',
       header: 'Total',
-      cell: ({ row }: any) => (
-        <div className="font-semibold">${row.original.total.toFixed(2)}</div>
-      ),
+      cell: ({ row }: any) => <div className="font-semibold">Rs {row.original.total.toFixed(2)}</div>,
     },
     {
       accessorKey: 'status',
@@ -120,59 +139,59 @@ export default function OrderReportPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-muted-foreground mt-1">All time</p>
+            <p className="text-muted-foreground mt-1 text-xs">All time</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Clock className="h-4 w-4 text-yellow-500" />
               Pending
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.pending}</div>
-            <p className="text-xs text-yellow-600 mt-1">Awaiting processing</p>
+            <p className="mt-1 text-xs text-yellow-600">Awaiting processing</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Package className="h-4 w-4 text-blue-500" />
               Processing
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.processing}</div>
-            <p className="text-xs text-blue-600 mt-1">Being prepared</p>
+            <p className="mt-1 text-xs text-blue-600">Being prepared</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <CheckCircle className="h-4 w-4 text-green-500" />
               Delivered
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.delivered}</div>
-            <p className="text-xs text-green-600 mt-1">Successfully completed</p>
+            <p className="mt-1 text-xs text-green-600">Successfully completed</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <XCircle className="h-4 w-4 text-red-500" />
               Cancelled
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.cancelled}</div>
-            <p className="text-xs text-red-600 mt-1">
+            <p className="mt-1 text-xs text-red-600">
               {((stats.cancelled / stats.total) * 100).toFixed(1)}% cancellation rate
             </p>
           </CardContent>
@@ -187,7 +206,7 @@ export default function OrderReportPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {statusData.map((item) => (
+            {statusData.map(item => (
               <div key={item.status} className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
                   <span className="font-medium">{item.status}</span>
@@ -195,7 +214,7 @@ export default function OrderReportPage() {
                     {item.count} orders ({item.percentage.toFixed(1)}%)
                   </span>
                 </div>
-                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                <div className="h-2 overflow-hidden rounded-full bg-gray-100">
                   <div
                     className={`h-full ${item.color} transition-all`}
                     style={{ width: `${item.percentage}%` }}

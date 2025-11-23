@@ -1,12 +1,15 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
+
+interface DeleteProductResponse {
+  message: string;
+}
 
 const deleteProduct = async (id: number | string): Promise<void> => {
-  return await axiosInstance.delete(`products/${id}`);
+  await axiosInstance.delete<DeleteProductResponse>(`/product/${id}`);
 };
 
 export const useDeleteProduct = () => {
@@ -18,9 +21,9 @@ export const useDeleteProduct = () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
       toast.success('Product deleted successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to delete product');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to delete product';
+      toast.error(errorMessage);
     },
   });
 };
-

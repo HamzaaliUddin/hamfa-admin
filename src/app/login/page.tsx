@@ -1,27 +1,30 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useLogin } from '@/queries/auth';
 import { authUtils } from '@/utils/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import * as z from 'zod';
+import bg from '../../../public/logo/bg.png';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const loginMutation = useLogin();
+  const [isChecking, setIsChecking] = useState(true);
 
   const {
     register,
@@ -31,53 +34,76 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
+  // Check if user is already logged in
+  useEffect(() => {
+    const checkExistingAuth = () => {
+      const token = authUtils.getToken();
+      const user = authUtils.getUser();
 
-    try {
-      // TODO: Replace with actual API call
-      // For now, using static credentials for demo
-      if (data.email === 'admin@hamfa.com' && data.password === 'admin123') {
-        const mockToken = 'mock-jwt-token-' + Date.now();
-        const mockUser = {
-          id: '1',
-          name: 'Admin User',
-          email: data.email,
-          role: 'admin',
-        };
-
-        authUtils.setToken(mockToken);
-        authUtils.setUser(mockUser);
-
-        toast.success('Login successful!');
+      if (token && user) {
+        console.log('✅ Token found in cache, redirecting to dashboard...');
         router.push('/dashboard');
       } else {
-        toast.error('Invalid credentials. Try admin@hamfa.com / admin123');
+        setIsChecking(false);
       }
+    };
 
-      // Uncomment when backend is ready:
-      // const response = await axiosInstance.post(API_ENDPOINTS.LOGIN, data);
-      // authUtils.setToken(response.token);
-      // authUtils.setUser(response.user);
-      // toast.success('Login successful!');
-      // router.push('/dashboard');
+    checkExistingAuth();
+  }, [router]);
+
+  const onSubmit = async (data: LoginFormData) => {
+    try {
+      const result = await loginMutation.mutateAsync(data);
+      console.log('✅ Login result:', result);
+
+      // Check if we have the required data
+      if (result?.user_id && result?.email) {
+        // Redirect to OTP verification page with user_id and email
+        router.push(
+          `/verify-otp?user_id=${result.user_id}&email=${encodeURIComponent(result.email)}`
+        );
+      } else {
+        console.error('❌ Missing user_id or email in response:', result);
+        toast.error('Login failed. Please try again.');
+      }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed. Please try again.';
-      toast.error(errorMessage);
-    } finally {
-      setIsLoading(false);
+      // Error already handled by the mutation
+      console.error('❌ Login error:', error);
     }
   };
 
+  // Show loading state while checking authentication
+  if (isChecking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center to-blue-100">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-12 w-12 animate-spin rounded-full border-t-2 border-b-2 border-blue-600"></div>
+          <p className="text-sm text-gray-600">Checking authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-blue-100 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
+    <div
+      className="relative flex min-h-screen items-center justify-center p-4"
+      style={{
+        backgroundImage: `url(${bg.src})`,
+        backgroundSize: 'contain',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+      }}
+    >
+      {/* Login Card */}
+      <Card className="relative z-10 w-full max-w-md space-y-12 bg-white/70 shadow-2xl">
+        <CardHeader className="space-y-1 text-center">
+          {/* Hamfa Logo */}
           <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
           <CardDescription>Enter your credentials to access the admin panel</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -85,11 +111,9 @@ export default function LoginPage() {
                 type="email"
                 placeholder="admin@hamfa.com"
                 {...register('email')}
-                disabled={isLoading}
+                disabled={loginMutation.isPending}
               />
-              {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
-              )}
+              {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
             </div>
 
             <div className="space-y-2">
@@ -99,19 +123,19 @@ export default function LoginPage() {
                 type="password"
                 placeholder="••••••••"
                 {...register('password')}
-                disabled={isLoading}
+                disabled={loginMutation.isPending}
               />
               {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
+                <p className="text-destructive text-sm">{errors.password.message}</p>
               )}
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Logging in...' : 'Login'}
+            <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
+              {loginMutation.isPending ? 'Logging in...' : 'Login'}
             </Button>
 
-            <p className="text-center text-sm text-muted-foreground">
-              Demo: admin@hamfa.com / admin123
+            <p className="text-muted-foreground text-center text-sm">
+              Use: admin@hamfa.com / Admin@123!
             </p>
           </form>
         </CardContent>
@@ -119,4 +143,3 @@ export default function LoginPage() {
     </div>
   );
 }
-

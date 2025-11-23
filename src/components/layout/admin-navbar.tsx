@@ -1,6 +1,7 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -20,6 +21,27 @@ export function AdminNavbar() {
     authUtils.logout();
   };
 
+  const getUserInitials = (name: string) => {
+    return name
+      ?.split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase() || 'AD';
+  };
+
+  const getRoleBadgeVariant = (role: string) => {
+    switch (role?.toLowerCase()) {
+      case 'super admin':
+        return 'default';
+      case 'admin':
+        return 'secondary';
+      case 'moderator':
+        return 'outline';
+      default:
+        return 'secondary';
+    }
+  };
+
   return (
     <div className="flex w-full items-center justify-between">
       <div className="flex items-center gap-2">
@@ -33,22 +55,28 @@ export function AdminNavbar() {
               <Avatar>
                 <AvatarImage src="/avatar-placeholder.png" alt={user?.name || 'Admin'} />
                 <AvatarFallback>
-                  {user?.name
-                    ?.split(' ')
-                    .map(n => n[0])
-                    .join('')
-                    .toUpperCase() || 'AD'}
+                  {getUserInitials(user?.name || 'Admin')}
                 </AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
-              <div className="flex flex-col space-y-1">
+              <div className="flex flex-col space-y-2">
                 <p className="text-sm leading-none font-medium">{user?.name || 'Admin'}</p>
                 <p className="text-muted-foreground text-xs leading-none">
                   {user?.email || 'admin@example.com'}
                 </p>
+                {user?.role?.name && (
+                  <Badge variant={getRoleBadgeVariant(user.role.name) as any} className="w-fit text-xs">
+                    {user.role.name}
+                  </Badge>
+                )}
+                {user?.brand?.name && (
+                  <p className="text-muted-foreground text-xs leading-none">
+                    Brand: {user.brand.name}
+                  </p>
+                )}
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />

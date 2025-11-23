@@ -1,9 +1,8 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
 import { Category } from './useGetCategories.query';
 import { CreateCategoryInput } from './useCreateCategory.query';
 
@@ -14,8 +13,14 @@ interface UpdateCategoryParams {
   data: UpdateCategoryInput;
 }
 
+interface UpdateCategoryResponse {
+  data: Category;
+  message: string;
+}
+
 const updateCategory = async ({ id, data }: UpdateCategoryParams): Promise<Category> => {
-  return await axiosInstance.put(`categories/${id}`, data);
+  const response: UpdateCategoryResponse = await axiosInstance.put(`/category/${id}`, data);
+  return response.data;
 };
 
 export const useUpdateCategory = () => {
@@ -28,9 +33,9 @@ export const useUpdateCategory = () => {
       queryClient.invalidateQueries({ queryKey: ['category', variables.id] });
       toast.success('Category updated successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to update category');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to update category';
+      toast.error(errorMessage);
     },
   });
 };
-

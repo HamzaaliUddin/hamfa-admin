@@ -1,15 +1,15 @@
 'use client';
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import axiosInstance from '@/api/axios';
 import { ErrorResponseType } from '@/types/api.types';
-import { Settings } from './useGetSettings.query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import { Setting } from './useGetSettings.query';
 
-type UpdateSettingsInput = Partial<Omit<Settings, 'id' | 'createdAt' | 'updatedAt'>>;
+type UpdateSettingsInput = Partial<Omit<Setting, 'setting_id' | 'created_at' | 'updated_at'>>;
 
-const updateSettings = async (data: UpdateSettingsInput): Promise<Settings> => {
-  return await axiosInstance.put('settings', data);
+const updateSettings = async (data: UpdateSettingsInput): Promise<Setting> => {
+  return await axiosInstance.put('/setting', data);
 };
 
 export const useUpdateSettings = () => {
@@ -26,4 +26,3 @@ export const useUpdateSettings = () => {
     },
   });
 };
-

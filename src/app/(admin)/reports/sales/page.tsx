@@ -1,10 +1,10 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/common/data-table';
-import { BarChart3, TrendingUp, TrendingDown, DollarSign, ShoppingCart } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { orders } from '@/data/orders';
+import { BarChart3, DollarSign, ShoppingCart, TrendingUp } from 'lucide-react';
 
 // Calculate sales statistics from orders
 const calculateSalesStats = () => {
@@ -12,7 +12,7 @@ const calculateSalesStats = () => {
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
   const totalOrders = orders.length;
   const avgOrderValue = totalRevenue / totalOrders;
-  
+
   return {
     totalRevenue,
     totalOrders,
@@ -58,9 +58,7 @@ export default function SalesReportPage() {
       accessorKey: 'revenue',
       header: 'Revenue',
       cell: ({ row }: any) => (
-        <div className="font-semibold text-green-600">
-          ${row.original.revenue.toFixed(2)}
-        </div>
+        <div className="font-semibold text-green-600">Rs {row.original.revenue.toFixed(2)}</div>
       ),
     },
   ];
@@ -76,14 +74,14 @@ export default function SalesReportPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <DollarSign className="h-4 w-4 text-green-500" />
               Total Revenue
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.totalRevenue.toFixed(2)}</div>
-            <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+            <div className="text-2xl font-bold">Rs {stats.totalRevenue.toFixed(2)}</div>
+            <p className="mt-1 flex items-center gap-1 text-xs text-green-600">
               <TrendingUp className="h-3 w-3" />
               +20.1% from last month
             </p>
@@ -92,14 +90,14 @@ export default function SalesReportPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <ShoppingCart className="h-4 w-4 text-blue-500" />
               Total Orders
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.totalOrders}</div>
-            <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+            <p className="mt-1 flex items-center gap-1 text-xs text-green-600">
               <TrendingUp className="h-3 w-3" />
               +15% from last month
             </p>
@@ -111,8 +109,8 @@ export default function SalesReportPage() {
             <CardTitle className="text-sm font-medium">Average Order Value</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${stats.avgOrderValue.toFixed(2)}</div>
-            <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+            <div className="text-2xl font-bold">Rs {stats.avgOrderValue.toFixed(2)}</div>
+            <p className="mt-1 flex items-center gap-1 text-xs text-green-600">
               <TrendingUp className="h-3 w-3" />
               +4.5% from last month
             </p>
@@ -125,7 +123,7 @@ export default function SalesReportPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.completedOrders}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-1 text-xs">
               {((stats.completedOrders / stats.totalOrders) * 100).toFixed(1)}% completion rate
             </p>
           </CardContent>
@@ -143,16 +141,16 @@ export default function SalesReportPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {monthlySales.map((month) => (
+            {monthlySales.map(month => (
               <div key={month.month} className="flex items-center gap-4">
                 <div className="w-12 font-medium">{month.month}</div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <div
-                      className="h-8 bg-primary rounded"
+                      className="bg-primary h-8 rounded"
                       style={{ width: `${(month.revenue / 10000) * 100}%` }}
                     />
-                    <span className="text-sm font-medium">${month.revenue.toLocaleString()}</span>
+                    <span className="text-sm font-medium">Rs {month.revenue.toLocaleString()}</span>
                   </div>
                 </div>
                 <Badge variant="secondary">{month.orders} orders</Badge>

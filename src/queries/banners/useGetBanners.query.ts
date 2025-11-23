@@ -1,32 +1,45 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
-import { PaginationParams, PaginatedResponse } from '@/types/api.types';
+import { useQuery } from '@tanstack/react-query';
 
 export interface Banner {
-  id: number;
+  banner_id: number;
   title: string;
-  description?: string;
+  description: string;
   image: string;
-  link?: string;
-  position: 'home-hero' | 'home-secondary' | 'sidebar' | 'footer';
   status: 'active' | 'inactive';
-  order?: number;
-  startDate?: string;
-  endDate?: string;
-  createdAt: string;
-  updatedAt: string;
+  redirect_url?: string;
+  sort_order: number;
+  start_date?: string;
+  end_date?: string;
+  click_count: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
-const fetchBanners = async (params?: PaginationParams): Promise<PaginatedResponse<Banner>> => {
-  return await axiosInstance.get('banners', { params });
+export interface GetBannersParams {
+  page?: number;
+  limit?: number;
+  sortKey?: string;
+  sortValue?: 'ASC' | 'DESC';
+  status?: string;
+  search?: string;
+}
+
+interface GetBannersResponse {
+  data: Banner[];
+  count: number;
+}
+
+const fetchBanners = async (params?: GetBannersParams): Promise<GetBannersResponse> => {
+  return await axiosInstance.get('/banner', { params });
 };
 
-export const useGetBanners = (params?: PaginationParams) => {
+export const useGetBanners = (params?: GetBannersParams) => {
   return useQuery({
     queryKey: ['banners', params],
     queryFn: () => fetchBanners(params),
+    staleTime: 60 * 1000,
   });
 };
-

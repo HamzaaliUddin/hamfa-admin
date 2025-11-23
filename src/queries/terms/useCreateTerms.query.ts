@@ -1,22 +1,27 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
-import { Terms } from './useGetTerms.query';
+import { Term } from './useGetTerms.query';
 
 export interface CreateTermsInput {
   title: string;
   slug: string;
   content: string;
-  type?: Terms['type'];
-  status?: 'active' | 'inactive';
-  version?: string;
+  version: string;
+  status: 'active' | 'draft';
+  effective_date: string;
 }
 
-const createTerms = async (data: CreateTermsInput): Promise<Terms> => {
-  return await axiosInstance.post('terms', data);
+interface CreateTermsResponse {
+  data: Term;
+  message: string;
+}
+
+const createTerms = async (data: CreateTermsInput): Promise<Term> => {
+  const response: CreateTermsResponse = await axiosInstance.post('/term', data);
+  return response.data;
 };
 
 export const useCreateTerms = () => {
@@ -28,9 +33,9 @@ export const useCreateTerms = () => {
       queryClient.invalidateQueries({ queryKey: ['terms'] });
       toast.success('Terms created successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to create terms');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to create terms';
+      toast.error(errorMessage);
     },
   });
 };
-

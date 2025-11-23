@@ -10,24 +10,23 @@ import { TableActions } from '@/components/common/table-actions';
 import { DeleteDialog } from '@/components/common/delete-dialog';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { products as productsData, Product } from '@/data/products';
+import { useGetProducts, Product } from '@/queries/products/useGetProducts.query';
+import { useDeleteProduct } from '@/queries/products/useDeleteProduct.query';
 
 export default function ProductsPage() {
   const router = useRouter();
-  const [products, setProducts] = React.useState<Product[]>(productsData);
-  const [deleteId, setDeleteId] = React.useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [page, setPage] = React.useState(1);
+  const { data, isLoading, error } = useGetProducts({ page, limit: 10 });
+  const deleteProduct = useDeleteProduct();
+  
+  const products = data?.data || [];
+
+  const [deleteId, setDeleteId] = React.useState<number | null>(null);
 
   const handleDelete = async () => {
     if (!deleteId) return;
-
-    setIsDeleting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setProducts(products.filter((p) => p.id !== deleteId));
-      setIsDeleting(false);
-      setDeleteId(null);
-    }, 1000);
+    await deleteProduct.mutateAsync(deleteId);
+    setDeleteId(null);
   };
 
   const columns: ColumnDef<Product>[] = [
@@ -60,7 +59,7 @@ export default function ProductsPage() {
             {image ? (
               <Image
                 src={image}
-                alt={row.getValue('name')}
+                alt={row.getValue('title') as string}
                 fill
                 className="object-cover"
                 sizes="40px"
@@ -79,12 +78,18 @@ export default function ProductsPage() {
       header: 'Name',
     },
     {
-      accessorKey: 'category',
+      accessorKey: 'category_id',
       header: 'Category',
+      cell: ({ row }) => {
+        return <div>{row.getValue('category_id')}</div>;
+      },
     },
     {
-      accessorKey: 'brand',
+      accessorKey: 'brand_id',
       header: 'Brand',
+      cell: ({ row }) => {
+        return <div>{row.getValue('brand_id')}</div>;
+      },
     },
     {
       accessorKey: 'price',
@@ -103,9 +108,10 @@ export default function ProductsPage() {
       header: 'Stock',
       cell: ({ row }) => {
         const stock = row.getValue('stock') as number;
+        const lowStockThreshold = row.original.low_stock_threshold;
         return (
-          <div className={stock === 0 ? 'text-destructive font-medium' : ''}>
-            {stock === 0 ? 'Out of Stock' : stock}
+          <div className={stock <= lowStockThreshold ? 'text-red-600 font-medium' : ''}>
+            {stock}
           </div>
         );
       },
@@ -115,19 +121,28 @@ export default function ProductsPage() {
       header: 'Status',
       cell: ({ row }) => {
         const status = row.getValue('status') as string;
+        const variant =
+          status === 'active'
+            ? 'default'
+            : status === 'out_of_stock'
+              ? 'destructive'
+              : 'secondary';
+
         return (
-          <Badge variant={status === 'active' ? 'default' : 'secondary'}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+          <Badge variant={variant}>
+            {status.replace('_', ' ').toUpperCase()}
           </Badge>
         );
       },
     },
     {
-      accessorKey: 'createdAt',
-      header: 'Created',
+      accessorKey: 'featured',
+      header: 'Featured',
       cell: ({ row }) => {
-        const date = new Date(row.getValue('createdAt'));
-        return date.toLocaleDateString('en-IN');
+        const featured = row.getValue('featured') as boolean;
+        return featured ? (
+          <Badge variant="outline">⭐ Featured</Badge>
+        ) : null;
       },
     },
     {
@@ -138,14 +153,30 @@ export default function ProductsPage() {
 
         return (
           <TableActions
-            onView={() => router.push(`/products/${product.id}`)}
-            onEdit={() => router.push(`/products/${product.id}/edit`)}
-            onDelete={() => setDeleteId(product.id)}
+            onView={() => router.push(`/products/${product.product_id}`)}
+            onEdit={() => router.push(`/products/${product.product_id}/edit`)}
+            onDelete={() => setDeleteId(product.product_id)}
           />
         );
       },
     },
   ];
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Products"
+          description="Manage your products"
+          addNewLabel="Add Product"
+          addNewHref="/products/add"
+        />
+        <div className="text-center py-10 text-red-500">
+          Error loading products. Please try again.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -156,7 +187,13 @@ export default function ProductsPage() {
         addNewHref="/products/add"
       />
 
-      <DataTable columns={columns} data={products} searchKey="title" searchPlaceholder="Search products..." />
+      <DataTable 
+        columns={columns} 
+        data={products} 
+        searchKey="title" 
+        searchPlaceholder="Search products..." 
+        isLoading={isLoading}
+      />
 
       <DeleteDialog
         open={!!deleteId}
@@ -164,7 +201,7 @@ export default function ProductsPage() {
         onConfirm={handleDelete}
         title="Delete Product"
         description="Are you sure you want to delete this product? This action cannot be undone."
-        isLoading={isDeleting}
+        isLoading={deleteProduct.isPending}
       />
     </div>
   );

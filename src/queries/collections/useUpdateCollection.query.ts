@@ -1,9 +1,8 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
 import { Collection } from './useGetCollections.query';
 import { CreateCollectionInput } from './useCreateCollection.query';
 
@@ -14,8 +13,14 @@ interface UpdateCollectionParams {
   data: UpdateCollectionInput;
 }
 
+interface UpdateCollectionResponse {
+  data: Collection;
+  message: string;
+}
+
 const updateCollection = async ({ id, data }: UpdateCollectionParams): Promise<Collection> => {
-  return await axiosInstance.put(`collections/${id}`, data);
+  const response: UpdateCollectionResponse = await axiosInstance.put(`/collection/${id}`, data);
+  return response.data;
 };
 
 export const useUpdateCollection = () => {
@@ -28,9 +33,9 @@ export const useUpdateCollection = () => {
       queryClient.invalidateQueries({ queryKey: ['collection', variables.id] });
       toast.success('Collection updated successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to update collection');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to update collection';
+      toast.error(errorMessage);
     },
   });
 };
-

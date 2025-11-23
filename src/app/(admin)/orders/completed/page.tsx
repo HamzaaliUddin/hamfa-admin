@@ -307,7 +307,7 @@ export default function OrdersCompletedPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ₹{(totalRevenue / 1000).toFixed(1)}k
+              Rs {(totalRevenue / 1000).toFixed(1)}k
             </div>
             <p className="text-xs text-muted-foreground">From completed orders</p>
           </CardContent>
@@ -320,7 +320,7 @@ export default function OrdersCompletedPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ₹{(avgOrderValue / 1000).toFixed(1)}k
+              Rs {(avgOrderValue / 1000).toFixed(1)}k
             </div>
             <p className="text-xs text-muted-foreground">Per completed order</p>
           </CardContent>

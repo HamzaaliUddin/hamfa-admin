@@ -80,7 +80,7 @@ export default function AddProductPage() {
             <CrudFormSection title="Pricing & Inventory">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="grid gap-2">
-                  <Label htmlFor="price">Price (₹) *</Label>
+                  <Label htmlFor="price">Price (Rs) *</Label>
                   <Input
                     id="price"
                     name="price"
@@ -93,7 +93,7 @@ export default function AddProductPage() {
                 </div>
 
                 <div className="grid gap-2">
-                  <Label htmlFor="comparePrice">Compare at Price (₹)</Label>
+                  <Label htmlFor="comparePrice">Compare at Price (Rs)</Label>
                   <Input
                     id="comparePrice"
                     name="comparePrice"

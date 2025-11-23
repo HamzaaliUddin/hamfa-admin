@@ -1,30 +1,47 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
-import { PaginationParams, PaginatedResponse } from '@/types/api.types';
+import { useQuery } from '@tanstack/react-query';
 
 export interface User {
-  id: number;
+  user_id: number;
+  name: string;
   email: string;
-  firstName: string;
-  lastName: string;
-  phone?: string;
-  avatar?: string;
-  status: 'active' | 'inactive' | 'blocked';
-  role: 'user' | 'admin';
-  createdAt: string;
-  updatedAt: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+  role?: {
+    role_id: number;
+    name: string;
+  };
+  brand?: {
+    brand_id: number;
+    name: string;
+  };
 }
 
-const fetchUsers = async (params?: PaginationParams): Promise<PaginatedResponse<User>> => {
-  return await axiosInstance.get('users', { params });
+export interface GetUsersParams {
+  page?: number;
+  limit?: number;
+  sortKey?: string;
+  sortValue?: 'ASC' | 'DESC';
+  role?: string;
+  search?: string;
+}
+
+interface GetUsersResponse {
+  data: User[];
+  count: number;
+}
+
+const fetchUsers = async (params?: GetUsersParams): Promise<GetUsersResponse> => {
+  return await axiosInstance.get('/user', { params });
 };
 
-export const useGetUsers = (params?: PaginationParams) => {
+export const useGetUsers = (params?: GetUsersParams) => {
   return useQuery({
     queryKey: ['users', params],
     queryFn: () => fetchUsers(params),
+    staleTime: 60 * 1000, // 1 minute
   });
 };
-

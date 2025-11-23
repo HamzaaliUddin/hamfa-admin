@@ -1,55 +1,37 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
+import { useQuery } from '@tanstack/react-query';
 
-export interface Settings {
-  id: number;
-  siteName?: string;
-  siteDescription?: string;
-  siteUrl?: string;
-  contactEmail?: string;
-  contactPhone?: string;
-  address?: string;
-  currency?: string;
-  language?: string;
-  timezone?: string;
-  logo?: string;
-  favicon?: string;
-  socialMedia?: {
-    facebook?: string;
-    twitter?: string;
-    instagram?: string;
-    linkedin?: string;
-  };
-  seo?: {
-    metaTitle?: string;
-    metaDescription?: string;
-    metaKeywords?: string;
-  };
-  payment?: {
-    stripePublicKey?: string;
-    paypalClientId?: string;
-  };
-  email?: {
-    smtpHost?: string;
-    smtpPort?: number;
-    smtpUser?: string;
-    fromEmail?: string;
-    fromName?: string;
-  };
-  createdAt: string;
-  updatedAt: string;
+export interface Setting {
+  setting_id: number;
+  key: string;
+  value: string;
+  type: 'string' | 'number' | 'boolean' | 'json';
+  category: 'general' | 'email' | 'payment' | 'shipping' | 'security' | 'appearance';
+  description?: string;
+  is_public: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
-const fetchSettings = async (): Promise<Settings> => {
-  return await axiosInstance.get('settings');
+export interface GetSettingsParams {
+  category?: string;
+}
+
+interface GetSettingsResponse {
+  data: Setting[];
+}
+
+const fetchSettings = async (params?: GetSettingsParams): Promise<Setting[]> => {
+  const response: GetSettingsResponse = await axiosInstance.get('/setting', { params });
+  return response.data;
 };
 
-export const useGetSettings = () => {
+export const useGetSettings = (params?: GetSettingsParams) => {
   return useQuery({
-    queryKey: ['settings'],
-    queryFn: fetchSettings,
+    queryKey: ['settings', params],
+    queryFn: () => fetchSettings(params),
+    staleTime: 300 * 1000, // 5 minutes
   });
 };
-

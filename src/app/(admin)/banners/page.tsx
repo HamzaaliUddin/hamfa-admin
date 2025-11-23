@@ -7,27 +7,16 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PageHeader } from '@/components/common/page-header';
 import { DataTable } from '@/components/common/data-table';
 import { TableActions } from '@/components/common/table-actions';
-import { DeleteDialog } from '@/components/common/delete-dialog';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { banners as bannersData, Banner } from '@/data/banners';
+import { useGetBanners, Banner } from '@/queries/banners/useGetBanners.query';
 
 export default function BannersPage() {
   const router = useRouter();
-  const [banners, setBanners] = React.useState<Banner[]>(bannersData);
-  const [deleteId, setDeleteId] = React.useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [page, setPage] = React.useState(1);
+  const { data, isLoading, error } = useGetBanners({ page, limit: 10 });
 
-  const handleDelete = async () => {
-    if (!deleteId) return;
-
-    setIsDeleting(true);
-    setTimeout(() => {
-      setBanners(banners.filter((b) => b.id !== deleteId));
-      setIsDeleting(false);
-      setDeleteId(null);
-    }, 1000);
-  };
+  const banners = data?.data || [];
 
   const columns: ColumnDef<Banner>[] = [
     {
@@ -51,18 +40,16 @@ export default function BannersPage() {
     },
     {
       accessorKey: 'image',
-      header: 'Preview',
+      header: 'Image',
       cell: ({ row }) => {
         const image = row.getValue('image') as string;
         return (
-          <div className="relative h-12 w-20 rounded-md overflow-hidden bg-gray-100">
-            <Image
-              src={image}
-              alt={row.getValue('title')}
-              fill
-              className="object-cover"
-              sizes="80px"
-            />
+          <div className="relative h-10 w-20 rounded-md overflow-hidden bg-gray-100">
+            {image ? (
+              <Image src={image} alt={row.getValue('title') as string} fill className="object-cover" sizes="80px" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">No image</div>
+            )}
           </div>
         );
       },
@@ -70,40 +57,12 @@ export default function BannersPage() {
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }) => (
-        <div className="font-medium">{row.getValue('title')}</div>
-      ),
+      cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
     },
     {
-      accessorKey: 'position',
-      header: 'Position',
-      cell: ({ row }) => (
-        <Badge variant="outline">{row.getValue('position')}</Badge>
-      ),
-    },
-    {
-      accessorKey: 'order',
-      header: 'Order',
-      cell: ({ row }) => (
-        <div className="text-center">{row.getValue('order')}</div>
-      ),
-    },
-    {
-      accessorKey: 'expiresAt',
-      header: 'Expires',
-      cell: ({ row }) => {
-        const expiresAt = row.getValue('expiresAt') as string | undefined;
-        if (!expiresAt) return <span className="text-muted-foreground text-sm">—</span>;
-        
-        const date = new Date(expiresAt);
-        const isExpired = date < new Date();
-        
-        return (
-          <div className={isExpired ? 'text-destructive' : ''}>
-            {date.toLocaleDateString('en-IN')}
-          </div>
-        );
-      },
+      accessorKey: 'click_count',
+      header: 'Clicks',
+      cell: ({ row }) => <div className="text-center">{row.getValue('click_count')}</div>,
     },
     {
       accessorKey: 'status',
@@ -118,54 +77,35 @@ export default function BannersPage() {
       },
     },
     {
-      accessorKey: 'createdAt',
-      header: 'Created',
-      cell: ({ row }) => {
-        const date = new Date(row.getValue('createdAt'));
-        return date.toLocaleDateString('en-IN');
-      },
-    },
-    {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
         const banner = row.original;
-
         return (
           <TableActions
-            onView={() => router.push(`/banners/${banner.id}`)}
-            onEdit={() => router.push(`/banners/${banner.id}/edit`)}
-            onDelete={() => setDeleteId(banner.id)}
+            onView={() => router.push(`/banners/${banner.banner_id}`)}
+            onEdit={() => router.push(`/banners/${banner.banner_id}/edit`)}
+            viewLabel="View Details"
+            editLabel="Edit Banner"
           />
         );
       },
     },
   ];
 
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Banners" description="Manage homepage banners" addNewLabel="Add Banner" addNewHref="/banners/add" />
+        <div className="text-center py-10 text-red-500">Error loading banners. Please try again.</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Banners"
-        description="Manage homepage and promotional banners"
-        addNewLabel="Add Banner"
-        addNewHref="/banners/add"
-      />
-
-      <DataTable 
-        columns={columns} 
-        data={banners} 
-        searchKey="title" 
-        searchPlaceholder="Search banners..." 
-      />
-
-      <DeleteDialog
-        open={!!deleteId}
-        onOpenChange={(open) => !open && setDeleteId(null)}
-        onConfirm={handleDelete}
-        title="Delete Banner"
-        description="Are you sure you want to delete this banner?"
-        isLoading={isDeleting}
-      />
+      <PageHeader title="Banners" description="Manage homepage banners" addNewLabel="Add Banner" addNewHref="/banners/add" />
+      <DataTable columns={columns} data={banners} searchKey="title" searchPlaceholder="Search banners..." isLoading={isLoading} />
     </div>
   );
 }

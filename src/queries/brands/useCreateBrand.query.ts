@@ -1,21 +1,28 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
 import { Brand } from './useGetBrands.query';
 
 export interface CreateBrandInput {
   name: string;
   slug: string;
-  description?: string;
-  logo?: string;
-  status?: 'active' | 'inactive';
+  description: string;
+  logo: string;
+  website?: string;
+  status: 'active' | 'inactive';
+  featured?: boolean;
+}
+
+interface CreateBrandResponse {
+  data: Brand;
+  message: string;
 }
 
 const createBrand = async (data: CreateBrandInput): Promise<Brand> => {
-  return await axiosInstance.post('brands', data);
+  const response: CreateBrandResponse = await axiosInstance.post('/brand', data);
+  return response.data;
 };
 
 export const useCreateBrand = () => {
@@ -27,8 +34,9 @@ export const useCreateBrand = () => {
       queryClient.invalidateQueries({ queryKey: ['brands'] });
       toast.success('Brand created successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to create brand');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to create brand';
+      toast.error(errorMessage);
     },
   });
 };

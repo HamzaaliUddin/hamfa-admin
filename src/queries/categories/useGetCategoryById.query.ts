@@ -1,11 +1,16 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
+import { useQuery } from '@tanstack/react-query';
 import { Category } from './useGetCategories.query';
 
+interface GetCategoryByIdResponse {
+  data: Category;
+}
+
 const fetchCategoryById = async (id: number | string): Promise<Category> => {
-  return await axiosInstance.get(`categories/${id}`);
+  const response: GetCategoryByIdResponse = await axiosInstance.get(`/category/${id}`);
+  return response.data;
 };
 
 export const useGetCategoryById = (id: number | string | null) => {
@@ -13,6 +18,6 @@ export const useGetCategoryById = (id: number | string | null) => {
     queryKey: ['category', id],
     queryFn: () => fetchCategoryById(id!),
     enabled: !!id,
+    staleTime: 60 * 1000,
   });
 };
-

@@ -1,151 +1,102 @@
 'use client';
 
-import { useState } from 'react';
-import { MoreHorizontal, Plus, Edit, Trash2, Eye, FileText } from 'lucide-react';
-import Link from 'next/link';
-import { CrudLayout } from '@/components/common/crud-layout';
-import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import * as React from 'react';
+import { ColumnDef } from '@tanstack/react-table';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
+import { PageHeader } from '@/components/common/page-header';
 import { DataTable } from '@/components/common/data-table';
-import { DeleteDialog } from '@/components/common/delete-dialog';
-import { PermissionGuard } from '@/components/common/permission-guard';
-import { Module, Permission } from '@/types/permissions';
-import { usePermission } from '@/hooks/use-permissions';
-import { terms as termsData, Term } from '@/data/terms';
+import { TableActions } from '@/components/common/table-actions';
+import { useRouter } from 'next/navigation';
+import { useGetTerms, Term } from '@/queries/terms/useGetTerms.query';
 
 export default function TermsPage() {
-  const [terms, setTerms] = useState<Term[]>(termsData);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const router = useRouter();
+  const [page, setPage] = React.useState(1);
+  const { data, isLoading, error } = useGetTerms({ page, limit: 10 });
 
-  const canCreate = usePermission(Module.TERMS, Permission.CREATE);
-  const canUpdate = usePermission(Module.TERMS, Permission.UPDATE);
-  const canDelete = usePermission(Module.TERMS, Permission.DELETE);
+  const terms = data?.data || [];
 
-  const handleDelete = (id: string) => {
-    setTerms(terms.filter(t => t.id !== id));
-    setDeleteId(null);
-  };
-
-  const columns = [
+  const columns: ColumnDef<Term>[] = [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <Checkbox
+          checked={table.getIsAllPageRowsSelected()}
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
     {
       accessorKey: 'title',
       header: 'Title',
-      cell: ({ row }: any) => (
-        <div className="flex items-center gap-2">
-          <FileText className="h-4 w-4 text-muted-foreground" />
-          <span className="font-medium">{row.original.title}</span>
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'type',
-      header: 'Type',
-      cell: ({ row }: any) => {
-        const typeLabels: Record<string, string> = {
-          terms: 'Terms & Conditions',
-          privacy: 'Privacy Policy',
-          refund: 'Refund Policy',
-          shipping: 'Shipping Policy',
-        };
-        return <Badge variant="outline">{typeLabels[row.original.type]}</Badge>;
-      },
+      cell: ({ row }) => <div className="font-medium">{row.getValue('title')}</div>,
     },
     {
       accessorKey: 'version',
       header: 'Version',
-      cell: ({ row }: any) => <Badge variant="secondary">v{row.original.version}</Badge>,
+      cell: ({ row }) => <div>{row.getValue('version')}</div>,
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      cell: ({ row }: any) => (
-        <Badge variant={row.original.status === 'active' ? 'default' : 'secondary'}>
-          {row.original.status === 'active' ? 'Active' : 'Inactive'}
-        </Badge>
-      ),
+      cell: ({ row }) => {
+        const status = row.getValue('status') as string;
+        return (
+          <Badge variant={status === 'active' ? 'default' : 'secondary'}>
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </Badge>
+        );
+      },
     },
     {
-      accessorKey: 'updatedAt',
-      header: 'Last Updated',
-      cell: ({ row }: any) => new Date(row.original.updatedAt).toLocaleDateString(),
+      accessorKey: 'effective_date',
+      header: 'Effective Date',
+      cell: ({ row }) => {
+        const date = row.getValue('effective_date') as string;
+        return date ? new Date(date).toLocaleDateString('en-IN') : '—';
+      },
     },
     {
       id: 'actions',
-      cell: ({ row }: any) => {
+      header: 'Actions',
+      cell: ({ row }) => {
         const term = row.original;
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem asChild>
-                <Link href={`/terms/${term.id}`}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  View Details
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              {canUpdate && (
-                <DropdownMenuItem asChild>
-                  <Link href={`/terms/edit/${term.id}`}>
-                    <Edit className="mr-2 h-4 w-4" />
-                    Edit
-                  </Link>
-                </DropdownMenuItem>
-              )}
-              {canDelete && (
-                <DropdownMenuItem onClick={() => setDeleteId(term.id)}>
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <TableActions
+            onView={() => router.push(`/terms/${term.term_id}`)}
+            onEdit={() => router.push(`/terms/${term.term_id}/edit`)}
+            viewLabel="View Details"
+            editLabel="Edit Terms"
+          />
         );
       },
     },
   ];
 
-  return (
-    <PermissionGuard module={Module.TERMS} permission={Permission.VIEW}>
-      <CrudLayout
-        title="Terms & Conditions"
-        description="Manage legal documents and policies"
-        actionButton={
-          canCreate ? (
-            <Button asChild>
-              <Link href="/terms/add">
-                <Plus className="mr-2 h-4 w-4" />
-                Add Terms
-              </Link>
-            </Button>
-          ) : undefined
-        }
-      >
-        <DataTable columns={columns} data={terms} searchKey="title" />
-      </CrudLayout>
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Terms & Conditions" description="Manage website terms and policies" addNewLabel="Add Terms" addNewHref="/terms/add" />
+        <div className="text-center py-10 text-red-500">Error loading terms. Please try again.</div>
+      </div>
+    );
+  }
 
-      <DeleteDialog
-        open={!!deleteId}
-        onOpenChange={() => setDeleteId(null)}
-        onConfirm={() => deleteId && handleDelete(deleteId)}
-        title="Delete Terms"
-        description="Are you sure you want to delete this document? This action cannot be undone."
-      />
-    </PermissionGuard>
+  return (
+    <div className="space-y-6">
+      <PageHeader title="Terms & Conditions" description="Manage website terms and policies" addNewLabel="Add Terms" addNewHref="/terms/add" />
+      <DataTable columns={columns} data={terms} searchKey="title" searchPlaceholder="Search terms..." isLoading={isLoading} />
+    </div>
   );
 }
-

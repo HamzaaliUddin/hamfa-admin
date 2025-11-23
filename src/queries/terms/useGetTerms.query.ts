@@ -1,29 +1,42 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
-import { PaginationParams, PaginatedResponse } from '@/types/api.types';
+import { useQuery } from '@tanstack/react-query';
 
-export interface Terms {
-  id: number;
+export interface Term {
+  term_id: number;
   title: string;
   slug: string;
   content: string;
-  type: 'terms' | 'privacy' | 'refund' | 'shipping';
-  status: 'active' | 'inactive';
-  version?: string;
-  createdAt: string;
-  updatedAt: string;
+  version: string;
+  status: 'active' | 'draft';
+  effective_date: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
-const fetchTerms = async (params?: PaginationParams): Promise<PaginatedResponse<Terms>> => {
-  return await axiosInstance.get('terms', { params });
+export interface GetTermsParams {
+  page?: number;
+  limit?: number;
+  sortKey?: string;
+  sortValue?: 'ASC' | 'DESC';
+  status?: string;
+  search?: string;
+}
+
+interface GetTermsResponse {
+  data: Term[];
+  count: number;
+}
+
+const fetchTerms = async (params?: GetTermsParams): Promise<GetTermsResponse> => {
+  return await axiosInstance.get('/term', { params });
 };
 
-export const useGetTerms = (params?: PaginationParams) => {
+export const useGetTerms = (params?: GetTermsParams) => {
   return useQuery({
     queryKey: ['terms', params],
     queryFn: () => fetchTerms(params),
+    staleTime: 60 * 1000,
   });
 };
-

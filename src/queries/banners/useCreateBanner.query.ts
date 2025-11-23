@@ -1,25 +1,29 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
 import { Banner } from './useGetBanners.query';
 
 export interface CreateBannerInput {
   title: string;
-  description?: string;
+  description: string;
   image: string;
-  link?: string;
-  position?: Banner['position'];
-  status?: 'active' | 'inactive';
-  order?: number;
-  startDate?: string;
-  endDate?: string;
+  status: 'active' | 'inactive';
+  redirect_url?: string;
+  sort_order: number;
+  start_date?: string;
+  end_date?: string;
+}
+
+interface CreateBannerResponse {
+  data: Banner;
+  message: string;
 }
 
 const createBanner = async (data: CreateBannerInput): Promise<Banner> => {
-  return await axiosInstance.post('banners', data);
+  const response: CreateBannerResponse = await axiosInstance.post('/banner', data);
+  return response.data;
 };
 
 export const useCreateBanner = () => {
@@ -31,9 +35,9 @@ export const useCreateBanner = () => {
       queryClient.invalidateQueries({ queryKey: ['banners'] });
       toast.success('Banner created successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to create banner');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to create banner';
+      toast.error(errorMessage);
     },
   });
 };
-

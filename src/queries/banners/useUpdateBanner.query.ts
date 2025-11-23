@@ -1,9 +1,8 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
 import { Banner } from './useGetBanners.query';
 import { CreateBannerInput } from './useCreateBanner.query';
 
@@ -14,8 +13,14 @@ interface UpdateBannerParams {
   data: UpdateBannerInput;
 }
 
+interface UpdateBannerResponse {
+  data: Banner;
+  message: string;
+}
+
 const updateBanner = async ({ id, data }: UpdateBannerParams): Promise<Banner> => {
-  return await axiosInstance.put(`banners/${id}`, data);
+  const response: UpdateBannerResponse = await axiosInstance.put(`/banner/${id}`, data);
+  return response.data;
 };
 
 export const useUpdateBanner = () => {
@@ -28,9 +33,9 @@ export const useUpdateBanner = () => {
       queryClient.invalidateQueries({ queryKey: ['banner', variables.id] });
       toast.success('Banner updated successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to update banner');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to update banner';
+      toast.error(errorMessage);
     },
   });
 };
-

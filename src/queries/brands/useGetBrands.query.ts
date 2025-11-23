@@ -1,29 +1,45 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
-import { PaginationParams, PaginatedResponse } from '@/types/api.types';
+import { useQuery } from '@tanstack/react-query';
 
 export interface Brand {
-  id: number;
+  brand_id: number;
   name: string;
   slug: string;
   description?: string;
   logo?: string;
+  website?: string;
   status: 'active' | 'inactive';
-  productCount?: number;
-  createdAt: string;
-  updatedAt: string;
+  product_count?: number;
+  featured: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
-const fetchBrands = async (params?: PaginationParams): Promise<PaginatedResponse<Brand>> => {
-  return await axiosInstance.get('brands', { params });
+export interface GetBrandsParams {
+  page?: number;
+  limit?: number;
+  sortKey?: string;
+  sortValue?: 'ASC' | 'DESC';
+  status?: string;
+  featured?: boolean;
+  search?: string;
+}
+
+interface GetBrandsResponse {
+  data: Brand[];
+  count: number;
+}
+
+const fetchBrands = async (params?: GetBrandsParams): Promise<GetBrandsResponse> => {
+  return await axiosInstance.get('/brand', { params });
 };
 
-export const useGetBrands = (params?: PaginationParams) => {
+export const useGetBrands = (params?: GetBrandsParams) => {
   return useQuery({
     queryKey: ['brands', params],
     queryFn: () => fetchBrands(params),
+    staleTime: 60 * 1000,
   });
 };
-

@@ -1,15 +1,14 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
 import { Order } from './useGetOrders.query';
 
 export interface UpdateOrderInput {
-  status?: Order['status'];
-  paymentStatus?: Order['paymentStatus'];
-  trackingNumber?: string;
+  status?: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  payment_status?: 'paid' | 'pending' | 'failed';
+  tracking_number?: string;
   notes?: string;
 }
 
@@ -18,8 +17,14 @@ interface UpdateOrderParams {
   data: UpdateOrderInput;
 }
 
+interface UpdateOrderResponse {
+  data: Order;
+  message: string;
+}
+
 const updateOrder = async ({ id, data }: UpdateOrderParams): Promise<Order> => {
-  return await axiosInstance.put(`orders/${id}`, data);
+  const response: UpdateOrderResponse = await axiosInstance.put(`/order/${id}`, data);
+  return response.data;
 };
 
 export const useUpdateOrder = () => {
@@ -32,9 +37,9 @@ export const useUpdateOrder = () => {
       queryClient.invalidateQueries({ queryKey: ['order', variables.id] });
       toast.success('Order updated successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to update order');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to update order';
+      toast.error(errorMessage);
     },
   });
 };
-

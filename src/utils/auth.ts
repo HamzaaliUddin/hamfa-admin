@@ -1,8 +1,21 @@
 interface AdminUser {
-  id: string;
+  user_id: number;
   name: string;
   email: string;
-  role: string;
+  role: {
+    role_id: number;
+    name: string;
+    permissions?: Array<{
+      permission_id: number;
+      module: string;
+      action: string;
+      description: string;
+    }>;
+  };
+  brand?: {
+    brand_id: number;
+    name: string;
+  };
 }
 
 export const authUtils = {
@@ -10,6 +23,8 @@ export const authUtils = {
   setToken: (token: string) => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('admin_token', token);
+      // Also set in cookie for middleware
+      document.cookie = `admin_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 days
     }
   },
 
@@ -25,6 +40,8 @@ export const authUtils = {
   removeToken: () => {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('admin_token');
+      // Also remove from cookie
+      document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     }
   },
 
@@ -67,6 +84,11 @@ export const authUtils = {
     authUtils.removeToken();
     authUtils.removeUser();
     if (typeof window !== 'undefined') {
+      // Also remove refresh token and expiry
+      localStorage.removeItem('admin_refresh_token');
+      localStorage.removeItem('token_expires_in');
+      // Remove cookie
+      document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       window.location.href = '/login';
     }
   },

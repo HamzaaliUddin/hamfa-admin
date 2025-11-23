@@ -57,9 +57,9 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from '@/components/ui/sidebar';
-import { authUtils } from '@/utils/auth';
-import { useIsSuperAdmin, useCanAccessModule } from '@/hooks/use-permissions';
+import { useCanAccessModule, useIsSuperAdmin } from '@/hooks/use-permissions';
 import { Module } from '@/types/permissions';
+import { authUtils } from '@/utils/auth';
 
 type MenuItem = {
   title: string;
@@ -213,6 +213,55 @@ export function AppSidebar() {
   const [openSections, setOpenSections] = React.useState<string[]>([]);
   const isSuperAdmin = useIsSuperAdmin();
 
+  // Pre-compute module access for all modules
+  const canAccessDashboard = useCanAccessModule(Module.DASHBOARD);
+  const canAccessOrders = useCanAccessModule(Module.ORDERS);
+  const canAccessProducts = useCanAccessModule(Module.PRODUCTS);
+  const canAccessCategories = useCanAccessModule(Module.CATEGORIES);
+  const canAccessCollections = useCanAccessModule(Module.COLLECTIONS);
+  const canAccessBrands = useCanAccessModule(Module.BRANDS);
+  const canAccessBanners = useCanAccessModule(Module.BANNERS);
+  const canAccessUsers = useCanAccessModule(Module.USERS);
+  const canAccessNotifications = useCanAccessModule(Module.NOTIFICATIONS);
+  const canAccessTerms = useCanAccessModule(Module.TERMS);
+  const canAccessAdminManagement = useCanAccessModule(Module.ADMIN_MANAGEMENT);
+  const canAccessReports = useCanAccessModule(Module.REPORTS);
+  const canAccessSettings = useCanAccessModule(Module.SETTINGS);
+
+  // Create a map for easy lookup
+  const moduleAccessMap = React.useMemo(
+    () => ({
+      [Module.DASHBOARD]: canAccessDashboard,
+      [Module.ORDERS]: canAccessOrders,
+      [Module.PRODUCTS]: canAccessProducts,
+      [Module.CATEGORIES]: canAccessCategories,
+      [Module.COLLECTIONS]: canAccessCollections,
+      [Module.BRANDS]: canAccessBrands,
+      [Module.BANNERS]: canAccessBanners,
+      [Module.USERS]: canAccessUsers,
+      [Module.NOTIFICATIONS]: canAccessNotifications,
+      [Module.TERMS]: canAccessTerms,
+      [Module.ADMIN_MANAGEMENT]: canAccessAdminManagement,
+      [Module.REPORTS]: canAccessReports,
+      [Module.SETTINGS]: canAccessSettings,
+    }),
+    [
+      canAccessDashboard,
+      canAccessOrders,
+      canAccessProducts,
+      canAccessCategories,
+      canAccessCollections,
+      canAccessBrands,
+      canAccessBanners,
+      canAccessUsers,
+      canAccessNotifications,
+      canAccessTerms,
+      canAccessAdminManagement,
+      canAccessReports,
+      canAccessSettings,
+    ]
+  );
+
   // Filter menu items based on permissions
   const visibleMenuItems = React.useMemo(() => {
     return menuItems.filter(item => {
@@ -223,13 +272,12 @@ export function AppSidebar() {
 
       // Check module access
       if (item.module) {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useCanAccessModule(item.module);
+        return moduleAccessMap[item.module];
       }
 
       return true;
     });
-  }, [isSuperAdmin]);
+  }, [isSuperAdmin, moduleAccessMap]);
 
   // Auto-open section if current page is within it
   React.useEffect(() => {
@@ -254,7 +302,7 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r sticky top-0 h-screen">
+    <Sidebar collapsible="icon" className="sticky top-0 h-screen border-r">
       <SidebarHeader className="border-b px-6 py-4 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-3">
         <div className="flex items-center gap-2">
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-black">

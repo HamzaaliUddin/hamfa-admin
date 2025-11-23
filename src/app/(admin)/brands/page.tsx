@@ -7,27 +7,16 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PageHeader } from '@/components/common/page-header';
 import { DataTable } from '@/components/common/data-table';
 import { TableActions } from '@/components/common/table-actions';
-import { DeleteDialog } from '@/components/common/delete-dialog';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { brands as brandsData, Brand } from '@/data/brands';
+import { useGetBrands, Brand } from '@/queries/brands/useGetBrands.query';
 
 export default function BrandsPage() {
   const router = useRouter();
-  const [brands, setBrands] = React.useState<Brand[]>(brandsData);
-  const [deleteId, setDeleteId] = React.useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [page, setPage] = React.useState(1);
+  const { data, isLoading, error } = useGetBrands({ page, limit: 10 });
 
-  const handleDelete = async () => {
-    if (!deleteId) return;
-
-    setIsDeleting(true);
-    setTimeout(() => {
-      setBrands(brands.filter((b) => b.id !== deleteId));
-      setIsDeleting(false);
-      setDeleteId(null);
-    }, 1000);
-  };
+  const brands = data?.data || [];
 
   const columns: ColumnDef<Brand>[] = [
     {
@@ -53,21 +42,13 @@ export default function BrandsPage() {
       accessorKey: 'logo',
       header: 'Logo',
       cell: ({ row }) => {
-        const logo = row.getValue('logo') as string | undefined;
+        const logo = row.getValue('logo') as string;
         return (
           <div className="relative h-10 w-10 rounded-md overflow-hidden bg-gray-100">
             {logo ? (
-              <Image
-                src={logo}
-                alt={row.getValue('name')}
-                fill
-                className="object-contain p-1"
-                sizes="40px"
-              />
+              <Image src={logo} alt={row.getValue('name') as string} fill className="object-cover" sizes="40px" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-                No logo
-              </div>
+              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">No logo</div>
             )}
           </div>
         );
@@ -75,24 +56,21 @@ export default function BrandsPage() {
     },
     {
       accessorKey: 'name',
-      header: 'Brand Name',
-      cell: ({ row }) => (
-        <div className="font-medium">{row.getValue('name')}</div>
-      ),
+      header: 'Name',
+      cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
     },
     {
-      accessorKey: 'slug',
-      header: 'Slug',
-      cell: ({ row }) => (
-        <div className="text-muted-foreground">{row.getValue('slug')}</div>
-      ),
-    },
-    {
-      accessorKey: 'productCount',
+      accessorKey: 'product_count',
       header: 'Products',
-      cell: ({ row }) => (
-        <div className="text-center">{row.getValue('productCount')}</div>
-      ),
+      cell: ({ row }) => <div className="text-center">{row.getValue('product_count')}</div>,
+    },
+    {
+      accessorKey: 'featured',
+      header: 'Featured',
+      cell: ({ row }) => {
+        const featured = row.getValue('featured') as boolean;
+        return featured ? <Badge variant="outline">⭐ Featured</Badge> : null;
+      },
     },
     {
       accessorKey: 'status',
@@ -107,54 +85,35 @@ export default function BrandsPage() {
       },
     },
     {
-      accessorKey: 'createdAt',
-      header: 'Created',
-      cell: ({ row }) => {
-        const date = new Date(row.getValue('createdAt'));
-        return date.toLocaleDateString('en-IN');
-      },
-    },
-    {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
         const brand = row.original;
-
         return (
           <TableActions
-            onView={() => router.push(`/brands/${brand.id}`)}
-            onEdit={() => router.push(`/brands/${brand.id}/edit`)}
-            onDelete={() => setDeleteId(brand.id)}
+            onView={() => router.push(`/brands/${brand.brand_id}`)}
+            onEdit={() => router.push(`/brands/${brand.brand_id}/edit`)}
+            viewLabel="View Details"
+            editLabel="Edit Brand"
           />
         );
       },
     },
   ];
 
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Brands" description="Manage product brands" addNewLabel="Add Brand" addNewHref="/brands/add" />
+        <div className="text-center py-10 text-red-500">Error loading brands. Please try again.</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Brands"
-        description="Manage product brands"
-        addNewLabel="Add Brand"
-        addNewHref="/brands/add"
-      />
-
-      <DataTable 
-        columns={columns} 
-        data={brands} 
-        searchKey="name" 
-        searchPlaceholder="Search brands..." 
-      />
-
-      <DeleteDialog
-        open={!!deleteId}
-        onOpenChange={(open) => !open && setDeleteId(null)}
-        onConfirm={handleDelete}
-        title="Delete Brand"
-        description="Are you sure you want to delete this brand? All associated products will need to be reassigned."
-        isLoading={isDeleting}
-      />
+      <PageHeader title="Brands" description="Manage product brands" addNewLabel="Add Brand" addNewHref="/brands/add" />
+      <DataTable columns={columns} data={brands} searchKey="name" searchPlaceholder="Search brands..." isLoading={isLoading} />
     </div>
   );
 }

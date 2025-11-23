@@ -1,23 +1,29 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
 import { Category } from './useGetCategories.query';
 
 export interface CreateCategoryInput {
   name: string;
   slug: string;
-  description?: string;
-  image?: string;
-  parentId?: number;
-  status?: 'active' | 'inactive';
-  order?: number;
+  description: string;
+  parent_id?: number;
+  image: string;
+  icon?: string;
+  status: 'active' | 'inactive';
+  sort_order: number;
+}
+
+interface CreateCategoryResponse {
+  data: Category;
+  message: string;
 }
 
 const createCategory = async (data: CreateCategoryInput): Promise<Category> => {
-  return await axiosInstance.post('categories', data);
+  const response: CreateCategoryResponse = await axiosInstance.post('/category', data);
+  return response.data;
 };
 
 export const useCreateCategory = () => {
@@ -29,9 +35,9 @@ export const useCreateCategory = () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category created successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to create category');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to create category';
+      toast.error(errorMessage);
     },
   });
 };
-

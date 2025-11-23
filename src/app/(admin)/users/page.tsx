@@ -1,72 +1,32 @@
 'use client';
 
-import * as React from 'react';
-import { ColumnDef } from '@tanstack/react-table';
+import { DataTable } from '@/components/common/data-table';
+import { PageHeader } from '@/components/common/page-header';
+import { TableActions } from '@/components/common/table-actions';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { PageHeader } from '@/components/common/page-header';
-import { DataTable } from '@/components/common/data-table';
-import { TableActions } from '@/components/common/table-actions';
+import { useGetUsers, User } from '@/queries/users/useGetUsers.query';
+import { ColumnDef } from '@tanstack/react-table';
 import { useRouter } from 'next/navigation';
-
-// User Type
-export type User = {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  ordersCount: number;
-  totalSpent: number;
-  status: 'active' | 'blocked';
-  createdAt: string;
-};
-
-// Sample Data
-const sampleUsers: User[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '+91 9876543210',
-    ordersCount: 12,
-    totalSpent: 45999,
-    status: 'active',
-    createdAt: '2024-01-15',
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    phone: '+91 9876543211',
-    ordersCount: 8,
-    totalSpent: 32500,
-    status: 'active',
-    createdAt: '2024-01-14',
-  },
-  {
-    id: '3',
-    name: 'Mike Johnson',
-    email: 'mike.j@example.com',
-    ordersCount: 3,
-    totalSpent: 8999,
-    status: 'blocked',
-    createdAt: '2024-01-13',
-  },
-  {
-    id: '4',
-    name: 'Sarah Williams',
-    email: 'sarah.w@example.com',
-    phone: '+91 9876543213',
-    ordersCount: 25,
-    totalSpent: 125000,
-    status: 'active',
-    createdAt: '2024-01-12',
-  },
-];
+import * as React from 'react';
 
 export default function UsersPage() {
   const router = useRouter();
-  const [users] = React.useState<User[]>(sampleUsers);
+  const [page, setPage] = React.useState(1);
+  const { data, isLoading, error } = useGetUsers({ page, limit: 10 });
+
+  const users = data?.data || [];
+
+  // Debug logging
+  React.useEffect(() => {
+    console.log('🔍 Debug Info:', {
+      data,
+      users,
+      usersLength: users.length,
+      isLoading,
+      error,
+    });
+  }, [data, users, isLoading, error]);
 
   const columns: ColumnDef<User>[] = [
     {
@@ -74,14 +34,14 @@ export default function UsersPage() {
       header: ({ table }) => (
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          onCheckedChange={value => row.toggleSelected(!!value)}
           aria-label="Select row"
         />
       ),
@@ -91,66 +51,55 @@ export default function UsersPage() {
     {
       accessorKey: 'name',
       header: 'Name',
-      cell: ({ row }) => (
-        <div className="font-medium">{row.getValue('name')}</div>
-      ),
+      cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
     },
     {
       accessorKey: 'email',
       header: 'Email',
-      cell: ({ row }) => (
-        <div className="text-muted-foreground">{row.getValue('email')}</div>
-      ),
+      cell: ({ row }) => <div className="text-muted-foreground">{row.getValue('email')}</div>,
     },
     {
-      accessorKey: 'phone',
-      header: 'Phone',
+      accessorKey: 'role',
+      header: 'Role',
       cell: ({ row }) => {
-        const phone = row.getValue('phone') as string | undefined;
-        return phone ? (
-          <div>{phone}</div>
+        const role = row.getValue('role') as User['role'];
+        return role ? (
+          <div>{role.name}</div>
         ) : (
           <span className="text-muted-foreground text-sm">—</span>
         );
       },
     },
     {
-      accessorKey: 'ordersCount',
-      header: 'Orders',
-      cell: ({ row }) => (
-        <div className="text-center">{row.getValue('ordersCount')}</div>
-      ),
-    },
-    {
-      accessorKey: 'totalSpent',
-      header: 'Total Spent',
+      accessorKey: 'brand',
+      header: 'Brand',
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue('totalSpent'));
-        const formatted = new Intl.NumberFormat('en-IN', {
-          style: 'currency',
-          currency: 'INR',
-        }).format(amount);
-        return <div className="font-medium">{formatted}</div>;
+        const brand = row.getValue('brand') as User['brand'];
+        return brand ? (
+          <div>{brand.name}</div>
+        ) : (
+          <span className="text-muted-foreground text-sm">—</span>
+        );
       },
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'is_active',
       header: 'Status',
       cell: ({ row }) => {
-        const status = row.getValue('status') as string;
+        const isActive = row.getValue('is_active') as boolean;
         return (
-          <Badge variant={status === 'active' ? 'default' : 'destructive'}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+          <Badge variant={isActive ? 'default' : 'destructive'}>
+            {isActive ? 'Active' : 'Inactive'}
           </Badge>
         );
       },
     },
     {
-      accessorKey: 'createdAt',
+      accessorKey: 'created_at',
       header: 'Joined',
       cell: ({ row }) => {
-        const date = new Date(row.getValue('createdAt'));
-        return date.toLocaleDateString('en-IN');
+        const date = row.getValue('created_at') as string;
+        return date ? new Date(date).toLocaleDateString('en-IN') : '—';
       },
     },
     {
@@ -161,7 +110,7 @@ export default function UsersPage() {
 
         return (
           <TableActions
-            onView={() => router.push(`/users/${user.id}`)}
+            onView={() => router.push(`/users/${user.user_id}`)}
             viewLabel="View Details"
           />
         );
@@ -169,18 +118,25 @@ export default function UsersPage() {
     },
   ];
 
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Users" description="View and manage user accounts" />
+        <div className="py-10 text-center text-red-500">Error loading users. Please try again.</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Users"
-        description="View and manage user accounts"
-      />
+      <PageHeader title="Users" description="View and manage user accounts" />
 
-      <DataTable 
-        columns={columns} 
-        data={users} 
-        searchKey="name" 
-        searchPlaceholder="Search users..." 
+      <DataTable
+        columns={columns}
+        data={users}
+        searchKey="name"
+        searchPlaceholder="Search users..."
+        isLoading={isLoading}
       />
     </div>
   );

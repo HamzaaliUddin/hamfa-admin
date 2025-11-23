@@ -1,10 +1,10 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/common/data-table';
-import { Package, TrendingUp, TrendingDown, AlertCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { products } from '@/data/products';
+import { AlertCircle, Package, TrendingDown, TrendingUp } from 'lucide-react';
 
 // Calculate product statistics
 const calculateProductStats = () => {
@@ -13,7 +13,7 @@ const calculateProductStats = () => {
   const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.lowStockThreshold).length;
   const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
   const avgPrice = products.reduce((sum, p) => sum + p.price, 0) / products.length;
-  
+
   return {
     total: products.length,
     active,
@@ -69,32 +69,26 @@ export default function ProductPerformanceReportPage() {
       cell: ({ row }: any) => (
         <div>
           <div className="font-medium">{row.original.title}</div>
-          <div className="text-sm text-muted-foreground">{row.original.sku}</div>
+          <div className="text-muted-foreground text-sm">{row.original.sku}</div>
         </div>
       ),
     },
     {
       accessorKey: 'stock',
       header: 'Stock',
-      cell: ({ row }: any) => (
-        <Badge variant="secondary">{row.original.stock} units</Badge>
-      ),
+      cell: ({ row }: any) => <Badge variant="secondary">{row.original.stock} units</Badge>,
     },
     {
       accessorKey: 'price',
       header: 'Price',
-      cell: ({ row }: any) => (
-        <div className="font-medium">${row.original.price.toFixed(2)}</div>
-      ),
+      cell: ({ row }: any) => <div className="font-medium">Rs {row.original.price.toFixed(2)}</div>,
     },
     {
       accessorKey: 'stockValue',
       header: 'Stock Value',
-      cell: ({ row }: any) => (
-        <div className="font-semibold text-green-600">
-          ${row.original.stockValue.toFixed(2)}
-        </div>
-      ),
+        cell: ({ row }: any) => (
+          <div className="font-semibold text-green-600">Rs {row.original.stockValue.toFixed(2)}</div>
+        ),
     },
     {
       accessorKey: 'status',
@@ -119,9 +113,7 @@ export default function ProductPerformanceReportPage() {
     {
       accessorKey: 'stock',
       header: 'Current Stock',
-      cell: ({ row }: any) => (
-        <Badge variant="destructive">{row.original.stock} units</Badge>
-      ),
+      cell: ({ row }: any) => <Badge variant="destructive">{row.original.stock} units</Badge>,
     },
     {
       accessorKey: 'threshold',
@@ -143,14 +135,14 @@ export default function ProductPerformanceReportPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Package className="h-4 w-4 text-blue-500" />
               Total Products
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+            <p className="mt-1 flex items-center gap-1 text-xs text-green-600">
               <TrendingUp className="h-3 w-3" />
               {stats.active} active
             </p>
@@ -163,41 +155,35 @@ export default function ProductPerformanceReportPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              ${topByValue.reduce((sum, p) => sum + p.stockValue, 0).toFixed(2)}
+              Rs {topByValue.reduce((sum, p) => sum + p.stockValue, 0).toFixed(2)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Across all products
-            </p>
+            <p className="text-muted-foreground mt-1 text-xs">Across all products</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <AlertCircle className="h-4 w-4 text-yellow-500" />
               Low Stock
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-yellow-600">{stats.lowStock}</div>
-            <p className="text-xs text-yellow-600 mt-1">
-              Need restock soon
-            </p>
+            <p className="mt-1 text-xs text-yellow-600">Need restock soon</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <TrendingDown className="h-4 w-4 text-red-500" />
               Out of Stock
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">{stats.outOfStock}</div>
-            <p className="text-xs text-red-600 mt-1">
-              Immediate action needed
-            </p>
+            <p className="mt-1 text-xs text-red-600">Immediate action needed</p>
           </CardContent>
         </Card>
       </div>
@@ -211,12 +197,12 @@ export default function ProductPerformanceReportPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <div className="text-sm text-muted-foreground">Total Units in Stock</div>
+              <div className="text-muted-foreground text-sm">Total Units in Stock</div>
               <div className="text-3xl font-bold">{stats.totalStock}</div>
             </div>
             <div>
-              <div className="text-sm text-muted-foreground">Average Product Price</div>
-              <div className="text-3xl font-bold">${stats.avgPrice.toFixed(2)}</div>
+              <div className="text-muted-foreground text-sm">Average Product Price</div>
+              <div className="text-3xl font-bold">Rs {stats.avgPrice.toFixed(2)}</div>
             </div>
           </CardContent>
         </Card>
@@ -228,7 +214,7 @@ export default function ProductPerformanceReportPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
+              <span className="flex items-center gap-2 text-sm">
                 <div className="h-3 w-3 rounded-full bg-green-500" />
                 In Stock
               </span>
@@ -237,14 +223,14 @@ export default function ProductPerformanceReportPage() {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
+              <span className="flex items-center gap-2 text-sm">
                 <div className="h-3 w-3 rounded-full bg-yellow-500" />
                 Low Stock
               </span>
               <span className="font-semibold">{stats.lowStock} products</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
+              <span className="flex items-center gap-2 text-sm">
                 <div className="h-3 w-3 rounded-full bg-red-500" />
                 Out of Stock
               </span>
@@ -293,14 +279,17 @@ export default function ProductPerformanceReportPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {outOfStockProducts.map((product) => (
-                <div key={product.sku} className="flex items-center justify-between p-3 border rounded-lg">
+              {outOfStockProducts.map(product => (
+                <div
+                  key={product.sku}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
                   <div>
                     <div className="font-medium">{product.title}</div>
-                    <div className="text-sm text-muted-foreground">{product.sku}</div>
+                    <div className="text-muted-foreground text-sm">{product.sku}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">${product.price.toFixed(2)}</div>
+                    <div className="font-semibold">Rs {product.price.toFixed(2)}</div>
                     <Badge variant="destructive">Out of Stock</Badge>
                   </div>
                 </div>

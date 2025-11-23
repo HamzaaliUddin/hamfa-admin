@@ -1,11 +1,16 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
+import { useQuery } from '@tanstack/react-query';
 import { Brand } from './useGetBrands.query';
 
+interface GetBrandByIdResponse {
+  data: Brand;
+}
+
 const fetchBrandById = async (id: number | string): Promise<Brand> => {
-  return await axiosInstance.get(`brands/${id}`);
+  const response: GetBrandByIdResponse = await axiosInstance.get(`/brand/${id}`);
+  return response.data;
 };
 
 export const useGetBrandById = (id: number | string | null) => {
@@ -13,6 +18,7 @@ export const useGetBrandById = (id: number | string | null) => {
     queryKey: ['brand', id],
     queryFn: () => fetchBrandById(id!),
     enabled: !!id,
+    staleTime: 60 * 1000,
   });
 };
 

@@ -1,29 +1,45 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
-import { PaginationParams, PaginatedResponse } from '@/types/api.types';
+import { useQuery } from '@tanstack/react-query';
 
 export interface Collection {
-  id: number;
+  collection_id: number;
   name: string;
   slug: string;
-  description?: string;
-  image?: string;
+  description: string;
+  image: string;
+  product_count: number;
   status: 'active' | 'inactive';
-  productCount?: number;
-  createdAt: string;
-  updatedAt: string;
+  featured: boolean;
+  sort_order: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
-const fetchCollections = async (params?: PaginationParams): Promise<PaginatedResponse<Collection>> => {
-  return await axiosInstance.get('collections', { params });
+export interface GetCollectionsParams {
+  page?: number;
+  limit?: number;
+  sortKey?: string;
+  sortValue?: 'ASC' | 'DESC';
+  status?: string;
+  featured?: boolean;
+  search?: string;
+}
+
+interface GetCollectionsResponse {
+  data: Collection[];
+  count: number;
+}
+
+const fetchCollections = async (params?: GetCollectionsParams): Promise<GetCollectionsResponse> => {
+  return await axiosInstance.get('/collection', { params });
 };
 
-export const useGetCollections = (params?: PaginationParams) => {
+export const useGetCollections = (params?: GetCollectionsParams) => {
   return useQuery({
     queryKey: ['collections', params],
     queryFn: () => fetchCollections(params),
+    staleTime: 60 * 1000,
   });
 };
-

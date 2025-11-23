@@ -1,12 +1,15 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
+
+interface DeleteCategoryResponse {
+  message: string;
+}
 
 const deleteCategory = async (id: number | string): Promise<void> => {
-  return await axiosInstance.delete(`categories/${id}`);
+  await axiosInstance.delete<DeleteCategoryResponse>(`/category/${id}`);
 };
 
 export const useDeleteCategory = () => {
@@ -18,9 +21,9 @@ export const useDeleteCategory = () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success('Category deleted successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to delete category');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to delete category';
+      toast.error(errorMessage);
     },
   });
 };
-

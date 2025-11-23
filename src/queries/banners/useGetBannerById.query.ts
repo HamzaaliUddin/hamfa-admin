@@ -1,11 +1,16 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
+import { useQuery } from '@tanstack/react-query';
 import { Banner } from './useGetBanners.query';
 
+interface GetBannerByIdResponse {
+  data: Banner;
+}
+
 const fetchBannerById = async (id: number | string): Promise<Banner> => {
-  return await axiosInstance.get(`banners/${id}`);
+  const response: GetBannerByIdResponse = await axiosInstance.get(`/banner/${id}`);
+  return response.data;
 };
 
 export const useGetBannerById = (id: number | string | null) => {
@@ -13,6 +18,6 @@ export const useGetBannerById = (id: number | string | null) => {
     queryKey: ['banner', id],
     queryFn: () => fetchBannerById(id!),
     enabled: !!id,
+    staleTime: 60 * 1000,
   });
 };
-

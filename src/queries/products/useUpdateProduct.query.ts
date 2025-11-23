@@ -1,9 +1,8 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
 import { Product } from './useGetProducts.query';
 import { CreateProductInput } from './useCreateProduct.query';
 
@@ -14,8 +13,14 @@ interface UpdateProductParams {
   data: UpdateProductInput;
 }
 
+interface UpdateProductResponse {
+  data: Product;
+  message: string;
+}
+
 const updateProduct = async ({ id, data }: UpdateProductParams): Promise<Product> => {
-  return await axiosInstance.put(`products/${id}`, data);
+  const response: UpdateProductResponse = await axiosInstance.put(`/product/${id}`, data);
+  return response.data;
 };
 
 export const useUpdateProduct = () => {
@@ -28,9 +33,9 @@ export const useUpdateProduct = () => {
       queryClient.invalidateQueries({ queryKey: ['product', variables.id] });
       toast.success('Product updated successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to update product');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to update product';
+      toast.error(errorMessage);
     },
   });
 };
-

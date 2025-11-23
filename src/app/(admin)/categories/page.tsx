@@ -7,26 +7,16 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { PageHeader } from '@/components/common/page-header';
 import { DataTable } from '@/components/common/data-table';
 import { TableActions } from '@/components/common/table-actions';
-import { DeleteDialog } from '@/components/common/delete-dialog';
 import { useRouter } from 'next/navigation';
-import { categories as categoriesData, Category } from '@/data/categories';
+import Image from 'next/image';
+import { useGetCategories, Category } from '@/queries/categories/useGetCategories.query';
 
 export default function CategoriesPage() {
   const router = useRouter();
-  const [categories, setCategories] = React.useState<Category[]>(categoriesData);
-  const [deleteId, setDeleteId] = React.useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [page, setPage] = React.useState(1);
+  const { data, isLoading, error } = useGetCategories({ page, limit: 10 });
 
-  const handleDelete = async () => {
-    if (!deleteId) return;
-
-    setIsDeleting(true);
-    setTimeout(() => {
-      setCategories(categories.filter((c) => c.id !== deleteId));
-      setIsDeleting(false);
-      setDeleteId(null);
-    }, 1000);
-  };
+  const categories = data?.data || [];
 
   const columns: ColumnDef<Category>[] = [
     {
@@ -49,39 +39,40 @@ export default function CategoriesPage() {
       enableHiding: false,
     },
     {
-      accessorKey: 'name',
-      header: 'Category Name',
-      cell: ({ row }) => (
-        <div className="font-medium">{row.getValue('name')}</div>
-      ),
-    },
-    {
-      accessorKey: 'slug',
-      header: 'Slug',
-      cell: ({ row }) => (
-        <div className="text-muted-foreground">{row.getValue('slug')}</div>
-      ),
-    },
-    {
-      accessorKey: 'parentId',
-      header: 'Parent Category',
+      accessorKey: 'image',
+      header: 'Image',
       cell: ({ row }) => {
-        const parentId = row.getValue('parentId') as string | null;
-        if (!parentId) return <span className="text-muted-foreground text-sm">Main Category</span>;
-        const parentCat = categories.find(c => c.id === parentId);
-        return parentCat ? (
-          <Badge variant="outline">{parentCat.name}</Badge>
-        ) : (
-          <span className="text-muted-foreground text-sm">—</span>
+        const image = row.getValue('image') as string;
+        return (
+          <div className="relative h-10 w-10 rounded-md overflow-hidden bg-gray-100">
+            {image ? (
+              <Image src={image} alt={row.getValue('name') as string} fill className="object-cover" sizes="40px" />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                No image
+              </div>
+            )}
+          </div>
         );
       },
     },
     {
-      accessorKey: 'productCount',
+      accessorKey: 'name',
+      header: 'Name',
+      cell: ({ row }) => <div className="font-medium">{row.getValue('name')}</div>,
+    },
+    {
+      accessorKey: 'parent_id',
+      header: 'Parent',
+      cell: ({ row }) => {
+        const parentId = row.getValue('parent_id') as number | undefined;
+        return parentId ? <div>Category #{parentId}</div> : <span className="text-muted-foreground text-sm">—</span>;
+      },
+    },
+    {
+      accessorKey: 'product_count',
       header: 'Products',
-      cell: ({ row }) => (
-        <div className="text-center">{row.getValue('productCount')}</div>
-      ),
+      cell: ({ row }) => <div className="text-center">{row.getValue('product_count')}</div>,
     },
     {
       accessorKey: 'status',
@@ -96,54 +87,35 @@ export default function CategoriesPage() {
       },
     },
     {
-      accessorKey: 'createdAt',
-      header: 'Created',
-      cell: ({ row }) => {
-        const date = new Date(row.getValue('createdAt'));
-        return date.toLocaleDateString('en-IN');
-      },
-    },
-    {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
         const category = row.original;
-
         return (
           <TableActions
-            onView={() => router.push(`/categories/${category.id}`)}
-            onEdit={() => router.push(`/categories/${category.id}/edit`)}
-            onDelete={() => setDeleteId(category.id)}
+            onView={() => router.push(`/categories/${category.category_id}`)}
+            onEdit={() => router.push(`/categories/${category.category_id}/edit`)}
+            viewLabel="View Details"
+            editLabel="Edit Category"
           />
         );
       },
     },
   ];
 
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader title="Categories" description="Organize your products into categories" addNewLabel="Add Category" addNewHref="/categories/add" />
+        <div className="text-center py-10 text-red-500">Error loading categories. Please try again.</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Categories"
-        description="Manage product categories and subcategories"
-        addNewLabel="Add Category"
-        addNewHref="/categories/add"
-      />
-
-      <DataTable 
-        columns={columns} 
-        data={categories} 
-        searchKey="name" 
-        searchPlaceholder="Search categories..." 
-      />
-
-      <DeleteDialog
-        open={!!deleteId}
-        onOpenChange={(open) => !open && setDeleteId(null)}
-        onConfirm={handleDelete}
-        title="Delete Category"
-        description="Are you sure you want to delete this category? All subcategories will also be affected."
-        isLoading={isDeleting}
-      />
+      <PageHeader title="Categories" description="Organize your products into categories" addNewLabel="Add Category" addNewHref="/categories/add" />
+      <DataTable columns={columns} data={categories} searchKey="name" searchPlaceholder="Search categories..." isLoading={isLoading} />
     </div>
   );
 }

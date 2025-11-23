@@ -1,29 +1,28 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DataTable } from '@/components/common/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/common/data-table';
-import { ColumnDef } from '@tanstack/react-table';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
-import { 
-  MoreHorizontal, 
-  Eye, 
-  RotateCcw,
-  AlertCircle,
-  XCircle,
-  DollarSign,
-  TrendingDown
-} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { ColumnDef } from '@tanstack/react-table';
+import {
+  AlertCircle,
+  DollarSign,
+  Eye,
+  MoreHorizontal,
+  RotateCcw,
+  TrendingDown,
+  XCircle,
+} from 'lucide-react';
+import { useState } from 'react';
 
 type CancelledOrder = {
   id: string;
@@ -152,14 +151,14 @@ export default function OrdersCancelledPage() {
       header: ({ table }) => (
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          onCheckedChange={value => table.toggleAllPageRowsSelected(!!value)}
           aria-label="Select all"
         />
       ),
       cell: ({ row }) => (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          onCheckedChange={value => row.toggleSelected(!!value)}
           aria-label="Select row"
         />
       ),
@@ -169,9 +168,7 @@ export default function OrdersCancelledPage() {
     {
       accessorKey: 'orderNumber',
       header: 'Order #',
-      cell: ({ row }) => (
-        <div className="font-medium">{row.getValue('orderNumber')}</div>
-      ),
+      cell: ({ row }) => <div className="font-medium">{row.getValue('orderNumber')}</div>,
     },
     {
       accessorKey: 'customer',
@@ -179,16 +176,14 @@ export default function OrdersCancelledPage() {
       cell: ({ row }) => (
         <div>
           <div className="font-medium">{row.getValue('customer')}</div>
-          <div className="text-sm text-muted-foreground">{row.original.email}</div>
+          <div className="text-muted-foreground text-sm">{row.original.email}</div>
         </div>
       ),
     },
     {
       accessorKey: 'items',
       header: 'Items',
-      cell: ({ row }) => (
-        <div className="text-center">{row.getValue('items')}</div>
-      ),
+      cell: ({ row }) => <div className="text-center">{row.getValue('items')}</div>,
     },
     {
       accessorKey: 'total',
@@ -215,7 +210,7 @@ export default function OrdersCancelledPage() {
       header: 'Reason',
       cell: ({ row }) => (
         <div className="max-w-[200px]">
-          <p className="text-sm truncate">{row.getValue('cancelReason')}</p>
+          <p className="truncate text-sm">{row.getValue('cancelReason')}</p>
         </div>
       ),
     },
@@ -286,7 +281,7 @@ export default function OrdersCancelledPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{orders.length}</div>
-            <p className="text-xs text-muted-foreground">Orders cancelled</p>
+            <p className="text-muted-foreground text-xs">Orders cancelled</p>
           </CardContent>
         </Card>
 
@@ -297,9 +292,9 @@ export default function OrdersCancelledPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-red-600">
-              ₹{(totalLostRevenue / 1000).toFixed(1)}k
+              Rs {(totalLostRevenue / 1000).toFixed(1)}k
             </div>
-            <p className="text-xs text-muted-foreground">From cancellations</p>
+            <p className="text-muted-foreground text-xs">From cancellations</p>
           </CardContent>
         </Card>
 
@@ -310,7 +305,7 @@ export default function OrdersCancelledPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-amber-600">{refundPending}</div>
-            <p className="text-xs text-muted-foreground">Awaiting refund</p>
+            <p className="text-muted-foreground text-xs">Awaiting refund</p>
           </CardContent>
         </Card>
 
@@ -321,7 +316,7 @@ export default function OrdersCancelledPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{refundCompleted}</div>
-            <p className="text-xs text-muted-foreground">{refundProcessed} processed</p>
+            <p className="text-muted-foreground text-xs">{refundProcessed} processed</p>
           </CardContent>
         </Card>
       </div>
@@ -342,7 +337,7 @@ export default function OrdersCancelledPage() {
                 { reason: 'Delivery delay', count: 1 },
                 { reason: 'Other reasons', count: 1 },
               ].map((item, idx) => (
-                <div key={idx} className="flex items-center justify-between p-2 border rounded-lg">
+                <div key={idx} className="flex items-center justify-between rounded-lg border p-2">
                   <span className="text-sm">{item.reason}</span>
                   <Badge variant="secondary">{item.count} orders</Badge>
                 </div>
@@ -358,24 +353,24 @@ export default function OrdersCancelledPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 border rounded-lg bg-green-50">
+              <div className="flex items-center justify-between rounded-lg border bg-green-50 p-3">
                 <div>
                   <p className="font-medium">Completed</p>
-                  <p className="text-xs text-muted-foreground">Refund sent to customer</p>
+                  <p className="text-muted-foreground text-xs">Refund sent to customer</p>
                 </div>
                 <Badge className="bg-green-600">{refundCompleted}</Badge>
               </div>
-              <div className="flex items-center justify-between p-3 border rounded-lg bg-blue-50">
+              <div className="flex items-center justify-between rounded-lg border bg-blue-50 p-3">
                 <div>
                   <p className="font-medium">Processing</p>
-                  <p className="text-xs text-muted-foreground">Refund being processed</p>
+                  <p className="text-muted-foreground text-xs">Refund being processed</p>
                 </div>
                 <Badge className="bg-blue-600">{refundProcessed}</Badge>
               </div>
-              <div className="flex items-center justify-between p-3 border rounded-lg bg-amber-50">
+              <div className="flex items-center justify-between rounded-lg border bg-amber-50 p-3">
                 <div>
                   <p className="font-medium">Pending</p>
-                  <p className="text-xs text-muted-foreground">Awaiting approval</p>
+                  <p className="text-muted-foreground text-xs">Awaiting approval</p>
                 </div>
                 <Badge className="bg-amber-600">{refundPending}</Badge>
               </div>
@@ -393,9 +388,9 @@ export default function OrdersCancelledPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable 
-            columns={columns} 
-            data={orders} 
+          <DataTable
+            columns={columns}
+            data={orders}
             searchKey="orderNumber"
             searchPlaceholder="Search cancelled orders..."
           />

@@ -1,10 +1,10 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { DataTable } from '@/components/common/data-table';
-import { Users, UserCheck, UserX, TrendingUp, Mail } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { users } from '@/data/users';
+import { Mail, TrendingUp, UserCheck, Users, UserX } from 'lucide-react';
 
 // Calculate user statistics
 const calculateUserStats = () => {
@@ -13,7 +13,7 @@ const calculateUserStats = () => {
   const inactive = users.filter(u => u.status === 'inactive').length;
   const emailVerified = users.filter(u => u.emailVerified).length;
   const totalSpending = users.reduce((sum, user) => sum + user.totalSpent, 0);
-  
+
   return {
     total: users.length,
     active,
@@ -58,25 +58,21 @@ export default function UserGrowthReportPage() {
       cell: ({ row }: any) => (
         <div>
           <div className="font-medium">{row.original.name}</div>
-          <div className="text-sm text-muted-foreground">{row.original.email}</div>
+          <div className="text-muted-foreground text-sm">{row.original.email}</div>
         </div>
       ),
     },
     {
       accessorKey: 'orders',
       header: 'Orders',
-      cell: ({ row }: any) => (
-        <Badge variant="secondary">{row.original.orders} orders</Badge>
-      ),
+      cell: ({ row }: any) => <Badge variant="secondary">{row.original.orders} orders</Badge>,
     },
     {
       accessorKey: 'spent',
       header: 'Total Spent',
-      cell: ({ row }: any) => (
-        <div className="font-semibold text-green-600">
-          ${row.original.spent.toFixed(2)}
-        </div>
-      ),
+        cell: ({ row }: any) => (
+          <div className="font-semibold text-green-600">Rs {row.original.spent.toFixed(2)}</div>
+        ),
     },
     {
       accessorKey: 'status',
@@ -100,14 +96,14 @@ export default function UserGrowthReportPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Users className="h-4 w-4 text-blue-500" />
               Total Users
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+            <p className="mt-1 flex items-center gap-1 text-xs text-green-600">
               <TrendingUp className="h-3 w-3" />
               +18.2% this month
             </p>
@@ -116,14 +112,14 @@ export default function UserGrowthReportPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <UserCheck className="h-4 w-4 text-green-500" />
               Active Users
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.active}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-1 text-xs">
               {((stats.active / stats.total) * 100).toFixed(1)}% of total
             </p>
           </CardContent>
@@ -131,14 +127,14 @@ export default function UserGrowthReportPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <Mail className="h-4 w-4 text-purple-500" />
               Email Verified
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.emailVerified}</div>
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-muted-foreground mt-1 text-xs">
               {((stats.emailVerified / stats.total) * 100).toFixed(1)}% verified
             </p>
           </CardContent>
@@ -146,14 +142,14 @@ export default function UserGrowthReportPage() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-sm font-medium">
               <UserX className="h-4 w-4 text-red-500" />
               Blocked Users
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.blocked}</div>
-            <p className="text-xs text-red-600 mt-1">
+            <p className="mt-1 text-xs text-red-600">
               {((stats.blocked / stats.total) * 100).toFixed(1)}% blocked
             </p>
           </CardContent>
@@ -168,18 +164,16 @@ export default function UserGrowthReportPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {monthlyGrowth.map((month) => (
+            {monthlyGrowth.map(month => (
               <div key={month.month} className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="font-medium w-12">{month.month}</span>
-                  <span className="text-muted-foreground">
-                    +{month.newUsers} new users
-                  </span>
+                  <span className="w-12 font-medium">{month.month}</span>
+                  <span className="text-muted-foreground">+{month.newUsers} new users</span>
                   <span className="font-semibold">{month.totalUsers} total</span>
                 </div>
-                <div className="h-8 bg-gray-100 rounded overflow-hidden">
+                <div className="h-8 overflow-hidden rounded bg-gray-100">
                   <div
-                    className="h-full bg-blue-500 transition-all flex items-center justify-end pr-2 text-white text-xs font-medium"
+                    className="flex h-full items-center justify-end bg-blue-500 pr-2 text-xs font-medium text-white transition-all"
                     style={{ width: `${(month.totalUsers / 600) * 100}%` }}
                   >
                     {month.totalUsers}
@@ -199,18 +193,16 @@ export default function UserGrowthReportPage() {
             <CardDescription>Revenue statistics</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div>
-              <div className="text-sm text-muted-foreground">Total Customer Spending</div>
-              <div className="text-3xl font-bold text-green-600">
-                ${stats.totalSpending.toFixed(2)}
+              <div>
+                <div className="text-muted-foreground text-sm">Total Customer Spending</div>
+                <div className="text-3xl font-bold text-green-600">
+                  Rs {stats.totalSpending.toFixed(2)}
+                </div>
               </div>
-            </div>
-            <div>
-              <div className="text-sm text-muted-foreground">Average Spend Per User</div>
-              <div className="text-3xl font-bold">
-                ${stats.avgSpending.toFixed(2)}
+              <div>
+                <div className="text-muted-foreground text-sm">Average Spend Per User</div>
+                <div className="text-3xl font-bold">Rs {stats.avgSpending.toFixed(2)}</div>
               </div>
-            </div>
           </CardContent>
         </Card>
 
@@ -221,25 +213,31 @@ export default function UserGrowthReportPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
+              <span className="flex items-center gap-2 text-sm">
                 <div className="h-3 w-3 rounded-full bg-green-500" />
                 Active
               </span>
-              <span className="font-semibold">{stats.active} ({((stats.active/stats.total)*100).toFixed(0)}%)</span>
+              <span className="font-semibold">
+                {stats.active} ({((stats.active / stats.total) * 100).toFixed(0)}%)
+              </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
+              <span className="flex items-center gap-2 text-sm">
                 <div className="h-3 w-3 rounded-full bg-gray-400" />
                 Inactive
               </span>
-              <span className="font-semibold">{stats.inactive} ({((stats.inactive/stats.total)*100).toFixed(0)}%)</span>
+              <span className="font-semibold">
+                {stats.inactive} ({((stats.inactive / stats.total) * 100).toFixed(0)}%)
+              </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm flex items-center gap-2">
+              <span className="flex items-center gap-2 text-sm">
                 <div className="h-3 w-3 rounded-full bg-red-500" />
                 Blocked
               </span>
-              <span className="font-semibold">{stats.blocked} ({((stats.blocked/stats.total)*100).toFixed(0)}%)</span>
+              <span className="font-semibold">
+                {stats.blocked} ({((stats.blocked / stats.total) * 100).toFixed(0)}%)
+              </span>
             </div>
           </CardContent>
         </Card>

@@ -1,12 +1,15 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
+
+interface DeleteCollectionResponse {
+  message: string;
+}
 
 const deleteCollection = async (id: number | string): Promise<void> => {
-  return await axiosInstance.delete(`collections/${id}`);
+  await axiosInstance.delete<DeleteCollectionResponse>(`/collection/${id}`);
 };
 
 export const useDeleteCollection = () => {
@@ -18,9 +21,9 @@ export const useDeleteCollection = () => {
       queryClient.invalidateQueries({ queryKey: ['collections'] });
       toast.success('Collection deleted successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to delete collection');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to delete collection';
+      toast.error(errorMessage);
     },
   });
 };
-

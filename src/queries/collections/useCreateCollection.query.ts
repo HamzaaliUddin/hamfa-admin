@@ -1,22 +1,28 @@
 'use client';
 
+import axiosInstance from '@/api/axios';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
-import { ErrorResponseType } from '@/types/api.types';
 import { Collection } from './useGetCollections.query';
 
 export interface CreateCollectionInput {
   name: string;
   slug: string;
-  description?: string;
-  image?: string;
-  status?: 'active' | 'inactive';
-  productIds?: number[];
+  description: string;
+  image: string;
+  status: 'active' | 'inactive';
+  featured?: boolean;
+  sort_order: number;
+}
+
+interface CreateCollectionResponse {
+  data: Collection;
+  message: string;
 }
 
 const createCollection = async (data: CreateCollectionInput): Promise<Collection> => {
-  return await axiosInstance.post('collections', data);
+  const response: CreateCollectionResponse = await axiosInstance.post('/collection', data);
+  return response.data;
 };
 
 export const useCreateCollection = () => {
@@ -28,9 +34,9 @@ export const useCreateCollection = () => {
       queryClient.invalidateQueries({ queryKey: ['collections'] });
       toast.success('Collection created successfully');
     },
-    onError: (error: ErrorResponseType) => {
-      toast.error(error?.data?.message || 'Failed to create collection');
+    onError: (error: any) => {
+      const errorMessage = error?.error || error?.message || 'Failed to create collection';
+      toast.error(errorMessage);
     },
   });
 };
-

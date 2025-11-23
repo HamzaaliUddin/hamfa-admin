@@ -1,30 +1,46 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
-import { PaginationParams, PaginatedResponse } from '@/types/api.types';
+import { useQuery } from '@tanstack/react-query';
 
 export interface Category {
-  id: number;
+  category_id: number;
   name: string;
   slug: string;
-  description?: string;
-  image?: string;
-  parentId?: number;
+  description: string;
+  parent_id?: number;
+  image: string;
+  icon?: string;
   status: 'active' | 'inactive';
-  order?: number;
-  createdAt: string;
-  updatedAt: string;
+  sort_order: number;
+  product_count: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
-const fetchCategories = async (params?: PaginationParams): Promise<PaginatedResponse<Category>> => {
-  return await axiosInstance.get('categories', { params });
+export interface GetCategoriesParams {
+  page?: number;
+  limit?: number;
+  sortKey?: string;
+  sortValue?: 'ASC' | 'DESC';
+  status?: string;
+  parent_id?: number;
+  search?: string;
+}
+
+interface GetCategoriesResponse {
+  data: Category[];
+  count: number;
+}
+
+const fetchCategories = async (params?: GetCategoriesParams): Promise<GetCategoriesResponse> => {
+  return await axiosInstance.get('/category', { params });
 };
 
-export const useGetCategories = (params?: PaginationParams) => {
+export const useGetCategories = (params?: GetCategoriesParams) => {
   return useQuery({
     queryKey: ['categories', params],
     queryFn: () => fetchCategories(params),
+    staleTime: 60 * 1000,
   });
 };
-

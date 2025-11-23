@@ -1,11 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { MoreHorizontal, Eye, Package, Clock } from 'lucide-react';
-import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { DataTable } from '@/components/common/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,7 +12,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { DataTable } from '@/components/common/data-table';
+import { Clock, Eye, MoreHorizontal, Package } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
 
 type Order = {
   id: string;
@@ -45,7 +45,7 @@ const mockPendingOrders: Order[] = [
     customer: 'Fatima Khan',
     email: 'fatima@example.com',
     items: 2,
-    total: 1899.00,
+    total: 1899.0,
     status: 'pending',
     date: '2024-02-15',
   },
@@ -55,7 +55,7 @@ const mockPendingOrders: Order[] = [
     customer: 'Hassan Malik',
     email: 'hassan@example.com',
     items: 5,
-    total: 3599.50,
+    total: 3599.5,
     status: 'pending',
     date: '2024-02-15',
   },
@@ -75,7 +75,7 @@ const mockPendingOrders: Order[] = [
     customer: 'Bilal Ahmed',
     email: 'bilal@example.com',
     items: 4,
-    total: 4299.00,
+    total: 4299.0,
     status: 'pending',
     date: '2024-02-14',
   },
@@ -85,7 +85,7 @@ const mockPendingOrders: Order[] = [
     customer: 'Zainab Hassan',
     email: 'zainab@example.com',
     items: 2,
-    total: 1599.00,
+    total: 1599.0,
     status: 'pending',
     date: '2024-02-14',
   },
@@ -105,7 +105,7 @@ const mockPendingOrders: Order[] = [
     customer: 'Maryam Khan',
     email: 'maryam@example.com',
     items: 6,
-    total: 5499.00,
+    total: 5499.0,
     status: 'pending',
     date: '2024-02-14',
   },
@@ -125,7 +125,7 @@ const mockPendingOrders: Order[] = [
     customer: 'Sara Ahmed',
     email: 'sara@example.com',
     items: 3,
-    total: 2199.00,
+    total: 2199.0,
     status: 'pending',
     date: '2024-02-13',
   },
@@ -145,7 +145,7 @@ const mockPendingOrders: Order[] = [
     customer: 'Aisha Malik',
     email: 'aisha@example.com',
     items: 1,
-    total: 799.00,
+    total: 799.0,
     status: 'pending',
     date: '2024-02-13',
   },
@@ -160,7 +160,7 @@ export default function OrdersPendingPage() {
       header: 'Order #',
       cell: ({ row }: any) => (
         <div className="flex items-center gap-2">
-          <Package className="h-4 w-4 text-muted-foreground" />
+          <Package className="text-muted-foreground h-4 w-4" />
           <span className="font-medium">{row.original.orderNumber}</span>
         </div>
       ),
@@ -171,7 +171,7 @@ export default function OrdersPendingPage() {
       cell: ({ row }: any) => (
         <div>
           <p className="font-medium">{row.original.customer}</p>
-          <p className="text-sm text-muted-foreground">{row.original.email}</p>
+          <p className="text-muted-foreground text-sm">{row.original.email}</p>
         </div>
       ),
     },
@@ -184,7 +184,7 @@ export default function OrdersPendingPage() {
       accessorKey: 'total',
       header: 'Total',
       cell: ({ row }: any) => (
-        <span className="font-semibold">${row.original.total.toFixed(2)}</span>
+        <span className="font-semibold">Rs {row.original.total.toFixed(2)}</span>
       ),
     },
     {
@@ -239,7 +239,7 @@ export default function OrdersPendingPage() {
           <h1 className="text-3xl font-bold">Pending Orders</h1>
           <p className="text-muted-foreground">View and manage pending orders</p>
         </div>
-        <Badge variant="secondary" className="text-lg px-4 py-2">
+        <Badge variant="secondary" className="px-4 py-2 text-lg">
           {orders.length} Pending
         </Badge>
       </div>

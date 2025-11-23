@@ -8,96 +8,14 @@ import { PageHeader } from '@/components/common/page-header';
 import { DataTable } from '@/components/common/data-table';
 import { TableActions } from '@/components/common/table-actions';
 import { useRouter } from 'next/navigation';
-
-// Order Type
-export type Order = {
-  id: string;
-  orderNumber: string;
-  customer: string;
-  email: string;
-  items: number;
-  total: number;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
-  paymentStatus: 'pending' | 'paid' | 'failed';
-  createdAt: string;
-};
-
-// Sample Data
-const sampleOrders: Order[] = [
-  {
-    id: '1',
-    orderNumber: 'ORD-2024-001',
-    customer: 'John Doe',
-    email: 'john.doe@example.com',
-    items: 3,
-    total: 15999,
-    status: 'delivered',
-    paymentStatus: 'paid',
-    createdAt: '2024-01-15',
-  },
-  {
-    id: '2',
-    orderNumber: 'ORD-2024-002',
-    customer: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    items: 2,
-    total: 8999,
-    status: 'shipped',
-    paymentStatus: 'paid',
-    createdAt: '2024-01-16',
-  },
-  {
-    id: '3',
-    orderNumber: 'ORD-2024-003',
-    customer: 'Mike Johnson',
-    email: 'mike.j@example.com',
-    items: 1,
-    total: 2999,
-    status: 'processing',
-    paymentStatus: 'paid',
-    createdAt: '2024-01-17',
-  },
-  {
-    id: '4',
-    orderNumber: 'ORD-2024-004',
-    customer: 'Sarah Williams',
-    email: 'sarah.w@example.com',
-    items: 5,
-    total: 25999,
-    status: 'pending',
-    paymentStatus: 'pending',
-    createdAt: '2024-01-18',
-  },
-  {
-    id: '5',
-    orderNumber: 'ORD-2024-005',
-    customer: 'Tom Brown',
-    email: 'tom.b@example.com',
-    items: 2,
-    total: 6999,
-    status: 'cancelled',
-    paymentStatus: 'failed',
-    createdAt: '2024-01-19',
-  },
-];
-
-const statusColors = {
-  pending: 'secondary',
-  processing: 'default',
-  shipped: 'default',
-  delivered: 'default',
-  cancelled: 'destructive',
-} as const;
-
-const paymentColors = {
-  pending: 'secondary',
-  paid: 'default',
-  failed: 'destructive',
-} as const;
+import { useGetOrders, Order } from '@/queries/orders/useGetOrders.query';
 
 export default function OrdersPage() {
   const router = useRouter();
-  const [orders] = React.useState<Order[]>(sampleOrders);
+  const [page, setPage] = React.useState(1);
+  const { data, isLoading, error } = useGetOrders({ page, limit: 10 });
+
+  const orders = data?.data || [];
 
   const columns: ColumnDef<Order>[] = [
     {
@@ -120,71 +38,71 @@ export default function OrdersPage() {
       enableHiding: false,
     },
     {
-      accessorKey: 'orderNumber',
-      header: 'Order #',
+      accessorKey: 'order_number',
+      header: 'Order',
       cell: ({ row }) => (
-        <div className="font-medium">{row.getValue('orderNumber')}</div>
+        <div className="font-medium">{row.getValue('order_number')}</div>
       ),
     },
     {
-      accessorKey: 'customer',
+      accessorKey: 'user_id',
       header: 'Customer',
-      cell: ({ row }) => (
-        <div>
-          <div className="font-medium">{row.getValue('customer')}</div>
-          <div className="text-sm text-muted-foreground">{row.original.email}</div>
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'items',
-      header: 'Items',
-      cell: ({ row }) => (
-        <div className="text-center">{row.getValue('items')}</div>
-      ),
+      cell: ({ row }) => <div>User #{row.getValue('user_id')}</div>,
     },
     {
       accessorKey: 'total',
       header: 'Total',
       cell: ({ row }) => {
-        const amount = parseFloat(row.getValue('total'));
-        const formatted = new Intl.NumberFormat('en-IN', {
+        const total = parseFloat(row.getValue('total'));
+        const formatted = new Intl.NumberFormat('en-US', {
           style: 'currency',
-          currency: 'INR',
-        }).format(amount);
+          currency: 'USD',
+        }).format(total);
         return <div className="font-medium">{formatted}</div>;
       },
     },
     {
       accessorKey: 'status',
-      header: 'Order Status',
+      header: 'Status',
       cell: ({ row }) => {
-        const status = row.getValue('status') as keyof typeof statusColors;
+        const status = row.getValue('status') as string;
+        const variant =
+          status === 'delivered'
+            ? 'default'
+            : status === 'cancelled'
+              ? 'destructive'
+              : 'secondary';
         return (
-          <Badge variant={statusColors[status]}>
+          <Badge variant={variant}>
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </Badge>
         );
       },
     },
     {
-      accessorKey: 'paymentStatus',
+      accessorKey: 'payment_status',
       header: 'Payment',
       cell: ({ row }) => {
-        const status = row.getValue('paymentStatus') as keyof typeof paymentColors;
+        const paymentStatus = row.getValue('payment_status') as string;
+        const variant =
+          paymentStatus === 'paid'
+            ? 'default'
+            : paymentStatus === 'failed'
+              ? 'destructive'
+              : 'secondary';
         return (
-          <Badge variant={paymentColors[status]}>
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+          <Badge variant={variant}>
+            {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
           </Badge>
         );
       },
     },
     {
-      accessorKey: 'createdAt',
+      accessorKey: 'created_at',
       header: 'Date',
       cell: ({ row }) => {
-        const date = new Date(row.getValue('createdAt'));
-        return date.toLocaleDateString('en-IN');
+        const date = row.getValue('created_at') as string;
+        return date ? new Date(date).toLocaleDateString('en-IN') : '—';
       },
     },
     {
@@ -195,15 +113,27 @@ export default function OrdersPage() {
 
         return (
           <TableActions
-            onView={() => router.push(`/orders/${order.id}`)}
-            onEdit={() => router.push(`/orders/${order.id}/edit`)}
+            onView={() => router.push(`/orders/${order.order_id}`)}
             viewLabel="View Details"
-            editLabel="Update Status"
           />
         );
       },
     },
   ];
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <PageHeader
+          title="Orders"
+          description="View and manage customer orders"
+        />
+        <div className="text-center py-10 text-red-500">
+          Error loading orders. Please try again.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -212,11 +142,12 @@ export default function OrdersPage() {
         description="View and manage customer orders"
       />
 
-      <DataTable 
-        columns={columns} 
-        data={orders} 
-        searchKey="orderNumber" 
-        searchPlaceholder="Search orders..." 
+      <DataTable
+        columns={columns}
+        data={orders}
+        searchKey="order_number"
+        searchPlaceholder="Search orders..."
+        isLoading={isLoading}
       />
     </div>
   );

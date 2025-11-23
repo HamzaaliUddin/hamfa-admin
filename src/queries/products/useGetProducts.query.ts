@@ -1,34 +1,57 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axiosInstance from '@/api/axios';
-import { PaginationParams, PaginatedResponse } from '@/types/api.types';
+import { useQuery } from '@tanstack/react-query';
 
 export interface Product {
-  id: number;
-  name: string;
-  slug: string;
-  description?: string;
-  price: number;
-  salePrice?: number;
-  stock: number;
+  product_id: number;
+  title: string;
+  description: string;
   sku: string;
-  status: 'active' | 'inactive';
-  images?: string[];
-  categoryId?: number;
-  brandId?: number;
-  createdAt: string;
-  updatedAt: string;
+  image: string;
+  images: string[];
+  price: number;
+  compare_price?: number;
+  cost?: number;
+  stock: number;
+  low_stock_threshold: number;
+  brand_id: number;
+  category_id: number;
+  tags: string[];
+  status: 'active' | 'inactive' | 'out_of_stock';
+  featured: boolean;
+  has_variants: boolean;
+  weight?: number;
+  dimensions?: any;
+  created_at?: string;
+  updated_at?: string;
 }
 
-const fetchProducts = async (params?: PaginationParams): Promise<PaginatedResponse<Product>> => {
-  return await axiosInstance.get('products', { params });
+export interface GetProductsParams {
+  page?: number;
+  limit?: number;
+  sortKey?: string;
+  sortValue?: 'ASC' | 'DESC';
+  status?: string;
+  featured?: boolean;
+  brand_id?: number;
+  category_id?: number;
+  search?: string;
+}
+
+interface GetProductsResponse {
+  data: Product[];
+  count: number;
+}
+
+const fetchProducts = async (params?: GetProductsParams): Promise<GetProductsResponse> => {
+  return await axiosInstance.get('/product', { params });
 };
 
-export const useGetProducts = (params?: PaginationParams) => {
+export const useGetProducts = (params?: GetProductsParams) => {
   return useQuery({
     queryKey: ['products', params],
     queryFn: () => fetchProducts(params),
+    staleTime: 60 * 1000,
   });
 };
-
