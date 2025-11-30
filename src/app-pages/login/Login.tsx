@@ -1,23 +1,14 @@
 'use client';
 
-import { LoginBackgroundImage } from './LoginBackgroundImage';
-import { LoginCard } from './LoginCard';
 import { LoginForm } from './LoginForm';
 import { useLoginForm } from './useLoginForm.hook';
 
 export function Login() {
-  const { control, handleSubmit, errors, onSubmit, isLoading } = useLoginForm();
+  const { control, handleSubmit, onSubmit, isLoading } = useLoginForm();
 
   return (
-    <LoginBackgroundImage>
-      <LoginCard>
-        <LoginForm
-          onSubmit={handleSubmit(onSubmit)}
-          control={control}
-          errors={errors}
-          isLoading={isLoading}
-        />
-      </LoginCard>
-    </LoginBackgroundImage>
+    <div className="relative flex min-h-screen items-center justify-center p-4">
+      <LoginForm onSubmit={handleSubmit(onSubmit)} control={control} isLoading={isLoading} />
+    </div>
   );
 }

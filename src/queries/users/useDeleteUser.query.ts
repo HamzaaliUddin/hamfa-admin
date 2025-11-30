@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
+import axiosInstance from '@/services/axiosInstance';
 import { ErrorResponseType } from '@/types/api.types';
 
 const deleteUser = async (id: number | string): Promise<void> => {

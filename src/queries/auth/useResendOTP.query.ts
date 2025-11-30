@@ -1,4 +1,4 @@
-import axiosInstance from '@/api/axios';
+import axiosInstance from '@/services/axiosInstance';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 

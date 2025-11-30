@@ -1,11 +1,9 @@
 'use client';
 
-import * as React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { CrudFormSection, CrudLayout } from '@/components/common/crud-layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -13,8 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { CrudLayout, CrudFormSection } from '@/components/common/crud-layout';
-import { Upload, X } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Upload, X, ArrowLeft } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import * as React from 'react';
 
 export default function EditBrandPage() {
   const params = useParams();
@@ -54,28 +54,52 @@ export default function EditBrandPage() {
 
   if (isLoading) {
     return (
-      <CrudLayout title="Loading..." description="Please wait">
-        <div>Loading brand...</div>
-      </CrudLayout>
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="icon" onClick={() => router.push('/brands')}>
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+        </div>
+        <CrudLayout title="Loading..." description="Please wait">
+          <div>Loading brand...</div>
+        </CrudLayout>
+      </div>
     );
   }
 
   return (
-    <CrudLayout title="Edit Brand" description="Update brand details">
-      <form onSubmit={handleSubmit}>
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="outline" size="icon" onClick={() => router.push('/brands')}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+      </div>
+      <CrudLayout title="Edit Brand" description="Update brand details">
+        <form onSubmit={handleSubmit}>
         <div className="grid gap-6 md:grid-cols-3">
-          <div className="md:col-span-2 space-y-6">
+          <div className="space-y-6 md:col-span-2">
             <CrudFormSection title="Brand Information">
               <div className="space-y-4">
                 <div className="grid gap-2">
                   <Label htmlFor="name">Brand Name *</Label>
-                  <Input id="name" name="name" placeholder="Enter brand name" defaultValue="Sample Brand" required />
+                  <Input
+                    id="name"
+                    name="name"
+                    placeholder="Enter brand name"
+                    defaultValue="Sample Brand"
+                    required
+                  />
                 </div>
 
                 <div className="grid gap-2">
                   <Label htmlFor="slug">Slug</Label>
-                  <Input id="slug" name="slug" placeholder="brand-slug" defaultValue="sample-brand" />
-                  <p className="text-xs text-muted-foreground">
+                  <Input
+                    id="slug"
+                    name="slug"
+                    placeholder="brand-slug"
+                    defaultValue="sample-brand"
+                  />
+                  <p className="text-muted-foreground text-xs">
                     URL-friendly version. Auto-generated if left blank.
                   </p>
                 </div>
@@ -122,7 +146,7 @@ export default function EditBrandPage() {
                           type="button"
                           variant="destructive"
                           size="icon"
-                          className="absolute right-2 top-2 h-8 w-8"
+                          className="absolute top-2 right-2 h-8 w-8"
                           onClick={() => setLogoPreview(null)}
                         >
                           <X className="h-4 w-4" />
@@ -131,12 +155,10 @@ export default function EditBrandPage() {
                     ) : (
                       <label
                         htmlFor="logo"
-                        className="flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed hover:bg-accent"
+                        className="hover:bg-accent flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed"
                       >
-                        <Upload className="h-8 w-8 text-muted-foreground" />
-                        <span className="text-sm text-muted-foreground">
-                          Click to upload logo
-                        </span>
+                        <Upload className="text-muted-foreground h-8 w-8" />
+                        <span className="text-muted-foreground text-sm">Click to upload logo</span>
                       </label>
                     )}
                     <Input
@@ -148,7 +170,7 @@ export default function EditBrandPage() {
                       onChange={handleLogoChange}
                     />
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-muted-foreground text-xs">
                     Recommended: Square image, min 200x200px
                   </p>
                 </div>
@@ -181,9 +203,7 @@ export default function EditBrandPage() {
                       <SelectItem value="no">No</SelectItem>
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Show on homepage
-                  </p>
+                  <p className="text-muted-foreground text-xs">Show on homepage</p>
                 </div>
               </div>
             </CrudFormSection>
@@ -200,6 +220,6 @@ export default function EditBrandPage() {
         </div>
       </form>
     </CrudLayout>
+    </div>
   );
 }
-

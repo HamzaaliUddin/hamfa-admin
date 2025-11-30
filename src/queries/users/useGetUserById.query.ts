@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import axiosInstance from '@/api/axios';
+import axiosInstance from '@/services/axiosInstance';
 import { User } from './useGetUsers.query';
 
 const fetchUserById = async (id: number | string): Promise<User> => {

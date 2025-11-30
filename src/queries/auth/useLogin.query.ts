@@ -1,4 +1,4 @@
-import axiosInstance from '@/api/axios';
+import axiosInstance from '@/services/axiosInstance';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -13,21 +13,20 @@ interface LoginResponse {
   requiresOTP: boolean;
 }
 
+const onLogin = async (data: LoginRequest): Promise<any> => {
+  return await axiosInstance.post('/auth/login', data);
+};
+
 export const useLogin = () => {
   return useMutation({
-    mutationFn: async (data: LoginRequest) => {
-      console.log('🚀 Login request:', data);
-      const response = await axiosInstance.post<any, { data: LoginResponse }>('/auth/login', data);
-      console.log('✅ Login response:', response);
-      return response.data;
-    },
-    onSuccess: data => {
+    mutationFn: onLogin,
+    onSuccess: (data) => {
       console.log('✅ Login success data:', data);
       toast.success('OTP sent to your email!');
     },
     onError: (error: any) => {
       console.error('❌ Login error:', error);
-      const errorMessage = error?.error || error?.message || 'Login failed. Please try again.';
+      const errorMessage = error?.data?.message || error?.message || 'Login failed. Please try again.';
       toast.error(errorMessage);
     },
   });

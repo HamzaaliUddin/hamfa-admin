@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { VerifyOTPFormData } from './verifyOTP.schema';
-import { verifyOTPDefaultValues, verifyOTPErrorMessages } from './VerifyOTPHelper';
+import { verifyOTPDefaultValues, verifyOTPErrorMessages, verifyOTPValidationRules } from './VerifyOTPHelper';
 
 export function useVerifyOTPForm() {
   const router = useRouter();
@@ -24,10 +24,37 @@ export function useVerifyOTPForm() {
   const {
     control,
     handleSubmit,
-    formState: { errors },
   } = useForm<VerifyOTPFormData>({
     defaultValues: verifyOTPDefaultValues,
-    mode: 'onBlur', // Validate on blur for better UX
+    mode: 'onBlur',
+    resolver: async (data) => {
+      const errors: Record<string, any> = {};
+      
+      // Validate OTP code
+      if (verifyOTPValidationRules.otp_code.required && !data.otp_code) {
+        errors.otp_code = {
+          type: 'required',
+          message: typeof verifyOTPValidationRules.otp_code.required === 'string' 
+            ? verifyOTPValidationRules.otp_code.required 
+            : 'OTP code is required',
+        };
+      } else if (verifyOTPValidationRules.otp_code.pattern && data.otp_code) {
+        const pattern = verifyOTPValidationRules.otp_code.pattern;
+        if (typeof pattern === 'object' && 'value' in pattern) {
+          if (!pattern.value.test(data.otp_code)) {
+            errors.otp_code = {
+              type: 'pattern',
+              message: pattern.message || 'Invalid OTP code format',
+            };
+          }
+        }
+      }
+      
+      return {
+        values: Object.keys(errors).length === 0 ? data : {},
+        errors,
+      };
+    },
   });
 
   // Countdown timer for resend
@@ -35,10 +62,12 @@ export function useVerifyOTPForm() {
     if (countdown > 0) {
       const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
       return () => clearTimeout(timer);
-    } else {
-      setCanResend(true);
+    } else if (countdown === 0 && !canResend) {
+      // Use setTimeout to avoid cascading renders
+      const timer = setTimeout(() => setCanResend(true), 0);
+      return () => clearTimeout(timer);
     }
-  }, [countdown]);
+  }, [countdown, canResend]);
 
   // Redirect if no user_id
   useEffect(() => {
@@ -55,9 +84,7 @@ export function useVerifyOTPForm() {
       await verifyOTPMutation.mutateAsync({
         user_id: parseInt(userId),
         otp_code: data.otp_code,
-        remember_me: data.remember_me || false,
       });
-      router.push(ROUTES.DASHBOARD);
     } catch (error) {
       console.error('OTP verification error:', error);
     }
@@ -79,7 +106,6 @@ export function useVerifyOTPForm() {
   return {
     control,
     handleSubmit,
-    errors,
     onSubmit,
     isLoading: verifyOTPMutation.isPending,
     email,
@@ -89,4 +115,3 @@ export function useVerifyOTPForm() {
     isResending: resendOTPMutation.isPending,
   };
 }
-

@@ -11,7 +11,7 @@ export function LoginCard({ children }: LoginCardProps) {
         <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
         <CardDescription>Enter your credentials to access the admin panel</CardDescription>
       </CardHeader>
-      <CardContent>{children}</CardContent>
+      {/* <CardContent>{children}</CardContent> */}
     </Card>
   );
 }

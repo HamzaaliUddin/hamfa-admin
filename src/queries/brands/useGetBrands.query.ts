@@ -1,6 +1,6 @@
 'use client';
 
-import axiosInstance from '@/api/axios';
+import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
 
 export interface Brand {
@@ -28,8 +28,13 @@ export interface GetBrandsParams {
 }
 
 interface GetBrandsResponse {
-  data: Brand[];
-  count: number;
+  status: number;
+  message: string;
+  body: {
+    data: Brand[];
+    count: number;
+  };
+  errors: null;
 }
 
 const fetchBrands = async (params?: GetBrandsParams): Promise<GetBrandsResponse> => {

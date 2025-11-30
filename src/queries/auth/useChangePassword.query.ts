@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import axiosInstance from '@/api/axios';
+import axiosInstance from '@/services/axiosInstance';
 import { toast } from 'sonner';
 
 interface ChangePasswordRequest {

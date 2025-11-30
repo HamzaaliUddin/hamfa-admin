@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CrudLayout, CrudFormSection } from '@/components/common/crud-layout';
-import { Upload, X } from 'lucide-react';
+import { Upload, X, ArrowLeft } from 'lucide-react';
 
 export default function AddBrandPage() {
   const router = useRouter();
@@ -43,8 +43,14 @@ export default function AddBrandPage() {
   };
 
   return (
-    <CrudLayout title="Add New Brand" description="Create a new brand">
-      <form onSubmit={handleSubmit}>
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        <Button variant="outline" size="icon" onClick={() => router.push('/brands')}>
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+      </div>
+      <CrudLayout title="Add New Brand" description="Create a new brand">
+        <form onSubmit={handleSubmit}>
         <div className="grid gap-6 md:grid-cols-3">
           <div className="md:col-span-2 space-y-6">
             <CrudFormSection title="Brand Information">
@@ -180,5 +186,6 @@ export default function AddBrandPage() {
         </div>
       </form>
     </CrudLayout>
+    </div>
   );
 }

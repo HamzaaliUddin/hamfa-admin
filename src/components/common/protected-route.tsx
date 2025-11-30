@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authUtils } from '@/utils/auth';
+import { ROUTES } from '@/utils/route';
 
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -13,9 +14,13 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const checkAuth = () => {
       const authenticated = authUtils.isAuthenticated();
       
+      console.log('🔍 ProtectedRoute: Checking authentication:', authenticated);
+      
       if (!authenticated) {
-        router.push('/login');
+        console.log('❌ Not authenticated, redirecting to login');
+        router.push(ROUTES.AUTH.LOGIN);
       } else {
+        console.log('✅ Authenticated, allowing access');
         setIsAuthenticated(true);
       }
       

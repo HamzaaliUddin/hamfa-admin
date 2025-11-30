@@ -127,12 +127,9 @@ const menuItems: MenuItem[] = [
   },
   {
     title: 'Brands',
+    href: '/brands',
     icon: Award,
     module: Module.BRANDS,
-    items: [
-      { title: 'All Brands', href: '/brands', icon: Award },
-      { title: 'Add Brand', href: '/brands/add', icon: PlusCircle },
-    ],
   },
   {
     title: 'Banners',

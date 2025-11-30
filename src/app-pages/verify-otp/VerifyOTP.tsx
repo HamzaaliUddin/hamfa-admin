@@ -1,7 +1,5 @@
 'use client';
 
-import { VerifyOTPBackgroundImage } from './VerifyOTPBackgroundImage';
-import { VerifyOTPCard } from './VerifyOTPCard';
 import { VerifyOTPForm } from './VerifyOTPForm';
 import { useVerifyOTPForm } from './useVerifyOTPForm.hook';
 
@@ -9,7 +7,6 @@ export function VerifyOTP() {
   const {
     control,
     handleSubmit,
-    errors,
     onSubmit,
     isLoading,
     email,
@@ -20,20 +17,17 @@ export function VerifyOTP() {
   } = useVerifyOTPForm();
 
   return (
-    <VerifyOTPBackgroundImage>
-      <VerifyOTPCard email={email}>
+    <div className="relative flex min-h-screen items-center justify-center p-4">
         <VerifyOTPForm
           onSubmit={handleSubmit(onSubmit)}
           control={control}
-          errors={errors}
+          email={email}
           isLoading={isLoading}
           countdown={countdown}
           canResend={canResend}
           handleResendOTP={handleResendOTP}
           isResending={isResending}
         />
-      </VerifyOTPCard>
-    </VerifyOTPBackgroundImage>
+    </div>
   );
 }
-

@@ -1,61 +1,50 @@
 'use client';
 
+import { FormInput, FormWrapper } from '@/components/Form';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Control, Controller, FieldErrors } from 'react-hook-form';
+import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Control } from 'react-hook-form';
 import { LoginFormData } from './login.schema';
 import { loginFormFields, loginValidationRules } from './LoginHelper';
 
 interface LoginFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   control: Control<LoginFormData>;
-  errors: FieldErrors<LoginFormData>;
   isLoading: boolean;
 }
 
-export function LoginForm({ onSubmit, control, errors, isLoading }: LoginFormProps) {
+export function LoginForm({ onSubmit, control, isLoading }: LoginFormProps) {
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
+    <FormWrapper onSubmit={onSubmit} asForm>
+      <CardHeader className="space-y-1 text-center">
+        <CardTitle className="text-2xl font-bold">Admin Login</CardTitle>
+        <CardDescription>Enter your credentials to access the admin panel</CardDescription>
+      </CardHeader>
       {/* Email Field */}
-      <div className="space-y-2">
-        <Label htmlFor={loginFormFields.email.id}>{loginFormFields.email.label}</Label>
-        <Controller
-          name={loginFormFields.email.name}
-          control={control}
-          rules={loginValidationRules.email}
-          render={({ field }) => (
-            <Input
-              {...field}
-              id={loginFormFields.email.id}
-              type={loginFormFields.email.type}
-              placeholder={loginFormFields.email.placeholder}
-              disabled={isLoading}
-            />
-          )}
-        />
-        {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
-      </div>
+      <FormInput
+        control={control}
+        name={loginFormFields.email.name}
+        label={loginFormFields.email.label}
+        type={loginFormFields.email.type}
+        placeholder={loginFormFields.email.placeholder}
+        disabled={isLoading}
+        required
+        rules={loginValidationRules.email}
+        className="space-y-2"
+      />
 
       {/* Password Field */}
-      <div className="space-y-2">
-        <Label htmlFor={loginFormFields.password.id}>{loginFormFields.password.label}</Label>
-        <Controller
-          name={loginFormFields.password.name}
-          control={control}
-          rules={loginValidationRules.password}
-          render={({ field }) => (
-            <Input
-              {...field}
-              id={loginFormFields.password.id}
-              type={loginFormFields.password.type}
-              placeholder={loginFormFields.password.placeholder}
-              disabled={isLoading}
-            />
-          )}
-        />
-        {errors.password && <p className="text-destructive text-sm">{errors.password.message}</p>}
-      </div>
+      <FormInput
+        control={control}
+        name={loginFormFields.password.name}
+        label={loginFormFields.password.label}
+        type={loginFormFields.password.type}
+        placeholder={loginFormFields.password.placeholder}
+        disabled={isLoading}
+        required
+        rules={loginValidationRules.password}
+        className="space-y-2"
+      />
 
       {/* Submit Button */}
       <Button type="submit" className="w-full" disabled={isLoading}>
@@ -63,7 +52,9 @@ export function LoginForm({ onSubmit, control, errors, isLoading }: LoginFormPro
       </Button>
 
       {/* Helper Text */}
-      <p className="text-muted-foreground text-center text-sm">Use: admin@hamfa.com / Admin@123!</p>
-    </form>
+      <p className="text-muted-foreground text-center text-sm">
+        Use: superadmin@yopmail.com / Superadmin@123!
+      </p>
+    </FormWrapper>
   );
 }

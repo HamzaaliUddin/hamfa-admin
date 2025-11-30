@@ -58,8 +58,10 @@ export default function EditCategoryPage() {
     try {
       await updateCategory.mutateAsync({
         id: parseInt(categoryId),
-        ...formData,
-        parent_id: formData.parent_id ? parseInt(formData.parent_id) : undefined,
+        data: {
+          ...formData,
+          parent_id: formData.parent_id ? parseInt(formData.parent_id) : undefined,
+        },
       });
       router.push('/categories');
     } catch (error) {

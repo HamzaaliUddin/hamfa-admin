@@ -22,7 +22,7 @@ export default function BrandViewPage() {
   const brandId = params.id as string;
 
   const { data: brand, isLoading, error } = useGetBrandById(brandId);
-
+console.log(brand)
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">

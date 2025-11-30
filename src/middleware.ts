@@ -5,24 +5,24 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Public paths that don't require authentication
-  const publicPaths = ['/login', '/verify-otp'];
-  const isPublicPath = publicPaths.some(path => pathname.startsWith(path));
+  const publicPaths = ['/login', '/verify-otp', '/'];
+  const isPublicPath = publicPaths.some(path => 
+    pathname === path || pathname.startsWith(`${path}/`) || pathname.startsWith(`${path}?`)
+  );
 
-  // Get token from cookie or check localStorage (client-side)
+  // Get token from cookie
   const token = request.cookies.get('admin_token')?.value;
+
+  // If user is authenticated and trying to access auth pages, redirect to dashboard
+  if (token && (pathname === '/login' || pathname === '/verify-otp' || pathname === '/')) {
+    console.log('🔄 Authenticated user accessing auth page, redirecting to dashboard');
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
 
   // If trying to access protected route without token, redirect to login
   if (!isPublicPath && !token) {
-    // Check if there's a token in the request headers (for client-side navigation)
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
-  }
-
-  // If logged in and trying to access login page, redirect to dashboard
-  if (isPublicPath && token && pathname === '/login') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    console.log('🔒 Unauthenticated user accessing protected route, redirecting to login');
+    return NextResponse.redirect(new URL('/login', request.url));
   }
 
   return NextResponse.next();
@@ -39,6 +39,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - public (public files)
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|public).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|public|logo).*)',
   ],
 };

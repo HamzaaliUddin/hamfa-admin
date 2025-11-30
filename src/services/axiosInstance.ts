@@ -1,21 +1,25 @@
-import axios from 'axios';
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
-// Create axios instance
+export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
+  noAuth?: boolean;
+}
+
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1',
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json',
-  },
+    'Content-Type': 'application/json'
+  }
 });
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
-  config => {
+  async (config: CustomAxiosRequestConfig) => {
     // Get token from localStorage
     const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
 
-    if (token) {
+    // Check if we need to add an Authorization token
+    if (!config.noAuth && token) {
       config.headers.Authorization = `Bearer ${token}`;
       
       // Set token in cookie for server-side middleware validation
@@ -24,47 +28,44 @@ axiosInstance.interceptors.request.use(
       }
     }
 
-    // Debug log
-    console.log('🚀 API Request:', {
-      url: config.url,
-      method: config.method,
-      params: config.params,
-      hasToken: !!token,
-    });
-
+    // Return the modified config
     return config;
   },
-  error => {
+  (error: AxiosError) => {
     return Promise.reject(error);
   }
 );
 
 // Response interceptor
 axiosInstance.interceptors.response.use(
-  response => {
+  (response) => {
     // Debug log
-    console.log('✅ API Response:', {
-      url: response.config.url,
-      status: response.status,
-      data: response.data,
-    });
+    console.log(
+      `%cSuccess: ${response?.config?.url}`,
+      'color: green; background-color:rgb(225, 255, 230); font-weight: bold; padding: 8px;',
+      response?.data
+    );
 
     // Backend wraps responses in { body: {...} }, so unwrap it
     // If response has a body property, return that, otherwise return data as-is
-    return response.data.body || response.data;
+    return response?.data;
   },
-  error => {
+  async (error) => {
+    const error_response = {
+      status: error?.response?.status,
+      data: error?.response?.data
+    };
+    
     // Debug log
-    console.error('❌ API Error:', {
-      url: error.config?.url,
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-    });
+    console.log(
+      `%cError: ${error?.config?.url}`,
+      'color: red; background-color:rgb(255, 225, 225); font-weight: bold; padding: 8px;',
+      error_response
+    );
 
     // Handle errors globally
     if (error.response) {
-      const { status, data } = error.response;
+      const { status } = error.response;
 
       // Handle 401 Unauthorized - Auto logout
       if (status === 401) {
@@ -84,18 +85,11 @@ axiosInstance.interceptors.response.use(
       if (status >= 500) {
         console.error('Server error occurred');
       }
-
-      return Promise.reject(data || error.message);
     }
 
-    // Network error
-    if (error.request) {
-      console.error('Network error - no response received');
-      return Promise.reject(new Error('Network error. Please check your connection.'));
-    }
-
-    return Promise.reject(error.message || 'An error occurred');
+    return Promise.reject(error_response);
   }
 );
 
 export default axiosInstance;
+

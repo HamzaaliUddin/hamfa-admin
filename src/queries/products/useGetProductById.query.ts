@@ -1,6 +1,6 @@
 'use client';
 
-import axiosInstance from '@/api/axios';
+import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
 import { Product } from './useGetProducts.query';
 

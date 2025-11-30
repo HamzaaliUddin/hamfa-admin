@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import axiosInstance from '@/api/axios';
+import axiosInstance from '@/services/axiosInstance';
 import { ErrorResponseType } from '@/types/api.types';
 import { User } from './useGetUsers.query';
 import { CreateUserInput } from './useCreateUser.query';
