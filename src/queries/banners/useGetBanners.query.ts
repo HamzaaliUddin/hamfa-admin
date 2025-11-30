@@ -9,11 +9,8 @@ export interface Banner {
   description: string;
   image: string;
   status: 'active' | 'inactive';
-  redirect_url?: string;
-  sort_order: number;
   start_date?: string;
   end_date?: string;
-  click_count: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -28,8 +25,10 @@ export interface GetBannersParams {
 }
 
 interface GetBannersResponse {
+  body: {
   data: Banner[];
   count: number;
+  };
 }
 
 const fetchBanners = async (params?: GetBannersParams): Promise<GetBannersResponse> => {

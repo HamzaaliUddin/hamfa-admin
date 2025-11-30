@@ -5,14 +5,13 @@ import { useQuery } from '@tanstack/react-query';
 
 export interface Collection {
   collection_id: number;
-  name: string;
+  title: string;
   slug: string;
   description: string;
   image: string;
-  product_count: number;
+  categories_count: number;
   status: 'active' | 'inactive';
   featured: boolean;
-  sort_order: number;
   created_at?: string;
   updated_at?: string;
 }
@@ -28,8 +27,10 @@ export interface GetCollectionsParams {
 }
 
 interface GetCollectionsResponse {
+  body: {
   data: Collection[];
   count: number;
+  };
 }
 
 const fetchCollections = async (params?: GetCollectionsParams): Promise<GetCollectionsResponse> => {

@@ -19,6 +19,7 @@ const URLs = {
   Brands: '/brands',
   BrandsAdd: '/brands/add',
   BrandsEdit: '/brands/edit/:id',
+  BrandsView: '/brands/view/:id',
 
   Banners: '/banners',
   BannersAdd: '/banners/add',

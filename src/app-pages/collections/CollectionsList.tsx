@@ -22,8 +22,8 @@ const CollectionsList = () => {
   });
 
   const { data, isLoading, isFetching } = useGetCollections(filters);
-  const collections = data?.data || [];
-  const totalCount = data?.count || 0;
+  const collections = data?.body?.data || [];
+  const totalCount = data?.body?.count || 0;
 
   const handleFilters = (newFilters: Record<string, string | number>) => {
     setFilters({

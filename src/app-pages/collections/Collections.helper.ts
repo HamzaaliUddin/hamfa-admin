@@ -34,28 +34,24 @@ export const collectionsColumnHeaders = (): TableHeaderProps[] => [
 ];
 
 export const collectionFormRules = () => ({
-  name: {
-    required: 'This field is required',
-    minLength: {
-      value: 3,
-      message: 'Minimum 3 characters required'
-    },
-    maxLength: {
-      value: 100,
-      message: 'Maximum 100 characters allowed'
-    },
+  title: {
+    required: 'Title is required',
+    validate: (value: string) =>
+      (value && String(value).trim()?.length > 0) || 'Title is required'
+  },
+  slug: {
+    required: 'Slug is required',
     pattern: {
-      value: /^[A-Za-z\u0600-\u06FF\s]+$/,
-      message: 'Invalid characters'
+      value: /^[a-z0-9-]+$/,
+      message: 'Slug must be lowercase letters, numbers, and hyphens only'
     },
     validate: (value: string) =>
-      (value && String(value).trim()?.length > 0) || 'This field is required'
+      (value && String(value).trim()?.length > 0) || 'Slug is required'
   },
   description: {
-    maxLength: {
-      value: 500,
-      message: 'Maximum 500 characters allowed'
-    }
+    required: 'Description is required',
+    validate: (value: string) =>
+      (value && String(value).trim()?.length > 0) || 'Description is required'
   }
 });
 

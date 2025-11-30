@@ -21,7 +21,7 @@ export const ROUTES = {
     PENDING: '/orders/pending',
     COMPLETED: '/orders/completed',
     CANCELLED: '/orders/cancelled',
-    DETAIL: (id: string | number) => `/orders/${id}`,
+    DETAIL: (id: string | number) => `/orders/view/${id}`,
     EDIT: (id: string | number) => `/orders/edit/${id}`,
   },
 
@@ -49,7 +49,7 @@ export const ROUTES = {
   BRANDS: {
     LIST: '/brands',
     ADD: '/brands/add',
-    DETAIL: (id: string | number) => `/brands/${id}`,
+    DETAIL: (id: string | number) => `/brands/view/${id}`,
     EDIT: (id: string | number) => `/brands/edit/${id}`,
   },
 
@@ -57,7 +57,7 @@ export const ROUTES = {
   BANNERS: {
     LIST: '/banners',
     ADD: '/banners/add',
-    DETAIL: (id: string | number) => `/banners/${id}`,
+    DETAIL: (id: string | number) => `/banners/view/${id}`,
     EDIT: (id: string | number) => `/banners/edit/${id}`,
   },
 

@@ -11,18 +11,17 @@ export interface Product {
   image: string;
   images: string[];
   price: number;
-  compare_price?: number;
+  discount_price?: number;
   cost?: number;
+  profit?: number;
   stock: number;
   low_stock_threshold: number;
   brand_id: number;
   category_id: number;
-  tags: string[];
   status: 'active' | 'inactive' | 'out_of_stock';
   featured: boolean;
-  has_variants: boolean;
-  weight?: number;
-  dimensions?: any;
+  size: 'small' | 'medium' | 'large';
+  product_type: 'stitched' | 'unstitched';
   created_at?: string;
   updated_at?: string;
 }
@@ -40,8 +39,10 @@ export interface GetProductsParams {
 }
 
 interface GetProductsResponse {
+  body: {
   data: Product[];
   count: number;
+  };
 }
 
 const fetchProducts = async (params?: GetProductsParams): Promise<GetProductsResponse> => {

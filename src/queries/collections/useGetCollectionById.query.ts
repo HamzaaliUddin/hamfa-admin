@@ -5,12 +5,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Collection } from './useGetCollections.query';
 
 interface GetCollectionByIdResponse {
+  body: {
   data: Collection;
+  };
 }
 
 const fetchCollectionById = async (id: number | string): Promise<Collection> => {
   const response: GetCollectionByIdResponse = await axiosInstance.get(`/collection/${id}`);
-  return response.data;
+  return response.body.data;
 };
 
 export const useGetCollectionById = (id: number | string | null) => {

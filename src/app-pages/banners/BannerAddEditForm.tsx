@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { FormProvider, useForm } from 'react-hook-form';
 import FormInput from '@/components/Form/FormInput';
+import FormTextarea from '@/components/Form/FormTextarea';
+import FormSelect from '@/components/Form/FormSelect';
 import { bannerFormRules } from './Banners.helper';
 
 type Props = {
@@ -18,8 +20,10 @@ const BannerAddEditForm = ({ initialValues, handleRequest, onClose }: Props) => 
       : {
           title: '',
           description: '',
-          redirect_url: '',
-          image_url: null
+          image: null,
+          status: 'active',
+          start_date: '',
+          end_date: ''
         }
   });
   const { handleSubmit, control, setError, reset } = methods;
@@ -28,11 +32,18 @@ const BannerAddEditForm = ({ initialValues, handleRequest, onClose }: Props) => 
   const handleForm = (values: any) => {
     const formData = new FormData();
     formData.append('title', values.title);
-    formData.append('description', values.description || '');
-    formData.append('redirect_url', values.redirect_url || '');
+    formData.append('description', values.description);
+    formData.append('status', values.status || 'active');
+    if (values.start_date) formData.append('start_date', values.start_date);
+    if (values.end_date) formData.append('end_date', values.end_date);
 
     handleRequest(formData, setError, reset);
   };
+
+  const statusOptions = [
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' }
+  ];
 
   return (
     <FormProvider {...methods}>
@@ -43,18 +54,33 @@ const BannerAddEditForm = ({ initialValues, handleRequest, onClose }: Props) => 
             label="Banner Title"
             control={control}
             rules={formRules.title}
+            required
           />
-          <FormInput
+          <FormTextarea
             name="description"
             label="Description"
             control={control}
             rules={formRules.description}
+            required
+          />
+          <FormSelect
+            name="status"
+            label="Status"
+            options={statusOptions}
+            control={control}
+            required
           />
           <FormInput
-            name="redirect_url"
-            label="Redirect URL"
+            name="start_date"
+            label="Start Date"
+            type="date"
             control={control}
-            rules={formRules.redirect_url}
+          />
+          <FormInput
+            name="end_date"
+            label="End Date"
+            type="date"
+            control={control}
           />
 
           <div className="flex flex-col gap-2 pt-2">

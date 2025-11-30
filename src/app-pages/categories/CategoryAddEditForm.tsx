@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { FormProvider, useForm } from 'react-hook-form';
 import FormInput from '@/components/Form/FormInput';
+import FormTextarea from '@/components/Form/FormTextarea';
+import FormSelect from '@/components/Form/FormSelect';
 import { categoryFormRules } from './Categories.helper';
 
 type Props = {
@@ -16,11 +18,12 @@ const CategoryAddEditForm = ({ initialValues, handleRequest, onClose }: Props) =
     defaultValues: initialValues
       ? initialValues
       : {
-          name_en: '',
-          name_ar: '',
+          name: '',
+          slug: '',
           description: '',
           parent_id: '',
-          image_url: null
+          image: null,
+          status: 'active'
         }
   });
   const { handleSubmit, control, setError, reset } = methods;
@@ -28,9 +31,10 @@ const CategoryAddEditForm = ({ initialValues, handleRequest, onClose }: Props) =
 
   const handleForm = (values: any) => {
     const formData = new FormData();
-    formData.append('name_en', values.name_en);
-    formData.append('name_ar', values.name_ar);
-    formData.append('description', values.description || '');
+    formData.append('name', values.name);
+    formData.append('slug', values.slug);
+    formData.append('description', values.description);
+    formData.append('status', values.status || 'active');
     if (values.parent_id) {
       formData.append('parent_id', values.parent_id);
     }
@@ -38,29 +42,43 @@ const CategoryAddEditForm = ({ initialValues, handleRequest, onClose }: Props) =
     handleRequest(formData, setError, reset);
   };
 
+  const statusOptions = [
+    { value: 'active', label: 'Active' },
+    { value: 'inactive', label: 'Inactive' }
+  ];
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(handleForm)}>
         <div className="space-y-4 p-6">
           <FormInput
-            name="name_en"
-            label="Category Name (English)"
+            name="name"
+            label="Category Name"
             control={control}
             rules={formRules.name}
-            dir="ltr"
+            required
           />
           <FormInput
-            name="name_ar"
-            label="Category Name (Arabic)"
+            name="slug"
+            label="Slug"
             control={control}
-            rules={formRules.name}
-            dir="rtl"
+            rules={formRules.slug}
+            required
+            placeholder="category-slug"
           />
-          <FormInput
+          <FormTextarea
             name="description"
             label="Description"
             control={control}
             rules={formRules.description}
+            required
+          />
+          <FormSelect
+            name="status"
+            label="Status"
+            options={statusOptions}
+            control={control}
+            required
           />
           <FormInput
             name="parent_id"

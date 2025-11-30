@@ -22,8 +22,8 @@ const BannersList = () => {
   });
 
   const { data, isLoading, isFetching } = useGetBanners(filters);
-  const banners = data?.data || [];
-  const totalCount = data?.count || 0;
+  const banners = data?.body?.data || [];
+  const totalCount = data?.body?.count || 0;
 
   const handleFilters = (newFilters: Record<string, string | number>) => {
     setFilters({
@@ -45,7 +45,7 @@ const BannersList = () => {
                 <Image src={row?.image} alt={row?.title} width={100} height={50} />
               </TableCell>
               <TableCell>{row?.title}</TableCell>
-              <TableCell>{row?.redirect_url || '-'}</TableCell>
+              {/* Removed redirect_url column - not in backend model */}
               <TableCell>{row?.status}</TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">

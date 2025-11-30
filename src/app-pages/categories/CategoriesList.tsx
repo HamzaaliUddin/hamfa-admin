@@ -22,8 +22,8 @@ const CategoriesList = () => {
   });
 
   const { data, isLoading, isFetching } = useGetCategories(filters);
-  const categories = data?.data || [];
-  const totalCount = data?.count || 0;
+  const categories = data?.body?.data || [];
+  const totalCount = data?.body?.count || 0;
 
   const handleFilters = (newFilters: Record<string, string | number>) => {
     setFilters({

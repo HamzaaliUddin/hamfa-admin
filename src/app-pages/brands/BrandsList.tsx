@@ -1,12 +1,11 @@
 'use client';
 
+import { StatusBadge } from '@/components/common/StatusBadge';
 import { Pagination } from '@/components/Pagination';
 import { Table } from '@/components/Table';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { useGetBrands } from '@/queries/brands/useGetBrands.query';
-import { IBrand } from '@/types/api.types';
+import { Brand, useGetBrands } from '@/queries/brands/useGetBrands.query';
 import { isEmpty } from 'lodash';
-import Image from 'next/image';
 import { useState } from 'react';
 import { BrandActions } from './BrandActions';
 import BrandListFilters from './BrandListFilters';
@@ -23,7 +22,7 @@ const BrandsList = () => {
   });
 
   const { data, isLoading, isFetching } = useGetBrands(filters);
-  const brands = (data?.body?.data || []) as unknown as IBrand[];
+  const brands = (data?.body?.data || []) as unknown as Brand[];
   const totalCount = data?.body?.count || 0;
   const handleFilters = (newFilters: Record<string, string | number>) => {
     setFilters({
@@ -33,19 +32,28 @@ const BrandsList = () => {
   };
 
   const headers = brandsColumnHeaders();
+  console.log(brands);
   return (
     <>
       <div className="rounded-md border">
         <BrandListFilters filters={filters} handleFilters={handleFilters} />
         <Table headers={headers} noData={isEmpty(brands)} isLoading={isLoading || isFetching}>
-          {brands.map((row: IBrand) => (
+          {brands?.map((row: Brand) => (
             <TableRow key={row?.brand_id}>
               <TableCell>{row?.brand_id}</TableCell>
               <TableCell>
-                <Image src={row?.logo} alt={row?.name} width={100} height={50} />
+                <img
+                  src={row?.logo}
+                  alt={row?.name}
+                  width={100}
+                  height={50}
+                  className="object-contain"
+                />
               </TableCell>
               <TableCell>{row?.name}</TableCell>
-              <TableCell>{row?.status}</TableCell>
+              <TableCell>
+                <StatusBadge status={row?.status} />
+              </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
                   <BrandActions row={row} />

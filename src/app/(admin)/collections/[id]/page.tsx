@@ -58,7 +58,7 @@ export default function CollectionViewPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
-          <PageHeader title={collection.name} description={`Slug: ${collection.slug}`} />
+          <PageHeader title={collection.title} description={`Slug: ${collection.slug}`} />
         </div>
       </div>
 
@@ -75,13 +75,13 @@ export default function CollectionViewPage() {
               </div>
               <Separator orientation="vertical" className="hidden h-12 sm:block" />
               <div>
-                <p className="text-muted-foreground text-sm">Products</p>
-                <p className="mt-1 font-semibold">{collection.product_count} products</p>
+                <p className="text-muted-foreground text-sm">Categories</p>
+                <p className="mt-1 font-semibold">{collection.categories_count} categories</p>
               </div>
               <Separator orientation="vertical" className="hidden h-12 sm:block" />
               <div>
-                <p className="text-muted-foreground text-sm">Sort Order</p>
-                <p className="mt-1 font-semibold">#{collection.sort_order}</p>
+                <p className="text-muted-foreground text-sm">Categories Count</p>
+                <p className="mt-1 font-semibold">{collection.categories_count}</p>
               </div>
               {collection.featured && (
                 <>
@@ -116,7 +116,7 @@ export default function CollectionViewPage() {
             <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
               <Image
                 src={collection.image || '/placeholder.png'}
-                alt={collection.name}
+                alt={collection.title}
                 fill
                 className="object-cover"
               />
@@ -135,7 +135,7 @@ export default function CollectionViewPage() {
           <CardContent className="space-y-4">
             <div>
               <p className="text-muted-foreground text-sm">Name</p>
-              <p className="font-medium">{collection.name}</p>
+              <p className="font-medium">{collection.title}</p>
             </div>
             <Separator />
             <div>
@@ -165,15 +165,17 @@ export default function CollectionViewPage() {
             <Separator />
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <p className="text-muted-foreground text-sm">Sort Order</p>
-                <p className="font-medium">#{collection.sort_order}</p>
+                <p className="text-muted-foreground text-sm">Categories Count</p>
+                <p className="font-medium">{collection.categories_count}</p>
               </div>
               <div>
                 <p className="text-muted-foreground flex items-center gap-2 text-sm">
                   <Package className="h-4 w-4" />
-                  Total Products
+                  Featured Status
                 </p>
-                <p className="font-medium">{collection.product_count} products</p>
+                <Badge variant={collection.featured ? 'default' : 'secondary'}>
+                  {collection.featured ? 'Featured' : 'Not Featured'}
+                </Badge>
               </div>
             </div>
           </CardContent>

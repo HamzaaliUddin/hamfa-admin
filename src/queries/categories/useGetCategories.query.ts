@@ -10,9 +10,7 @@ export interface Category {
   description: string;
   parent_id?: number;
   image: string;
-  icon?: string;
   status: 'active' | 'inactive';
-  sort_order: number;
   product_count: number;
   created_at?: string;
   updated_at?: string;
@@ -29,8 +27,10 @@ export interface GetCategoriesParams {
 }
 
 interface GetCategoriesResponse {
+  body: {
   data: Category[];
   count: number;
+  };
 }
 
 const fetchCategories = async (params?: GetCategoriesParams): Promise<GetCategoriesResponse> => {

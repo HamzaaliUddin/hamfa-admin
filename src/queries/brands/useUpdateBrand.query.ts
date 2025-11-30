@@ -2,7 +2,6 @@
 
 import axiosInstance from '@/services/axiosInstance';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
 import { Brand } from './useGetBrands.query';
 import { CreateBrandInput } from './useCreateBrand.query';
 
@@ -10,17 +9,19 @@ type UpdateBrandInput = Partial<CreateBrandInput>;
 
 interface UpdateBrandParams {
   id: number | string;
-  data: UpdateBrandInput;
+  data: FormData | UpdateBrandInput;
 }
 
 interface UpdateBrandResponse {
-  data: Brand;
+  body: {
+    data: Brand;
+  };
   message: string;
 }
 
-const updateBrand = async ({ id, data }: UpdateBrandParams): Promise<Brand> => {
+const updateBrand = async ({ id, data }: UpdateBrandParams): Promise<UpdateBrandResponse> => {
   const response: UpdateBrandResponse = await axiosInstance.put(`/brand/${id}`, data);
-  return response.data;
+  return response;
 };
 
 export const useUpdateBrand = () => {
@@ -31,11 +32,6 @@ export const useUpdateBrand = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['brands'] });
       queryClient.invalidateQueries({ queryKey: ['brand', variables.id] });
-      toast.success('Brand updated successfully');
-    },
-    onError: (error: any) => {
-      const errorMessage = error?.error || error?.message || 'Failed to update brand';
-      toast.error(errorMessage);
     },
   });
 };

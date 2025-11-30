@@ -16,13 +16,15 @@ export interface CreateCollectionInput {
 }
 
 interface CreateCollectionResponse {
+  body: {
   data: Collection;
+  };
   message: string;
 }
 
 const createCollection = async (data: CreateCollectionInput): Promise<Collection> => {
   const response: CreateCollectionResponse = await axiosInstance.post('/collection', data);
-  return response.data;
+  return response.body.data;
 };
 
 export const useCreateCollection = () => {

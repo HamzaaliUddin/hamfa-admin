@@ -14,13 +14,15 @@ interface UpdateBannerParams {
 }
 
 interface UpdateBannerResponse {
+  body: {
   data: Banner;
+  };
   message: string;
 }
 
 const updateBanner = async ({ id, data }: UpdateBannerParams): Promise<Banner> => {
   const response: UpdateBannerResponse = await axiosInstance.put(`/banner/${id}`, data);
-  return response.data;
+  return response.body.data;
 };
 
 export const useUpdateBanner = () => {

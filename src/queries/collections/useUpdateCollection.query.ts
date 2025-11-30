@@ -14,13 +14,15 @@ interface UpdateCollectionParams {
 }
 
 interface UpdateCollectionResponse {
+  body: {
   data: Collection;
+  };
   message: string;
 }
 
 const updateCollection = async ({ id, data }: UpdateCollectionParams): Promise<Collection> => {
   const response: UpdateCollectionResponse = await axiosInstance.put(`/collection/${id}`, data);
-  return response.data;
+  return response.body.data;
 };
 
 export const useUpdateCollection = () => {

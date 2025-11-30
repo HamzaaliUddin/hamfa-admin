@@ -46,8 +46,13 @@ axiosInstance.interceptors.response.use(
       response?.data
     );
 
-    // Backend wraps responses in { body: {...} }, so unwrap it
-    // If response has a body property, return that, otherwise return data as-is
+    // Backend wraps responses in { status, message, body: {...}, errors }
+    // We need to unwrap and return just the body content
+    if (response?.data?.body) {
+      return response.data;
+    }
+    
+    // If no body property, return data as-is (for non-standard responses)
     return response?.data;
   },
   async (error) => {

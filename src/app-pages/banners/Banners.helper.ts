@@ -35,29 +35,14 @@ export const bannersColumnHeaders = (): TableHeaderProps[] => [
 
 export const bannerFormRules = () => ({
   title: {
-    required: 'This field is required',
-    minLength: {
-      value: 3,
-      message: 'Minimum 3 characters required'
-    },
-    maxLength: {
-      value: 200,
-      message: 'Maximum 200 characters allowed'
-    },
+    required: 'Title is required',
     validate: (value: string) =>
-      (value && String(value).trim()?.length > 0) || 'This field is required'
+      (value && String(value).trim()?.length > 0) || 'Title is required'
   },
   description: {
-    maxLength: {
-      value: 500,
-      message: 'Maximum 500 characters allowed'
-    }
-  },
-  redirect_url: {
-    pattern: {
-      value: /^https?:\/\/.+/,
-      message: 'Please enter a valid URL'
-    }
+    required: 'Description is required',
+    validate: (value: string) =>
+      (value && String(value).trim()?.length > 0) || 'Description is required'
   }
 });
 

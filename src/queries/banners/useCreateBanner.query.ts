@@ -17,13 +17,15 @@ export interface CreateBannerInput {
 }
 
 interface CreateBannerResponse {
+  body: {
   data: Banner;
+  };
   message: string;
 }
 
 const createBanner = async (data: CreateBannerInput): Promise<Banner> => {
   const response: CreateBannerResponse = await axiosInstance.post('/banner', data);
-  return response.data;
+  return response.body.data;
 };
 
 export const useCreateBanner = () => {

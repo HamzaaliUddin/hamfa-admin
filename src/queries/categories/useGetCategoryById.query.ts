@@ -5,12 +5,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Category } from './useGetCategories.query';
 
 interface GetCategoryByIdResponse {
+  body: {
   data: Category;
+  };
 }
 
 const fetchCategoryById = async (id: number | string): Promise<Category> => {
   const response: GetCategoryByIdResponse = await axiosInstance.get(`/category/${id}`);
-  return response.data;
+  return response.body.data;
 };
 
 export const useGetCategoryById = (id: number | string | null) => {

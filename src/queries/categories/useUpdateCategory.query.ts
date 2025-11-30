@@ -14,13 +14,15 @@ interface UpdateCategoryParams {
 }
 
 interface UpdateCategoryResponse {
+  body: {
   data: Category;
+  };
   message: string;
 }
 
 const updateCategory = async ({ id, data }: UpdateCategoryParams): Promise<Category> => {
   const response: UpdateCategoryResponse = await axiosInstance.put(`/category/${id}`, data);
-  return response.data;
+  return response.body.data;
 };
 
 export const useUpdateCategory = () => {

@@ -14,13 +14,15 @@ interface UpdateProductParams {
 }
 
 interface UpdateProductResponse {
+  body: {
   data: Product;
+  };
   message: string;
 }
 
 const updateProduct = async ({ id, data }: UpdateProductParams): Promise<Product> => {
   const response: UpdateProductResponse = await axiosInstance.put(`/product/${id}`, data);
-  return response.data;
+  return response.body.data;
 };
 
 export const useUpdateProduct = () => {

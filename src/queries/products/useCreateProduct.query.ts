@@ -27,13 +27,15 @@ export interface CreateProductInput {
 }
 
 interface CreateProductResponse {
+  body: {
   data: Product;
+  };
   message: string;
 }
 
 const createProduct = async (data: CreateProductInput): Promise<Product> => {
   const response: CreateProductResponse = await axiosInstance.post('/product', data);
-  return response.data;
+  return response.body.data;
 };
 
 export const useCreateProduct = () => {

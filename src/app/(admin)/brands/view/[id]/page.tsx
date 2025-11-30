@@ -1,4 +1,4 @@
-import BrandsEdit from '@/app-pages/brands-add-edit/BrandsEdit';
+import BrandsView from '@/app-pages/brands-view/BrandsView';
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -7,7 +7,7 @@ type Props = {
 const Page = async ({ params }: Props) => {
   const pageParams = await params;
 
-  return <BrandsEdit id={pageParams?.id} />;
+  return <BrandsView id={pageParams?.id} />;
 };
 
 export default Page;

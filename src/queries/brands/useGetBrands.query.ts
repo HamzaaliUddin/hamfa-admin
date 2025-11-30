@@ -6,12 +6,10 @@ import { useQuery } from '@tanstack/react-query';
 export interface Brand {
   brand_id: number;
   name: string;
-  slug: string;
-  description?: string;
-  logo?: string;
-  website?: string;
+  description: string;
+  logo: string;
   status: 'active' | 'inactive';
-  product_count?: number;
+  collection_count: number;
   featured: boolean;
   created_at?: string;
   updated_at?: string;
@@ -28,13 +26,10 @@ export interface GetBrandsParams {
 }
 
 interface GetBrandsResponse {
-  status: number;
-  message: string;
   body: {
     data: Brand[];
     count: number;
   };
-  errors: null;
 }
 
 const fetchBrands = async (params?: GetBrandsParams): Promise<GetBrandsResponse> => {

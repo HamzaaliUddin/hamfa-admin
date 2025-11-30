@@ -1,9 +1,10 @@
+'use client'
 import { Button } from '@/components/ui/button';
-import { IBrand } from '@/types/api.types';
+import { Brand } from '@/queries/brands/useGetBrands.query';
 import ROUTES from '@/utils/route';
 import { useRouter } from 'next/navigation';
 
-export const BrandActions = ({ row }: { row: IBrand }) => {
+export const BrandActions = ({ row }: { row: Brand }) => {
   const router = useRouter();
   const brandViewHandler = () => {
     router.push(`${ROUTES.BRANDS.DETAIL(row.brand_id)}`);

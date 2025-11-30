@@ -17,13 +17,15 @@ export interface CreateCategoryInput {
 }
 
 interface CreateCategoryResponse {
+  body: {
   data: Category;
+  };
   message: string;
 }
 
 const createCategory = async (data: CreateCategoryInput): Promise<Category> => {
   const response: CreateCategoryResponse = await axiosInstance.post('/category', data);
-  return response.data;
+  return response.body.data;
 };
 
 export const useCreateCategory = () => {

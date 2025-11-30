@@ -45,37 +45,26 @@ export const productsColumnHeaders = (): TableHeaderProps[] => [
 
 export const productFormRules = () => ({
   title: {
-    required: 'This field is required',
-    minLength: {
-      value: 3,
-      message: 'Minimum 3 characters required'
-    },
-    maxLength: {
-      value: 200,
-      message: 'Maximum 200 characters allowed'
-    },
+    required: 'Title is required',
     validate: (value: string) =>
-      (value && String(value).trim()?.length > 0) || 'This field is required'
+      (value && String(value).trim()?.length > 0) || 'Title is required'
   },
   description: {
-    maxLength: {
-      value: 2000,
-      message: 'Maximum 2000 characters allowed'
-    }
+    required: 'Description is required',
+    validate: (value: string) =>
+      (value && String(value).trim()?.length > 0) || 'Description is required'
   },
   price: {
     required: 'Price is required',
     min: {
       value: 0,
-      message: 'Price must be greater than 0'
+      message: 'Price must be 0 or greater'
     }
   },
   sku: {
     required: 'SKU is required',
-    minLength: {
-      value: 2,
-      message: 'Minimum 2 characters required'
-    }
+    validate: (value: string) =>
+      (value && String(value).trim()?.length > 0) || 'SKU is required'
   }
 });
 

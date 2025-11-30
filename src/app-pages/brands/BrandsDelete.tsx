@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { IBrand } from '@/types/api.types';
+import { Brand } from '@/queries/brands/useGetBrands.query';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,7 +15,7 @@ import {
 import { useDeleteBrand } from '@/queries/brands/useDeleteBrand.query';
 
 type Props = {
-  row: IBrand;
+  row: Brand;
 };
 
 const   BrandsDelete = ({ row }: Props) => {
