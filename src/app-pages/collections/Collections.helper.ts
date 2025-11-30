@@ -1,9 +1,9 @@
 import { TableHeaderProps } from '@/components/Table/Table';
 
-export const bannersColumnHeaders = (): TableHeaderProps[] => [
+export const collectionsColumnHeaders = (): TableHeaderProps[] => [
   {
     title: 'ID',
-    width: '8%',
+    width: '10%',
     align: 'left'
   },
   {
@@ -12,18 +12,18 @@ export const bannersColumnHeaders = (): TableHeaderProps[] => [
     align: 'left'
   },
   {
-    title: 'Title',
+    title: 'Name',
     width: '25%',
     align: 'left'
   },
   {
-    title: 'Redirect URL',
-    width: '20%',
+    title: 'Products',
+    width: '15%',
     align: 'left'
   },
   {
     title: 'Status',
-    width: '12%',
+    width: '15%',
     align: 'left'
   },
   {
@@ -33,16 +33,20 @@ export const bannersColumnHeaders = (): TableHeaderProps[] => [
   }
 ];
 
-export const bannerFormRules = () => ({
-  title: {
+export const collectionFormRules = () => ({
+  name: {
     required: 'This field is required',
     minLength: {
       value: 3,
       message: 'Minimum 3 characters required'
     },
     maxLength: {
-      value: 200,
-      message: 'Maximum 200 characters allowed'
+      value: 100,
+      message: 'Maximum 100 characters allowed'
+    },
+    pattern: {
+      value: /^[A-Za-z\u0600-\u06FF\s]+$/,
+      message: 'Invalid characters'
     },
     validate: (value: string) =>
       (value && String(value).trim()?.length > 0) || 'This field is required'
@@ -51,12 +55,6 @@ export const bannerFormRules = () => ({
     maxLength: {
       value: 500,
       message: 'Maximum 500 characters allowed'
-    }
-  },
-  redirect_url: {
-    pattern: {
-      value: /^https?:\/\/.+/,
-      message: 'Please enter a valid URL'
     }
   }
 });

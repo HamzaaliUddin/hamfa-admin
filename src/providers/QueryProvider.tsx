@@ -1,13 +1,13 @@
 'use client';
 
-import React, { ReactNode } from 'react';
 import {
+  DehydratedState,
   HydrationBoundary,
   QueryClient,
   QueryClientProvider,
-  DehydratedState
 } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import React, { ReactNode } from 'react';
 
 type Props = {
   children: ReactNode;
@@ -24,9 +24,9 @@ const QueryProvider = ({ children, dehydratedState }: Props) => {
             // With SSR, we usually want to set some default staleTime
             // above 0 to avoid refetching immediately on the client
             staleTime: 60 * 1000,
-            retry: 1
-          }
-        }
+            retry: 1,
+          },
+        },
       })
   );
 
@@ -39,4 +39,3 @@ const QueryProvider = ({ children, dehydratedState }: Props) => {
 };
 
 export default QueryProvider;
-

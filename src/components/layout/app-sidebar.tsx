@@ -96,34 +96,21 @@ const menuItems: MenuItem[] = [
   },
   {
     title: 'Products',
+    href: '/products',
     icon: Package,
     module: Module.PRODUCTS,
-    items: [
-      { title: 'All Products', href: '/products', icon: Package },
-      { title: 'Add Product', href: '/products/add', icon: PackagePlus },
-      { title: 'Variants', href: '/products/variants', icon: Layers },
-      { title: 'Manage Stock', href: '/products/stock', icon: Tag },
-    ],
   },
   {
     title: 'Categories',
+    href: '/categories',
     icon: FolderTree,
     module: Module.CATEGORIES,
-    items: [
-      { title: 'Main Categories', href: '/categories', icon: FolderTree },
-      { title: 'Sub Categories', href: '/categories/sub', icon: Layers },
-      { title: 'Assign Categories', href: '/categories/assign', icon: Tag },
-    ],
   },
   {
     title: 'Collections',
+    href: '/collections',
     icon: Layers,
     module: Module.COLLECTIONS,
-    items: [
-      { title: 'All Collections', href: '/collections', icon: Layers },
-      { title: 'Add Collection', href: '/collections/add', icon: PlusCircle },
-      { title: 'Assign Products', href: '/collections/assign', icon: Tag },
-    ],
   },
   {
     title: 'Brands',
@@ -133,21 +120,15 @@ const menuItems: MenuItem[] = [
   },
   {
     title: 'Banners',
+    href: '/banners',
     icon: Image,
     module: Module.BANNERS,
-    items: [
-      { title: 'Homepage Banners', href: '/banners', icon: Image },
-      { title: 'Add Banner', href: '/banners/add', icon: ImagePlus },
-    ],
   },
   {
     title: 'Users',
+    href: '/users',
     icon: Users,
     module: Module.USERS,
-    items: [
-      { title: 'All Users', href: '/users', icon: Users },
-      { title: 'User Details', href: '/users/details', icon: UserCheck },
-    ],
   },
   {
     title: 'Notifications',

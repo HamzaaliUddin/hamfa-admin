@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Banner } from '@/queries/banners/useGetBanners.query';
+import { Collection } from '@/queries/collections/useGetCollections.query';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,22 +12,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useDeleteBanner } from '@/queries/banners/useDeleteBanner.query';
+import { useDeleteCollection } from '@/queries/collections/useDeleteCollection.query';
 
 type Props = {
-  row: Banner;
+  row: Collection;
 };
 
-const BannersDelete = ({ row }: Props) => {
-  const { mutate: onDelete, status } = useDeleteBanner();
+const CollectionsDelete = ({ row }: Props) => {
+  const { mutate: onDelete, status } = useDeleteCollection();
   const isLoading = status === 'pending';
 
   const handleSubmit = () => {
     onDelete(
-      row?.banner_id,
+      row?.collection_id,
       {
         onSuccess: () => {
-          toast.success('Banner deleted successfully');
+          toast.success('Collection deleted successfully');
         }
       }
     );
@@ -42,9 +42,9 @@ const BannersDelete = ({ row }: Props) => {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Banner</AlertDialogTitle>
+          <AlertDialogTitle>Delete Collection</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this banner? This action cannot be undone.
+            Are you sure you want to delete this collection? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -62,5 +62,5 @@ const BannersDelete = ({ row }: Props) => {
   );
 };
 
-export default BannersDelete;
+export default CollectionsDelete;
 

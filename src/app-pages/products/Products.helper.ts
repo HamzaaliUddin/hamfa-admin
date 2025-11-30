@@ -1,6 +1,6 @@
 import { TableHeaderProps } from '@/components/Table/Table';
 
-export const bannersColumnHeaders = (): TableHeaderProps[] => [
+export const productsColumnHeaders = (): TableHeaderProps[] => [
   {
     title: 'ID',
     width: '8%',
@@ -8,22 +8,32 @@ export const bannersColumnHeaders = (): TableHeaderProps[] => [
   },
   {
     title: 'Image',
-    width: '15%',
+    width: '10%',
     align: 'left'
   },
   {
     title: 'Title',
-    width: '25%',
-    align: 'left'
-  },
-  {
-    title: 'Redirect URL',
     width: '20%',
     align: 'left'
   },
   {
-    title: 'Status',
+    title: 'SKU',
     width: '12%',
+    align: 'left'
+  },
+  {
+    title: 'Price',
+    width: '10%',
+    align: 'left'
+  },
+  {
+    title: 'Stock',
+    width: '10%',
+    align: 'left'
+  },
+  {
+    title: 'Status',
+    width: '10%',
     align: 'left'
   },
   {
@@ -33,7 +43,7 @@ export const bannersColumnHeaders = (): TableHeaderProps[] => [
   }
 ];
 
-export const bannerFormRules = () => ({
+export const productFormRules = () => ({
   title: {
     required: 'This field is required',
     minLength: {
@@ -49,14 +59,22 @@ export const bannerFormRules = () => ({
   },
   description: {
     maxLength: {
-      value: 500,
-      message: 'Maximum 500 characters allowed'
+      value: 2000,
+      message: 'Maximum 2000 characters allowed'
     }
   },
-  redirect_url: {
-    pattern: {
-      value: /^https?:\/\/.+/,
-      message: 'Please enter a valid URL'
+  price: {
+    required: 'Price is required',
+    min: {
+      value: 0,
+      message: 'Price must be greater than 0'
+    }
+  },
+  sku: {
+    required: 'SKU is required',
+    minLength: {
+      value: 2,
+      message: 'Minimum 2 characters required'
     }
   }
 });

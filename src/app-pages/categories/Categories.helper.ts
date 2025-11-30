@@ -1,6 +1,6 @@
 import { TableHeaderProps } from '@/components/Table/Table';
 
-export const bannersColumnHeaders = (): TableHeaderProps[] => [
+export const categoriesColumnHeaders = (): TableHeaderProps[] => [
   {
     title: 'ID',
     width: '8%',
@@ -8,17 +8,22 @@ export const bannersColumnHeaders = (): TableHeaderProps[] => [
   },
   {
     title: 'Image',
-    width: '15%',
+    width: '12%',
     align: 'left'
   },
   {
-    title: 'Title',
-    width: '25%',
-    align: 'left'
-  },
-  {
-    title: 'Redirect URL',
+    title: 'Name',
     width: '20%',
+    align: 'left'
+  },
+  {
+    title: 'Parent',
+    width: '12%',
+    align: 'left'
+  },
+  {
+    title: 'Products',
+    width: '12%',
     align: 'left'
   },
   {
@@ -28,21 +33,25 @@ export const bannersColumnHeaders = (): TableHeaderProps[] => [
   },
   {
     title: 'Actions',
-    width: '20%',
+    width: '24%',
     align: 'center'
   }
 ];
 
-export const bannerFormRules = () => ({
-  title: {
+export const categoryFormRules = () => ({
+  name: {
     required: 'This field is required',
     minLength: {
-      value: 3,
-      message: 'Minimum 3 characters required'
+      value: 2,
+      message: 'Minimum 2 characters required'
     },
     maxLength: {
-      value: 200,
-      message: 'Maximum 200 characters allowed'
+      value: 100,
+      message: 'Maximum 100 characters allowed'
+    },
+    pattern: {
+      value: /^[A-Za-z\u0600-\u06FF\s]+$/,
+      message: 'Invalid characters'
     },
     validate: (value: string) =>
       (value && String(value).trim()?.length > 0) || 'This field is required'
@@ -51,12 +60,6 @@ export const bannerFormRules = () => ({
     maxLength: {
       value: 500,
       message: 'Maximum 500 characters allowed'
-    }
-  },
-  redirect_url: {
-    pattern: {
-      value: /^https?:\/\/.+/,
-      message: 'Please enter a valid URL'
     }
   }
 });

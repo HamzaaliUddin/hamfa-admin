@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { Banner } from '@/queries/banners/useGetBanners.query';
+import { Product } from '@/queries/products/useGetProducts.query';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,22 +12,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useDeleteBanner } from '@/queries/banners/useDeleteBanner.query';
+import { useDeleteProduct } from '@/queries/products/useDeleteProduct.query';
 
 type Props = {
-  row: Banner;
+  row: Product;
 };
 
-const BannersDelete = ({ row }: Props) => {
-  const { mutate: onDelete, status } = useDeleteBanner();
+const ProductsDelete = ({ row }: Props) => {
+  const { mutate: onDelete, status } = useDeleteProduct();
   const isLoading = status === 'pending';
 
   const handleSubmit = () => {
     onDelete(
-      row?.banner_id,
+      row?.product_id,
       {
         onSuccess: () => {
-          toast.success('Banner deleted successfully');
+          toast.success('Product deleted successfully');
         }
       }
     );
@@ -42,9 +42,9 @@ const BannersDelete = ({ row }: Props) => {
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Delete Banner</AlertDialogTitle>
+          <AlertDialogTitle>Delete Product</AlertDialogTitle>
           <AlertDialogDescription>
-            Are you sure you want to delete this banner? This action cannot be undone.
+            Are you sure you want to delete this product? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -62,5 +62,5 @@ const BannersDelete = ({ row }: Props) => {
   );
 };
 
-export default BannersDelete;
+export default ProductsDelete;
 
