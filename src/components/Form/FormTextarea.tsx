@@ -1,6 +1,6 @@
 'use client';
 
-import { Control, Controller, FieldValues, Path } from 'react-hook-form';
+import { Control, Controller, FieldValues, Path, RegisterOptions } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 
@@ -13,6 +13,7 @@ type Props<T extends FieldValues> = {
   required?: boolean;
   rows?: number;
   className?: string;
+  rules?: RegisterOptions<T>;
 };
 
 export function FormTextarea<T extends FieldValues>({
@@ -23,12 +24,14 @@ export function FormTextarea<T extends FieldValues>({
   disabled = false,
   required = false,
   rows = 4,
-  className
+  className,
+  rules
 }: Props<T>) {
   return (
     <Controller
       control={control}
       name={name}
+      rules={rules}
       render={({ field, fieldState: { error } }) => (
         <div className={className}>
           {label && (

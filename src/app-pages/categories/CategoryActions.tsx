@@ -1,9 +1,11 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Category } from '@/queries/categories/useGetCategories.query';
 import ROUTES from '@/utils/route';
 import { useRouter } from 'next/navigation';
 
-export const CategoryActions = ({ row }: { row: Category }) => {
+const CategoryActions = ({ row }: { row: Category }) => {
   const router = useRouter();
   const categoryViewHandler = () => {
     router.push(`${ROUTES.CATEGORIES.DETAIL(row.category_id)}`);
@@ -24,4 +26,6 @@ export const CategoryActions = ({ row }: { row: Category }) => {
     </>
   );
 };
+
+export default CategoryActions;
 

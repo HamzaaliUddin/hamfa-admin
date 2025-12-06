@@ -173,9 +173,9 @@ export default function ProductViewPage() {
                   <p className="font-medium">#{product.brand_id}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-sm">Has Variants</p>
-                  <Badge variant={product.has_variants ? 'default' : 'secondary'}>
-                    {product.has_variants ? 'Yes' : 'No'}
+                  <p className="text-muted-foreground text-sm">Product Type</p>
+                  <Badge variant="secondary">
+                    {product.product_type || 'N/A'}
                   </Badge>
                 </div>
               </div>

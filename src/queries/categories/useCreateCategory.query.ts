@@ -35,7 +35,6 @@ export const useCreateCategory = () => {
     mutationFn: createCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
-      toast.success('Category created successfully');
     },
     onError: (error: any) => {
       const errorMessage = error?.error || error?.message || 'Failed to create category';

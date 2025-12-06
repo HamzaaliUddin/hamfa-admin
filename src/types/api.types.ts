@@ -62,6 +62,44 @@ export interface IBrand {
   updated_at: string;
 }
 
+export interface ICollection {
+  collection_id: string | number;
+  title: string;
+  slug: string;
+  description: string;
+  image: string;
+  categories_count: number;
+  status: 'active' | 'inactive';
+  featured: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ICategory {
+  category_id: string | number;
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+  parent_id: number | null;
+  product_count: number;
+  status: 'active' | 'inactive';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface INotification {
+  notification_id: string | number;
+  title: string;
+  message: string;
+  type: 'success' | 'warning' | 'info' | 'error';
+  status: 'sent' | 'failed' | 'scheduled';
+  read: boolean;
+  sent_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // Order Types
 export enum OrderTypeEnums {
   Current = 'Current',

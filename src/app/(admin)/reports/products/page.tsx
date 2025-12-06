@@ -3,65 +3,14 @@
 import { DataTable } from '@/components/common/data-table';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { products } from '@/data/products';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useGetProductsReport } from '@/queries/reports';
 import { AlertCircle, Package, TrendingDown, TrendingUp } from 'lucide-react';
 
-// Calculate product statistics
-const calculateProductStats = () => {
-  const active = products.filter(p => p.status === 'active').length;
-  const outOfStock = products.filter(p => p.stock === 0).length;
-  const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.lowStockThreshold).length;
-  const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
-  const avgPrice = products.reduce((sum, p) => sum + p.price, 0) / products.length;
-
-  return {
-    total: products.length,
-    active,
-    outOfStock,
-    lowStock,
-    totalStock,
-    avgPrice,
-  };
-};
-
-const stats = calculateProductStats();
-
-// Top products by stock value
-const topByValue = products
-  .map(p => ({
-    id: p.id,
-    title: p.title,
-    sku: p.sku,
-    stock: p.stock,
-    price: p.price,
-    stockValue: p.stock * p.price,
-    status: p.status,
-  }))
-  .sort((a, b) => b.stockValue - a.stockValue)
-  .slice(0, 10);
-
-// Low stock products
-const lowStockProducts = products
-  .filter(p => p.stock > 0 && p.stock <= p.lowStockThreshold)
-  .map(p => ({
-    title: p.title,
-    sku: p.sku,
-    stock: p.stock,
-    threshold: p.lowStockThreshold,
-    price: p.price,
-  }));
-
-// Out of stock products
-const outOfStockProducts = products
-  .filter(p => p.stock === 0)
-  .map(p => ({
-    title: p.title,
-    sku: p.sku,
-    price: p.price,
-    status: p.status,
-  }));
-
 export default function ProductPerformanceReportPage() {
+  const { data: productsData, isLoading } = useGetProductsReport();
+  const report = productsData?.body?.data;
+
   const valueColumns = [
     {
       accessorKey: 'title',
@@ -76,19 +25,30 @@ export default function ProductPerformanceReportPage() {
     {
       accessorKey: 'stock',
       header: 'Stock',
-      cell: ({ row }: any) => <Badge variant="secondary">{row.original.stock} units</Badge>,
+      cell: ({ row }: any) => (
+        <Badge variant="secondary">{row.original.stock || 0} units</Badge>
+      ),
     },
     {
       accessorKey: 'price',
       header: 'Price',
-      cell: ({ row }: any) => <div className="font-medium">Rs {row.original.price.toFixed(2)}</div>,
+      cell: ({ row }: any) => (
+        <div className="font-medium">Rs {Number(row.original.price || 0).toFixed(2)}</div>
+      ),
     },
     {
-      accessorKey: 'stockValue',
-      header: 'Stock Value',
-        cell: ({ row }: any) => (
-          <div className="font-semibold text-green-600">Rs {row.original.stockValue.toFixed(2)}</div>
-        ),
+      accessorKey: 'total_sold',
+      header: 'Sold',
+      cell: ({ row }: any) => <span>{row.original.total_sold || 0} units</span>,
+    },
+    {
+      accessorKey: 'revenue',
+      header: 'Revenue',
+      cell: ({ row }: any) => (
+        <div className="font-semibold text-green-600">
+          Rs {Number(row.original.revenue || 0).toFixed(2)}
+        </div>
+      ),
     },
     {
       accessorKey: 'status',
@@ -113,16 +73,52 @@ export default function ProductPerformanceReportPage() {
     {
       accessorKey: 'stock',
       header: 'Current Stock',
-      cell: ({ row }: any) => <Badge variant="destructive">{row.original.stock} units</Badge>,
+      cell: ({ row }: any) => (
+        <Badge variant="destructive">{row.original.stock || 0} units</Badge>
+      ),
     },
     {
-      accessorKey: 'threshold',
+      accessorKey: 'low_stock_threshold',
       header: 'Threshold',
       cell: ({ row }: any) => (
-        <span className="text-muted-foreground">{row.original.threshold} units</span>
+        <span className="text-muted-foreground">{row.original.low_stock_threshold} units</span>
       ),
     },
   ];
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="mt-2 h-4 w-64" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-4">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-32" />
+          ))}
+        </div>
+        <Skeleton className="h-64" />
+        <Skeleton className="h-64" />
+      </div>
+    );
+  }
+
+  const stats = {
+    total: report?.totalProducts || 0,
+    active: report?.activeProducts || 0,
+    outOfStock: report?.outOfStockProducts || 0,
+    lowStock: report?.lowStockProducts || 0,
+    totalStockValue: report?.totalStockValue || 0,
+    totalStockUnits: report?.totalStockUnits || 0,
+    avgPrice: report?.averagePrice || 0,
+  };
+
+  const stockHealth = report?.stockHealth || { inStock: 0, lowStock: 0, outOfStock: 0 };
+  const topSellingProducts = report?.topSellingProducts || [];
+  const lowStockAlerts = report?.lowStockAlerts || [];
+  const outOfStockList = report?.outOfStockList || [];
+  const categoryPerformance = report?.categoryPerformance || [];
 
   return (
     <div className="space-y-6">
@@ -154,10 +150,10 @@ export default function ProductPerformanceReportPage() {
             <CardTitle className="text-sm font-medium">Total Stock Value</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
-              Rs {topByValue.reduce((sum, p) => sum + p.stockValue, 0).toFixed(2)}
-            </div>
-            <p className="text-muted-foreground mt-1 text-xs">Across all products</p>
+            <div className="text-2xl font-bold">Rs {stats.totalStockValue.toFixed(2)}</div>
+            <p className="text-muted-foreground mt-1 text-xs">
+              {stats.totalStockUnits} units in stock
+            </p>
           </CardContent>
         </Card>
 
@@ -198,7 +194,7 @@ export default function ProductPerformanceReportPage() {
           <CardContent className="space-y-4">
             <div>
               <div className="text-muted-foreground text-sm">Total Units in Stock</div>
-              <div className="text-3xl font-bold">{stats.totalStock}</div>
+              <div className="text-3xl font-bold">{stats.totalStockUnits}</div>
             </div>
             <div>
               <div className="text-muted-foreground text-sm">Average Product Price</div>
@@ -218,41 +214,77 @@ export default function ProductPerformanceReportPage() {
                 <div className="h-3 w-3 rounded-full bg-green-500" />
                 In Stock
               </span>
-              <span className="font-semibold">
-                {stats.total - stats.outOfStock - stats.lowStock} products
-              </span>
+              <span className="font-semibold">{stockHealth.inStock} products</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-sm">
                 <div className="h-3 w-3 rounded-full bg-yellow-500" />
                 Low Stock
               </span>
-              <span className="font-semibold">{stats.lowStock} products</span>
+              <span className="font-semibold">{stockHealth.lowStock} products</span>
             </div>
             <div className="flex items-center justify-between">
               <span className="flex items-center gap-2 text-sm">
                 <div className="h-3 w-3 rounded-full bg-red-500" />
                 Out of Stock
               </span>
-              <span className="font-semibold">{stats.outOfStock} products</span>
+              <span className="font-semibold">{stockHealth.outOfStock} products</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
+      {/* Category Performance */}
+      {categoryPerformance.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Category Performance</CardTitle>
+            <CardDescription>Sales by category</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {categoryPerformance.map((cat: any) => (
+                <div key={cat.category_id} className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">{cat.category_name}</div>
+                    <div className="text-muted-foreground text-sm">
+                      {cat.products_count} products
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-semibold text-green-600">
+                      Rs {Number(cat.revenue || 0).toFixed(2)}
+                    </div>
+                    <div className="text-muted-foreground text-sm">
+                      {cat.total_sold || 0} units sold
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Top Products by Stock Value */}
       <Card>
         <CardHeader>
-          <CardTitle>Products by Stock Value</CardTitle>
-          <CardDescription>Highest value inventory items</CardDescription>
+          <CardTitle>Top Selling Products</CardTitle>
+          <CardDescription>Best performing products by revenue</CardDescription>
         </CardHeader>
         <CardContent>
-          <DataTable columns={valueColumns} data={topByValue} searchKey="title" />
+          {topSellingProducts.length > 0 ? (
+            <DataTable columns={valueColumns} data={topSellingProducts} searchKey="title" />
+          ) : (
+            <div className="py-8 text-center">
+              <p className="text-muted-foreground">No product data available</p>
+            </div>
+          )}
         </CardContent>
       </Card>
 
       {/* Low Stock Alert */}
-      {lowStockProducts.length > 0 && (
+      {lowStockAlerts.length > 0 && (
         <Card className="border-yellow-500">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-yellow-600">
@@ -262,13 +294,13 @@ export default function ProductPerformanceReportPage() {
             <CardDescription>Products that need restocking soon</CardDescription>
           </CardHeader>
           <CardContent>
-            <DataTable columns={lowStockColumns} data={lowStockProducts} searchKey="title" />
+            <DataTable columns={lowStockColumns} data={lowStockAlerts} searchKey="title" />
           </CardContent>
         </Card>
       )}
 
       {/* Out of Stock */}
-      {outOfStockProducts.length > 0 && (
+      {outOfStockList.length > 0 && (
         <Card className="border-red-500">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-600">
@@ -279,9 +311,9 @@ export default function ProductPerformanceReportPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {outOfStockProducts.map(product => (
+              {outOfStockList.map((product: any) => (
                 <div
-                  key={product.sku}
+                  key={product.product_id}
                   className="flex items-center justify-between rounded-lg border p-3"
                 >
                   <div>
@@ -289,7 +321,7 @@ export default function ProductPerformanceReportPage() {
                     <div className="text-muted-foreground text-sm">{product.sku}</div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">Rs {product.price.toFixed(2)}</div>
+                    <div className="font-semibold">Rs {Number(product.price || 0).toFixed(2)}</div>
                     <Badge variant="destructive">Out of Stock</Badge>
                   </div>
                 </div>

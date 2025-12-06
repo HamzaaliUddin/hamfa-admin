@@ -19,7 +19,6 @@ export const useDeleteCollection = () => {
     mutationFn: deleteCollection,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['collections'] });
-      toast.success('Collection deleted successfully');
     },
     onError: (error: any) => {
       const errorMessage = error?.error || error?.message || 'Failed to delete collection';

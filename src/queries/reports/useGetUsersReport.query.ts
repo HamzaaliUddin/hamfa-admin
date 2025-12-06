@@ -12,25 +12,45 @@ export interface UsersReportParams {
 export interface UsersReport {
   totalUsers: number;
   activeUsers: number;
-  newUsers: number;
-  userGrowth: Array<{
+  inactiveUsers: number;
+  newUsersThisMonth: number;
+  userGrowth: number;
+  totalSpending: number;
+  averageSpending: number;
+  growthData: Array<{
     date: string;
-    count: number;
+    newUsers: number;
+    totalUsers: number;
   }>;
-  usersByStatus: Array<{
+  topCustomers: Array<{
+    user_id: number;
+    name: string;
+    email: string;
+    total_orders: number;
+    total_spent: number;
+    status: string;
+  }>;
+  statusDistribution: Array<{
     status: string;
     count: number;
+    percentage: number;
   }>;
 }
 
-const fetchUsersReport = async (params?: UsersReportParams): Promise<UsersReport> => {
-  return await axiosInstance.get('reports/users', { params });
+interface GetUsersReportResponse {
+  body: {
+    data: UsersReport;
+  };
+}
+
+const fetchUsersReport = async (params?: UsersReportParams): Promise<GetUsersReportResponse> => {
+  return await axiosInstance.get('/reports/users', { params });
 };
 
 export const useGetUsersReport = (params?: UsersReportParams) => {
   return useQuery({
     queryKey: ['reports', 'users', params],
     queryFn: () => fetchUsersReport(params),
+    staleTime: 60 * 1000,
   });
 };
-

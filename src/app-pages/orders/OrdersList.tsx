@@ -1,47 +1,37 @@
 'use client';
 
-import { isEmpty } from 'lodash';
-import { Button } from '@/components/ui/button';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import dayjs from 'dayjs';
 import { Pagination } from '@/components/Pagination';
 import { Table } from '@/components/Table';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { IOrder } from '@/types/api.types';
-import URLs, { makeURL } from '@/utils/URLs.util';
-import { useGetOrders } from '@/queries/orders/useGetOrders.query';
-import OrdersListFilters from './OrdersListFilters';
+import { Order, useGetOrders } from '@/queries/orders/useGetOrders.query';
+import dayjs from 'dayjs';
+import { isEmpty } from 'lodash';
+import { useState } from 'react';
+import { OrderActions } from './OrderActions';
 import { geOrderPaymentTexts, ordersColumnHeaders } from './Orders.helper';
 import OrdersDeliveryStatus from './OrdersDeliveryStatus';
+import OrdersListFilters from './OrdersListFilters';
 import OrdersPaymentStatus from './OrdersPaymentStatus';
 
 const OrdersList = () => {
-  const router = useRouter();
-
   const [filters, setFilters] = useState({
-    order_type: '',
+    status: '',
     search: '',
     sortKey: 'created_at',
     sortValue: 'DESC' as 'ASC' | 'DESC',
     page: 1,
-    limit: 10
+    limit: 10,
   });
 
   const { data, isLoading, isFetching } = useGetOrders(filters);
-  const orders: IOrder[] = (data?.data as any) || [];
-  const totalCount = data?.count || 0;
+  const orders: Order[] = data?.body?.data || [];
+  const totalCount = data?.body?.count || 0;
 
   const handleFilters = (newFilters: { [key: string]: any }) => {
     setFilters({
       ...filters,
-      ...newFilters
+      ...newFilters,
     });
-  };
-
-  const handleView = (row: IOrder) => {
-    const url = makeURL(URLs.OrdersView, { id: row?.order_id });
-    router.push(url);
   };
 
   const headers = ordersColumnHeaders();
@@ -51,27 +41,17 @@ const OrdersList = () => {
     <>
       <div className="rounded-md border">
         <OrdersListFilters filters={filters} handleFilters={handleFilters} />
-        <Table
-          headers={headers}
-          noData={isEmpty(orders)}
-          isLoading={isLoading || isFetching}
-        >
-          {orders.map((row: IOrder) => (
+        <Table headers={headers} noData={isEmpty(orders)} isLoading={isLoading || isFetching}>
+          {orders.map((row: Order) => (
             <TableRow key={row?.order_id}>
-              <TableCell className="text-center">
-                {row?.order_id}
-              </TableCell>
+              <TableCell className="text-center">{row?.order_id}</TableCell>
               <TableCell>
-                {row?.created_at
-                  ? dayjs(row?.created_at).format('DD MMM YYYY, hh:mm A')
-                  : '-'}
+                {row?.created_at ? dayjs(row?.created_at).format('DD MMM YYYY, hh:mm A') : '-'}
               </TableCell>
-              <TableCell>{row?.full_name || '-'}</TableCell>
+              <TableCell>{row?.user_id || '-'}</TableCell>
+              <TableCell className="text-center">QAR {row?.total || '-'}</TableCell>
               <TableCell className="text-center">
-                QAR {row?.invoice_details?.grand_total || '-'}
-              </TableCell>
-              <TableCell className="text-center">
-                {paymentTexts[row.payment_method_text] || '-'}
+                {paymentTexts[row.payment_method] || '-'}
               </TableCell>
               <TableCell className="text-center">
                 <OrdersPaymentStatus row={row} />
@@ -82,12 +62,7 @@ const OrdersList = () => {
 
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
-                  <Button
-                    variant="ghost"
-                    onClick={() => handleView(row)}
-                  >
-                    View
-                  </Button>
+                  <OrderActions row={row} />
                 </div>
               </TableCell>
             </TableRow>
@@ -107,4 +82,3 @@ const OrdersList = () => {
 };
 
 export default OrdersList;
-

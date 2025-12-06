@@ -1,31 +1,24 @@
 import { Badge } from '@/components/ui/badge';
-import { IOrder, OrderStageEnums, OrderTypeEnums, PaymentStageEnums, PaymentTypeEnums } from '@/types/api.types';
+import { Order } from '@/queries/orders/useGetOrders.query';
 
 type Props = {
-  row: IOrder;
+  row: Order;
 };
 
 const OrdersPaymentStatus = ({ row }: Props) => {
-  const isCODNotDelivered =
-    row.payment_method_text === PaymentTypeEnums.COD &&
-    row.order_stage !== OrderStageEnums.Delivered &&
-    row.order_type !== OrderTypeEnums.Cancelled;
-
-  const paymentStatus = isCODNotDelivered
-    ? PaymentStageEnums.Pending
-    : row?.refund_status || PaymentStageEnums.Pending;
+  const paymentStatus = row?.payment_status || 'pending';
 
   const statusText = {
-    [PaymentStageEnums.Pending]: 'Pending Payment',
-    [PaymentStageEnums.Paid]: 'Fully Paid',
-    [PaymentStageEnums.Refunded]: 'Refunded'
-  }[paymentStatus as PaymentStageEnums];
+    'pending': 'Pending Payment',
+    'paid': 'Fully Paid',
+    'failed': 'Failed'
+  }[paymentStatus];
 
   const variantClass = {
-    [PaymentStageEnums.Pending]: 'bg-orange-100 text-orange-700 hover:bg-orange-100',
-    [PaymentStageEnums.Paid]: 'bg-blue-100 text-blue-700 hover:bg-blue-100',
-    [PaymentStageEnums.Refunded]: 'bg-gray-100 text-gray-700 hover:bg-gray-100'
-  }[paymentStatus as PaymentStageEnums] || 'bg-gray-100 text-gray-700 hover:bg-gray-100';
+    'pending': 'bg-orange-100 text-orange-700 hover:bg-orange-100',
+    'paid': 'bg-blue-100 text-blue-700 hover:bg-blue-100',
+    'failed': 'bg-red-100 text-red-700 hover:bg-red-100'
+  }[paymentStatus] || 'bg-gray-100 text-gray-700 hover:bg-gray-100';
 
   return statusText ? (
     <Badge variant="outline" className={variantClass}>

@@ -1,86 +1,59 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/common/page-header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, User as UserIcon, Edit, Shield, ShieldCheck, ShieldAlert, Calendar, Mail } from 'lucide-react';
-import { AdminRole } from '@/types/permissions';
-import { ROLE_LABELS } from '@/constants/permissions';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { useGetAdminById } from '@/queries/admins';
+import {
+  ArrowLeft,
+  Edit,
+  Loader2,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  Trash2,
+  User,
+  Key,
+} from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import ROUTES from '@/utils/route';
 
-// Mock admin data - replace with API call when available
-type AdminUser = {
-  id: string;
-  name: string;
-  email: string;
-  role: AdminRole;
-  isActive: boolean;
-  lastLogin?: string;
-  createdAt: string;
-  avatar?: string;
-};
-
-const mockAdmins: AdminUser[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john@hamfa.com',
-    role: AdminRole.SUPER_ADMIN,
-    isActive: true,
-    lastLogin: '2024-02-10',
-    createdAt: '2024-01-01',
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    email: 'jane@hamfa.com',
-    role: AdminRole.ADMIN,
-    isActive: true,
-    lastLogin: '2024-02-09',
-    createdAt: '2024-01-15',
-  },
-  {
-    id: '3',
-    name: 'Bob Wilson',
-    email: 'bob@hamfa.com',
-    role: AdminRole.MODERATOR,
-    isActive: true,
-    lastLogin: '2024-02-08',
-    createdAt: '2024-01-20',
-  },
-  {
-    id: '4',
-    name: 'Alice Johnson',
-    email: 'alice@hamfa.com',
-    role: AdminRole.ADMIN,
-    isActive: false,
-    createdAt: '2024-01-10',
-  },
-];
-
-const getRoleIcon = (role: AdminRole) => {
-  switch (role) {
-    case AdminRole.SUPER_ADMIN:
-      return <ShieldCheck className="h-4 w-4" />;
-    case AdminRole.ADMIN:
-      return <Shield className="h-4 w-4" />;
-    case AdminRole.MODERATOR:
-      return <ShieldAlert className="h-4 w-4" />;
+// Get role icon
+const getRoleIcon = (roleName: string) => {
+  switch (roleName) {
+    case 'Super Admin':
+      return <ShieldCheck className="h-5 w-5" />;
+    case 'Admin':
+      return <Shield className="h-5 w-5" />;
+    case 'Moderator':
+      return <ShieldAlert className="h-5 w-5" />;
+    default:
+      return <Shield className="h-5 w-5" />;
   }
 };
 
-const getRoleBadgeVariant = (role: AdminRole) => {
-  switch (role) {
-    case AdminRole.SUPER_ADMIN:
-      return 'default' as const;
-    case AdminRole.ADMIN:
-      return 'secondary' as const;
-    case AdminRole.MODERATOR:
-      return 'outline' as const;
+const getRoleBadgeVariant = (roleName: string) => {
+  switch (roleName) {
+    case 'Super Admin':
+      return 'default';
+    case 'Admin':
+      return 'secondary';
+    case 'Moderator':
+      return 'outline';
+    default:
+      return 'secondary';
   }
+};
+
+// Permission labels
+const PERMISSION_LABELS: Record<string, string> = {
+  view: 'View',
+  create: 'Create',
+  update: 'Update',
+  delete: 'Delete',
 };
 
 export default function AdminViewPage() {
@@ -88,17 +61,27 @@ export default function AdminViewPage() {
   const router = useRouter();
   const adminId = params.id as string;
 
-  // In production, replace this with actual API call
-  const admin = mockAdmins.find((a) => a.id === adminId);
+  const { data: adminData, isLoading, error } = useGetAdminById(Number(adminId));
+  const admin = adminData?.data;
 
-  if (!admin) {
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Loader2 className="text-primary h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !admin) {
     return (
       <div className="space-y-6">
         <PageHeader title="Admin Details" description="View admin information" />
         <div className="py-10 text-center">
-          <UserIcon className="text-muted-foreground mx-auto mb-4 h-16 w-16" />
+          <User className="text-muted-foreground mx-auto mb-4 h-16 w-16" />
           <h2 className="mb-2 text-2xl font-semibold">Admin not found</h2>
-          <p className="text-muted-foreground mb-6">The admin you&apos;re looking for doesn&apos;t exist.</p>
+          <p className="text-muted-foreground mb-6">
+            The admin you&apos;re looking for doesn&apos;t exist.
+          </p>
           <Button onClick={() => router.push('/admins')}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to Admins
@@ -106,6 +89,17 @@ export default function AdminViewPage() {
         </div>
       </div>
     );
+  }
+
+  // Group permissions by module
+  const groupedPermissions: Record<string, string[]> = {};
+  if (admin.role?.permissions) {
+    admin.role.permissions.forEach((perm: any) => {
+      if (!groupedPermissions[perm.module]) {
+        groupedPermissions[perm.module] = [];
+      }
+      groupedPermissions[perm.module].push(perm.action);
+    });
   }
 
   return (
@@ -116,7 +110,7 @@ export default function AdminViewPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
-          <PageHeader title={admin.name} description={`Admin ID: ${admin.id}`} />
+          <PageHeader title={admin.name} description={admin.email} />
         </div>
       </div>
 
@@ -125,150 +119,143 @@ export default function AdminViewPage() {
         <CardContent className="pt-6">
           <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-3">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={admin.avatar} />
-                <AvatarFallback>{admin.name.charAt(0)}</AvatarFallback>
+              <Avatar className="h-16 w-16">
+                <AvatarFallback className="text-xl">
+                  {admin.name?.charAt(0)?.toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div>
                 <div className="flex items-center gap-2">
-                  <Badge variant={getRoleBadgeVariant(admin.role)} className="gap-1">
-                    {getRoleIcon(admin.role)}
-                    {ROLE_LABELS[admin.role]}
-                  </Badge>
-                  <Badge variant={admin.isActive ? 'default' : 'secondary'}>
-                    {admin.isActive ? 'Active' : 'Inactive'}
+                  <h2 className="text-xl font-semibold">{admin.name}</h2>
+                  <Badge variant={admin.is_active ? 'default' : 'secondary'}>
+                    {admin.is_active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
+                <p className="text-muted-foreground">{admin.email}</p>
+                <Badge
+                  variant={getRoleBadgeVariant(admin.role?.name || '')}
+                  className="mt-1 gap-1"
+                >
+                  {getRoleIcon(admin.role?.name || '')}
+                  {admin.role?.name}
+                </Badge>
               </div>
             </div>
             <div className="flex gap-2">
-              <Button onClick={() => router.push(`/admins/${admin.id}/permissions`)}>
-                <Shield className="mr-2 h-4 w-4" />
+              <Button
+                variant="outline"
+                onClick={() => router.push(ROUTES.ADMINS.PERMISSIONS(admin.user_id))}
+              >
+                <Key className="mr-2 h-4 w-4" />
                 Manage Permissions
               </Button>
-              <Button variant="outline" onClick={() => router.push(`/admins/edit/${admin.id}`)}>
+              <Button onClick={() => router.push(ROUTES.ADMINS.EDIT(admin.user_id))}>
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Admin
               </Button>
+              {admin.role?.name !== 'Super Admin' && (
+                <Button variant="destructive">
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  Delete
+                </Button>
+              )}
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Admin Information */}
-        <Card>
+        <Card className="lg:col-span-1">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <UserIcon className="h-5 w-5" />
+              <User className="h-5 w-5" />
               Admin Information
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <p className="text-muted-foreground text-sm">Name</p>
+              <p className="text-muted-foreground text-sm">Full Name</p>
               <p className="font-medium">{admin.name}</p>
             </div>
             <Separator />
             <div>
-              <p className="text-muted-foreground mb-2 flex items-center gap-2 text-sm">
-                <Mail className="h-4 w-4" />
-                Email
-              </p>
-              <a href={`mailto:${admin.email}`} className="text-primary font-medium hover:underline">
-                {admin.email}
-              </a>
+              <p className="text-muted-foreground text-sm">Email Address</p>
+              <p className="font-medium">{admin.email}</p>
             </div>
             <Separator />
             <div>
-              <p className="text-muted-foreground text-sm">Admin ID</p>
-              <p className="font-medium">#{admin.id}</p>
-            </div>
-            <Separator />
-            <div>
-              <p className="text-muted-foreground text-sm">Account Status</p>
-              <Badge variant={admin.isActive ? 'default' : 'secondary'}>
-                {admin.isActive ? 'ACTIVE' : 'INACTIVE'}
+              <p className="text-muted-foreground text-sm">Role</p>
+              <Badge
+                variant={getRoleBadgeVariant(admin.role?.name || '')}
+                className="mt-1 gap-1"
+              >
+                {getRoleIcon(admin.role?.name || '')}
+                {admin.role?.name}
               </Badge>
+            </div>
+            <Separator />
+            <div>
+              <p className="text-muted-foreground text-sm">Status</p>
+              <Badge variant={admin.is_active ? 'default' : 'secondary'} className="mt-1">
+                {admin.is_active ? 'Active' : 'Inactive'}
+              </Badge>
+            </div>
+            <Separator />
+            <div>
+              <p className="text-muted-foreground text-sm">Created At</p>
+              <p className="font-medium">
+                {admin.created_at ? new Date(admin.created_at).toLocaleString() : '-'}
+              </p>
+            </div>
+            <Separator />
+            <div>
+              <p className="text-muted-foreground text-sm">Updated At</p>
+              <p className="font-medium">
+                {admin.updated_at ? new Date(admin.updated_at).toLocaleString() : '-'}
+              </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Role & Permissions */}
-        <Card>
+        {/* Permissions */}
+        <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Role & Permissions
+              <Key className="h-5 w-5" />
+              Assigned Permissions
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <p className="text-muted-foreground text-sm">Role</p>
-              <div className="mt-2">
-                <Badge variant={getRoleBadgeVariant(admin.role)} className="gap-1">
-                  {getRoleIcon(admin.role)}
-                  {ROLE_LABELS[admin.role]}
-                </Badge>
+          <CardContent>
+            {Object.keys(groupedPermissions).length > 0 ? (
+              <div className="space-y-4">
+                {Object.entries(groupedPermissions).map(([module, actions]) => (
+                  <div key={module} className="rounded-lg border p-4">
+                    <div className="mb-2 flex items-center justify-between">
+                      <h4 className="font-medium capitalize">{module.replace('_', ' ')}</h4>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {actions.map(action => (
+                        <Badge key={action} variant="secondary">
+                          {PERMISSION_LABELS[action] || action}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-            <Separator />
-            <div>
-              <p className="text-muted-foreground mb-2 text-sm">Role Description</p>
-              {admin.role === AdminRole.SUPER_ADMIN && (
-                <p className="text-sm">Full access to all modules and features including admin management.</p>
-              )}
-              {admin.role === AdminRole.ADMIN && (
-                <p className="text-sm">Access to most modules with custom permissions. Cannot manage admins.</p>
-              )}
-              {admin.role === AdminRole.MODERATOR && (
-                <p className="text-sm">Limited access based on assigned permissions. Typically for content moderation.</p>
-              )}
-            </div>
-            <Separator />
-            <div>
-              <Button variant="outline" onClick={() => router.push(`/admins/${admin.id}/permissions`)}>
-                <Shield className="mr-2 h-4 w-4" />
-                View & Edit Permissions
-              </Button>
-            </div>
+            ) : (
+              <div className="py-8 text-center">
+                <Key className="text-muted-foreground mx-auto mb-4 h-12 w-12" />
+                <p className="text-muted-foreground">No specific permissions assigned.</p>
+                <p className="text-muted-foreground text-sm">
+                  This admin inherits permissions from their role.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
-
-      {/* Activity Timeline */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Activity Timeline
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {admin.lastLogin && (
-            <>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Last Login</span>
-                <span className="font-medium">{new Date(admin.lastLogin).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}</span>
-              </div>
-              <Separator />
-            </>
-          )}
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Account Created</span>
-            <span className="font-medium">{new Date(admin.createdAt).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}</span>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
-

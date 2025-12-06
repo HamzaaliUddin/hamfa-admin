@@ -22,6 +22,7 @@ export interface Order {
   completed_at?: string;
   created_at?: string;
   updated_at?: string;
+  items?: any[];
 }
 
 export interface GetOrdersParams {
@@ -35,8 +36,10 @@ export interface GetOrdersParams {
 }
 
 interface GetOrdersResponse {
-  data: Order[];
-  count: number;
+  body: {
+    data: Order[];
+    count: number;
+  };
 }
 
 const fetchOrders = async (params?: GetOrdersParams): Promise<GetOrdersResponse> => {

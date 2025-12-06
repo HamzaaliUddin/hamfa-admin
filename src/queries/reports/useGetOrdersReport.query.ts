@@ -12,26 +12,49 @@ export interface OrdersReportParams {
 export interface OrdersReport {
   totalOrders: number;
   pendingOrders: number;
-  completedOrders: number;
+  processingOrders: number;
+  shippedOrders: number;
+  deliveredOrders: number;
   cancelledOrders: number;
-  ordersByStatus: Array<{
+  totalRevenue: number;
+  averageOrderValue: number;
+  statusDistribution: Array<{
     status: string;
     count: number;
+    percentage: number;
+    revenue: number;
   }>;
-  ordersByDate: Array<{
+  recentOrders: Array<{
+    order_id: number;
+    order_number: string;
+    customer_name: string;
+    customer_email: string;
+    items_count: number;
+    total: number;
+    status: string;
+    created_at: string;
+  }>;
+  dailyOrders: Array<{
     date: string;
-    count: number;
+    orders: number;
+    revenue: number;
   }>;
 }
 
-const fetchOrdersReport = async (params?: OrdersReportParams): Promise<OrdersReport> => {
-  return await axiosInstance.get('reports/orders', { params });
+interface GetOrdersReportResponse {
+  body: {
+    data: OrdersReport;
+  };
+}
+
+const fetchOrdersReport = async (params?: OrdersReportParams): Promise<GetOrdersReportResponse> => {
+  return await axiosInstance.get('/reports/orders', { params });
 };
 
 export const useGetOrdersReport = (params?: OrdersReportParams) => {
   return useQuery({
     queryKey: ['reports', 'orders', params],
     queryFn: () => fetchOrdersReport(params),
+    staleTime: 60 * 1000,
   });
 };
-

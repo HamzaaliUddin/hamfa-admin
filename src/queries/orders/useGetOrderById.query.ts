@@ -5,12 +5,13 @@ import { useQuery } from '@tanstack/react-query';
 import { Order } from './useGetOrders.query';
 
 interface GetOrderByIdResponse {
-  data: Order;
+  body: {
+    data: Order;
+  };
 }
 
-const fetchOrderById = async (id: number | string): Promise<Order> => {
-  const response: GetOrderByIdResponse = await axiosInstance.get(`/order/${id}`);
-  return response.data;
+const fetchOrderById = async (id: number | string): Promise<GetOrderByIdResponse> => {
+  return await axiosInstance.get(`/order/${id}`);
 };
 
 export const useGetOrderById = (id: number | string | null) => {

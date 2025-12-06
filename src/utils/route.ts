@@ -106,12 +106,11 @@ export const ROUTES = {
 
   // ==================== SETTINGS ROUTES ====================
   SETTINGS: {
-    MAIN: '/settings',
+    MAIN: '/settings/contact',
     PROFILE: '/settings/profile',
     CONTACT: '/settings/contact',
     PAYMENT: '/settings/payment',
     SOCIAL: '/settings/social',
-    SEO: '/settings/seo',
   },
 
   // ==================== TERMS & CONDITIONS ROUTES ====================

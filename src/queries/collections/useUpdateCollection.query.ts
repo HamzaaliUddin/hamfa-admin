@@ -33,7 +33,6 @@ export const useUpdateCollection = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['collections'] });
       queryClient.invalidateQueries({ queryKey: ['collection', variables.id] });
-      toast.success('Collection updated successfully');
     },
     onError: (error: any) => {
       const errorMessage = error?.error || error?.message || 'Failed to update collection';

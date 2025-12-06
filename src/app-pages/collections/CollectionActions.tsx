@@ -1,9 +1,11 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Collection } from '@/queries/collections/useGetCollections.query';
 import ROUTES from '@/utils/route';
 import { useRouter } from 'next/navigation';
 
-export const CollectionActions = ({ row }: { row: Collection }) => {
+const CollectionActions = ({ row }: { row: Collection }) => {
   const router = useRouter();
   const collectionViewHandler = () => {
     router.push(`${ROUTES.COLLECTIONS.DETAIL(row.collection_id)}`);
@@ -24,4 +26,6 @@ export const CollectionActions = ({ row }: { row: Collection }) => {
     </>
   );
 };
+
+export default CollectionActions;
 

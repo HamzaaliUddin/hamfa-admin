@@ -51,10 +51,6 @@ export function LoginForm({ onSubmit, control, isLoading }: LoginFormProps) {
         {isLoading ? 'Logging in...' : 'Login'}
       </Button>
 
-      {/* Helper Text */}
-      <p className="text-muted-foreground text-center text-sm">
-        Use: superadmin@yopmail.com / Superadmin@123!
-      </p>
     </FormWrapper>
   );
 }

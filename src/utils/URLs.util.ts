@@ -49,16 +49,14 @@ const URLs = {
   AdminsPermissions: '/admins/:id/permissions',
 
   Notifications: '/notifications',
-  NotificationsAdd: '/notifications/add',
-  NotificationsEdit: '/notifications/edit/:id',
 
   Reports: '/reports',
   ReportsSales: '/reports/sales',
   ReportsRevenue: '/reports/revenue',
   ReportsInventory: '/reports/inventory',
 
-  Settings: '/settings',
-  SettingsGeneral: '/settings/general',
+  Settings: '/settings/contact',
+  SettingsContact: '/settings/contact',
   SettingsPayment: '/settings/payment',
   SettingsShipping: '/settings/shipping',
   SettingsTax: '/settings/tax',

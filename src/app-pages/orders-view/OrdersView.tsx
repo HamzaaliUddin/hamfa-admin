@@ -6,8 +6,8 @@ import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import PageLoader from '@/components/common/PageLoader';
 import { useGetOrderById } from '@/queries/orders/useGetOrderById.query';
-import URLs from '@/utils/URLs.util';
-import { IOrder } from '@/types/api.types';
+import { Order } from '@/queries/orders/useGetOrders.query';
+import ROUTES from '@/utils/route';
 import PageEmpty from '@/components/common/PageEmpty';
 import OrdersViewProducts from './OrdersViewProducts';
 import OrdersViewInvoice from './OrdersViewInvoice';
@@ -22,7 +22,7 @@ type Props = {
 const OrdersView = ({ id }: Props) => {
   const router = useRouter();
   const { data, isLoading, isFetching } = useGetOrderById(id);
-  const order = (data || {}) as IOrder;
+  const order = data?.body?.data as Order;
 
   return (
     <>
@@ -37,13 +37,21 @@ const OrdersView = ({ id }: Props) => {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => router.push(URLs.Orders)}
+                onClick={() => router.push(ROUTES.ORDERS.LIST)}
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <h1 className="text-2xl font-semibold">
                 Order: {order?.order_id}
               </h1>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => router.push(ROUTES.ORDERS.EDIT(order.order_id))}
+              >
+                Edit Order
+              </Button>
             </div>
           </div>
 
@@ -53,12 +61,12 @@ const OrdersView = ({ id }: Props) => {
                 <h3 className="text-lg font-medium mb-4">Order Summary</h3>
                 <OrdersViewProducts
                   isLoading={isLoading}
-                  products={order?.order_items}
+                  products={order?.items || []}
                 />
               </Card>
 
               <Card className="p-6">
-                <OrdersViewInvoice invoice={order?.invoice_details} />
+                <OrdersViewInvoice order={order} />
               </Card>
             </div>
 

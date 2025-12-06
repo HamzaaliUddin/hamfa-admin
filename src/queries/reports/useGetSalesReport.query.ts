@@ -14,22 +14,36 @@ export interface SalesReport {
   totalOrders: number;
   averageOrderValue: number;
   revenue: number;
+  revenueGrowth: number;
+  ordersGrowth: number;
   periodData: Array<{
     date: string;
     sales: number;
     orders: number;
     revenue: number;
   }>;
+  topProducts: Array<{
+    product_id: number;
+    title: string;
+    sales: number;
+    revenue: number;
+  }>;
 }
 
-const fetchSalesReport = async (params?: SalesReportParams): Promise<SalesReport> => {
-  return await axiosInstance.get('reports/sales', { params });
+interface GetSalesReportResponse {
+  body: {
+    data: SalesReport;
+  };
+}
+
+const fetchSalesReport = async (params?: SalesReportParams): Promise<GetSalesReportResponse> => {
+  return await axiosInstance.get('/reports/sales', { params });
 };
 
 export const useGetSalesReport = (params?: SalesReportParams) => {
   return useQuery({
     queryKey: ['reports', 'sales', params],
     queryFn: () => fetchSalesReport(params),
+    staleTime: 60 * 1000,
   });
 };
-

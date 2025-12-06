@@ -1,13 +1,13 @@
 'use client';
 
+import { StatusBadge } from '@/components/common/StatusBadge';
 import { Pagination } from '@/components/Pagination';
 import { Table } from '@/components/Table';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { useGetCategories, Category } from '@/queries/categories/useGetCategories.query';
 import { isEmpty } from 'lodash';
-import Image from 'next/image';
 import { useState } from 'react';
-import { CategoryActions } from './CategoryActions';
+import CategoryActions from './CategoryActions';
 import CategoryListFilters from './CategoryListFilters';
 import { categoriesColumnHeaders } from './Categories.helper';
 import CategoriesDelete from './CategoriesDelete';
@@ -22,7 +22,7 @@ const CategoriesList = () => {
   });
 
   const { data, isLoading, isFetching } = useGetCategories(filters);
-  const categories = data?.body?.data || [];
+  const categories = (data?.body?.data || []) as unknown as Category[];
   const totalCount = data?.body?.count || 0;
 
   const handleFilters = (newFilters: Record<string, string | number>) => {
@@ -33,21 +33,28 @@ const CategoriesList = () => {
   };
 
   const headers = categoriesColumnHeaders();
+  
   return (
     <>
       <div className="rounded-md border">
         <CategoryListFilters filters={filters} handleFilters={handleFilters} />
         <Table headers={headers} noData={isEmpty(categories)} isLoading={isLoading || isFetching}>
-          {categories.map((row: Category) => (
+          {categories?.map((row: Category) => (
             <TableRow key={row?.category_id}>
               <TableCell>{row?.category_id}</TableCell>
               <TableCell>
-                <Image src={row?.image} alt={row?.name} width={100} height={50} />
+                <img
+                  src={row?.image}
+                  alt={row?.name}
+                  width={100}
+                  height={50}
+                  className="object-contain"
+                />
               </TableCell>
               <TableCell>{row?.name}</TableCell>
-              <TableCell>{row?.parent_id || '-'}</TableCell>
-              <TableCell>{row?.product_count}</TableCell>
-              <TableCell>{row?.status}</TableCell>
+              <TableCell>
+                <StatusBadge status={row?.status} />
+              </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
                   <CategoryActions row={row} />

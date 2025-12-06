@@ -1,5 +1,4 @@
 import { TableHeaderProps } from '@/components/Table/Table';
-import { OrderStageEnums, OrderTypeEnums, PaymentTypeEnums, PaymentStageEnums } from '@/types/api.types';
 
 export const ordersColumnHeaders = (): TableHeaderProps[] => [
   {
@@ -42,16 +41,8 @@ export const ordersColumnHeaders = (): TableHeaderProps[] => [
 ];
 
 export const geOrderPaymentTexts = () => ({
-  [PaymentTypeEnums.COD]: 'Cash on Delivery',
-  [PaymentTypeEnums.CREDIT]: 'Credit Card',
-  [PaymentTypeEnums.DEBIT]: 'Debit Card'
-});
-
-export const getOrderStatusText = () => ({
-  [OrderStageEnums.Ordered]: 'Order Placed',
-  [OrderStageEnums.Preparing]: 'Processing',
-  [OrderStageEnums.Delivering]: 'Dispatched',
-  [OrderStageEnums.Delivered]: 'Delivered',
-  [OrderTypeEnums.Cancelled]: 'Cancelled'
+  'cod': 'Cash on Delivery',
+  'card': 'Credit/Debit Card',
+  'paypal': 'PayPal'
 });
 

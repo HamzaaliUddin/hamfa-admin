@@ -33,7 +33,6 @@ export const useUpdateCategory = () => {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       queryClient.invalidateQueries({ queryKey: ['category', variables.id] });
-      toast.success('Category updated successfully');
     },
     onError: (error: any) => {
       const errorMessage = error?.error || error?.message || 'Failed to update category';

@@ -217,7 +217,7 @@ export default function OrdersPendingPage() {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuItem asChild>
-                <Link href={`/orders/${order.id}`}>
+                <Link href={`/orders/view/${order.id}`}>
                   <Eye className="mr-2 h-4 w-4" />
                   View Details
                 </Link>

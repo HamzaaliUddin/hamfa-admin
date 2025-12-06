@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
-import { IOrder } from '@/types/api.types';
+import { Order } from '@/queries/orders/useGetOrders.query';
 
 type Props = {
-  order: IOrder;
+  order?: Order;
 };
 
 const OrdersViewInfo = ({ order }: Props) => {
@@ -10,6 +10,13 @@ const OrdersViewInfo = ({ order }: Props) => {
     <div className="space-y-4">
       <h3 className="text-lg font-medium">Order Information</h3>
       
+      <div>
+        <p className="text-sm font-medium">Order Number</p>
+        <p className="text-sm text-muted-foreground">
+          {order?.order_number || '-'}
+        </p>
+      </div>
+
       <div>
         <p className="text-sm font-medium">Order Date</p>
         <p className="text-sm text-muted-foreground">
@@ -19,29 +26,36 @@ const OrdersViewInfo = ({ order }: Props) => {
         </p>
       </div>
 
-      {order?.processed_at && (
+      <div>
+        <p className="text-sm font-medium">Status</p>
+        <p className="text-sm text-muted-foreground capitalize">
+          {order?.status || '-'}
+        </p>
+      </div>
+
+      {order?.tracking_number && (
         <div>
-          <p className="text-sm font-medium">Processed Date</p>
+          <p className="text-sm font-medium">Tracking Number</p>
           <p className="text-sm text-muted-foreground">
-            {dayjs(order?.processed_at).format('DD MMM YYYY, hh:mm:ss A')}
+            {order?.tracking_number}
           </p>
         </div>
       )}
 
-      {order?.dispatched_at && (
+      {order?.completed_at && (
         <div>
-          <p className="text-sm font-medium">Dispatched Date</p>
+          <p className="text-sm font-medium">Completed Date</p>
           <p className="text-sm text-muted-foreground">
-            {dayjs(order?.dispatched_at).format('DD MMM YYYY, hh:mm:ss A')}
+            {dayjs(order?.completed_at).format('DD MMM YYYY, hh:mm:ss A')}
           </p>
         </div>
       )}
 
-      {order?.delivered_at && (
+      {order?.notes && (
         <div>
-          <p className="text-sm font-medium">Delivered Date</p>
+          <p className="text-sm font-medium">Notes</p>
           <p className="text-sm text-muted-foreground">
-            {dayjs(order?.delivered_at).format('DD MMM YYYY, hh:mm:ss A')}
+            {order?.notes}
           </p>
         </div>
       )}

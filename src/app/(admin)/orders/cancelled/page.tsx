@@ -23,6 +23,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
+import Link from 'next/link';
 
 type CancelledOrder = {
   id: string;
@@ -250,9 +251,11 @@ export default function OrdersCancelledPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>
-                <Eye className="mr-2 h-4 w-4" />
-                View Details
+              <DropdownMenuItem asChild>
+                <Link href={`/orders/view/${order.id}`}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View Details
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <RotateCcw className="mr-2 h-4 w-4" />

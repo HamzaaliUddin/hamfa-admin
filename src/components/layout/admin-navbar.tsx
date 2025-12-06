@@ -13,8 +13,10 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { authUtils } from '@/utils/auth';
 import { LogOut, Settings, User } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export function AdminNavbar() {
+  const router = useRouter();
   const user = authUtils.getUser();
 
   const handleLogout = () => {
@@ -80,11 +82,11 @@ export function AdminNavbar() {
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push('/settings/profile')}>
               <User className="mr-2 h-4 w-4" />
               <span>Profile</span>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => router.push('/settings/contact')}>
               <Settings className="mr-2 h-4 w-4" />
               <span>Settings</span>
             </DropdownMenuItem>

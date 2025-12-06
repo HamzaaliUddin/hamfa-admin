@@ -1,4 +1,4 @@
-import { CollectionAdd, CollectionsList } from '@/app-pages/collections';
+import { CollectionsList, CollectionAdd } from '@/app-pages/collections';
 import { CrudLayout } from '@/components/common/crud-layout';
 
 export default function CollectionsPage() {

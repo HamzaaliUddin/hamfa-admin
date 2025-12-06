@@ -7,6 +7,8 @@ export interface Term {
   term_id: number;
   title: string;
   slug: string;
+  type?: string;
+  description?: string;
   content: string;
   version: string;
   status: 'active' | 'draft';

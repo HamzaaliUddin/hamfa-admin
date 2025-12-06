@@ -1,14 +1,23 @@
-import { IOrder } from '@/types/api.types';
+import { Order } from '@/queries/orders/useGetOrders.query';
 import LabelValue from '@/components/common/LabelValue';
 
 type Props = {
-  order: IOrder;
+  order?: Order;
 };
 
 const OrdersViewCustomer = ({ order }: Props) => {
-  const address = order?.address;
-  const fullAddress = address
-    ? `${address.building_name || ''} ${address.street_name || ''}, ${address.area || ''}, ${address.city || ''}`
+  // Parse shipping address if it's a JSON string
+  let shippingAddress = null;
+  try {
+    shippingAddress = typeof order?.shipping_address === 'string' 
+      ? JSON.parse(order.shipping_address) 
+      : order?.shipping_address;
+  } catch (e) {
+    shippingAddress = null;
+  }
+
+  const fullAddress = shippingAddress
+    ? `${shippingAddress.street || ''}, ${shippingAddress.city || ''}, ${shippingAddress.state || ''} ${shippingAddress.zip || ''}, ${shippingAddress.country || ''}`
     : '-';
 
   return (
@@ -17,21 +26,11 @@ const OrdersViewCustomer = ({ order }: Props) => {
 
       <div className="space-y-2">
         <LabelValue
-          label="Name"
-          value={order?.full_name || '-'}
+          label="User ID"
+          value={order?.user_id?.toString() || '-'}
         />
         <LabelValue
-          label="Email"
-          value={order?.email || '-'}
-        />
-        <LabelValue
-          label="Phone"
-          value={order?.phone_number
-            ? `${order.phone_number.country_code} ${order.phone_number.number}`
-            : '-'}
-        />
-        <LabelValue
-          label="Address"
+          label="Shipping Address"
           value={fullAddress}
         />
       </div>

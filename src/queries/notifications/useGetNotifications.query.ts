@@ -7,14 +7,15 @@ export interface Notification {
   notification_id: number;
   title: string;
   message: string;
-  type: 'success' | 'warning' | 'info' | 'announcement' | 'error';
-  recipients: string;
-  recipient_ids?: string;
+  description?: string;
+  actor_type?: 'user' | 'super_admin' | 'admin' | 'moderator' | 'system';
+  actor_id?: number;
+  actor_name?: string;
+  action?: string;
+  type: 'success' | 'warning' | 'info' | 'error';
   status: 'sent' | 'failed' | 'scheduled';
   read: boolean;
-  click_count: number;
   sent_at?: string;
-  scheduled_for?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -30,8 +31,10 @@ export interface GetNotificationsParams {
 }
 
 interface GetNotificationsResponse {
-  data: Notification[];
-  count: number;
+  body: {
+    data: Notification[];
+    count: number;
+  };
 }
 
 const fetchNotifications = async (

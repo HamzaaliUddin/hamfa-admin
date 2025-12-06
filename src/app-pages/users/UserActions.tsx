@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { User } from '@/queries/users/useGetUsers.query';
 import ROUTES from '@/utils/route';

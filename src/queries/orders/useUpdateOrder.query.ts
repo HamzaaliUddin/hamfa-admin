@@ -18,13 +18,14 @@ interface UpdateOrderParams {
 }
 
 interface UpdateOrderResponse {
-  data: Order;
+  body: {
+    data: Order;
+  };
   message: string;
 }
 
-const updateOrder = async ({ id, data }: UpdateOrderParams): Promise<Order> => {
-  const response: UpdateOrderResponse = await axiosInstance.put(`/order/${id}`, data);
-  return response.data;
+const updateOrder = async ({ id, data }: UpdateOrderParams): Promise<UpdateOrderResponse> => {
+  return await axiosInstance.put(`/order/${id}`, data);
 };
 
 export const useUpdateOrder = () => {

@@ -82,7 +82,7 @@ const BrandsView = ({ id }: Props) => {
 
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Description</label>
-                <p className="mt-1 text-base">{brand.description || 'No description provided'}</p>
+                <p className="mt-1 text-base">{(brand as any).description || 'No description provided'}</p>
               </div>
 
               <Separator />
@@ -103,8 +103,8 @@ const BrandsView = ({ id }: Props) => {
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Featured</label>
                   <div className="mt-1">
-                    <Badge variant={brand.featured ? 'default' : 'outline'}>
-                      {brand.featured ? 'Yes' : 'No'}
+                    <Badge variant={(brand as any).featured ? 'default' : 'outline'}>
+                      {(brand as any).featured ? 'Yes' : 'No'}
                     </Badge>
                   </div>
                 </div>
@@ -114,7 +114,7 @@ const BrandsView = ({ id }: Props) => {
 
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Collection Count</label>
-                <p className="mt-1 text-base font-medium">{brand.collection_count || 0}</p>
+                <p className="mt-1 text-base font-medium">{(brand as any).collection_count || 0}</p>
               </div>
             </CardContent>
           </Card>

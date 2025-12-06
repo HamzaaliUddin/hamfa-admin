@@ -1,9 +1,9 @@
-import { IOrder } from '@/types/api.types';
+import { Order } from '@/queries/orders/useGetOrders.query';
 import LabelValue from '@/components/common/LabelValue';
 import { geOrderPaymentTexts } from '../orders/Orders.helper';
 
 type Props = {
-  order: IOrder;
+  order?: Order;
 };
 
 const OrdersViewPayment = ({ order }: Props) => {
@@ -16,18 +16,12 @@ const OrdersViewPayment = ({ order }: Props) => {
       <div className="space-y-2">
         <LabelValue
           label="Payment Method"
-          value={paymentTexts[order?.payment_method_text] || '-'}
+          value={paymentTexts[order?.payment_method || 'cod'] || '-'}
         />
         <LabelValue
           label="Payment Status"
-          value={order?.refund_status || 'Pending'}
+          value={order?.payment_status || 'Pending'}
         />
-        {order?.refund_date && (
-          <LabelValue
-            label="Refund Date"
-            value={order?.refund_date}
-          />
-        )}
       </div>
     </div>
   );

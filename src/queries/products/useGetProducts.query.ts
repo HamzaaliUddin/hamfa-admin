@@ -12,6 +12,7 @@ export interface Product {
   images: string[];
   price: number;
   discount_price?: number;
+  compare_price?: number;
   cost?: number;
   profit?: number;
   stock: number;
@@ -22,6 +23,9 @@ export interface Product {
   featured: boolean;
   size: 'small' | 'medium' | 'large';
   product_type: 'stitched' | 'unstitched';
+  tags?: string[];
+  weight?: number;
+  dimensions?: string | object;
   created_at?: string;
   updated_at?: string;
 }

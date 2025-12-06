@@ -50,11 +50,10 @@ export const API_ENDPOINTS = {
   PRODUCT_PERFORMANCE: '/reports/products',
 
   // Settings
-  SETTINGS: '/settings',
+  SETTINGS: '/settings/contact',
   CONTACT_SETTINGS: '/settings/contact',
   PAYMENT_SETTINGS: '/settings/payment',
   SOCIAL_SETTINGS: '/settings/social',
-  SEO_SETTINGS: '/settings/seo',
   ADMIN_PROFILE: '/settings/profile',
 
   // Collections
@@ -128,11 +127,10 @@ export const ROUTES = {
   REPORTS_PRODUCTS: '/reports/products',
 
   // Settings
-  SETTINGS: '/settings',
+  SETTINGS: '/settings/contact',
   SETTINGS_CONTACT: '/settings/contact',
   SETTINGS_PAYMENT: '/settings/payment',
   SETTINGS_SOCIAL: '/settings/social',
-  SETTINGS_SEO: '/settings/seo',
   SETTINGS_PROFILE: '/settings/profile',
 
   // Collections
