@@ -56,8 +56,8 @@ const NotificationsList = () => {
   });
 
   const { data, isLoading, isFetching } = useGetNotifications(filters);
-  const notifications = (data?.body?.data || []) as unknown as Notification[];
-  const totalCount = data?.body?.count || 0;
+  const notifications = (data?.data || []) as unknown as Notification[];
+  const totalCount = data?.count || 0;
   
   const handleFilters = (newFilters: Record<string, string | number>) => {
     setFilters({

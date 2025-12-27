@@ -22,7 +22,7 @@ type Props = {
 const OrdersView = ({ id }: Props) => {
   const router = useRouter();
   const { data, isLoading, isFetching } = useGetOrderById(id);
-  const order = data?.body?.data as Order;
+  const order = data?.data as Order;
 
   return (
     <>

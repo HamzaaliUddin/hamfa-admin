@@ -26,10 +26,8 @@ export interface GetBrandsParams {
 }
 
 interface GetBrandsResponse {
-  body: {
-    data: Brand[];
-    count: number;
-  };
+  data: Brand[];
+  count: number;
 }
 
 const fetchBrands = async (params?: GetBrandsParams): Promise<GetBrandsResponse> => {

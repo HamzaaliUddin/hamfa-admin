@@ -5,14 +5,12 @@ import { useQuery } from '@tanstack/react-query';
 import { Product } from './useGetProducts.query';
 
 interface GetProductByIdResponse {
-  body: {
   data: Product;
-  };
 }
 
 const fetchProductById = async (id: number | string): Promise<Product> => {
   const response: GetProductByIdResponse = await axiosInstance.get(`/product/${id}`);
-  return response.body.data;
+  return response.data;
 };
 
 export const useGetProductById = (id: number | string | null) => {

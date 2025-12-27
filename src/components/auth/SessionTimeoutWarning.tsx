@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useRefreshToken } from '@/queries/auth/useRefreshToken.query';
+import { authUtils } from '@/utils/auth';
 import { Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -80,10 +81,7 @@ export function SessionTimeoutWarning({
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('admin_token');
-    localStorage.removeItem('admin_refresh_token');
-    localStorage.removeItem('admin_user');
-    window.location.href = '/login';
+    authUtils.logout();
   };
 
   const formatTime = (seconds: number) => {

@@ -25,7 +25,7 @@ const BannersAdd = () => {
           reset();
 
           const url = makeURL(URLs.BannersView, {
-            id: data?.body?.data?.banner_id || ''
+            id: data?.data?.banner_id || ''
           });
           router.push(url);
         },

@@ -3,12 +3,14 @@
 import axiosInstance from '@/services/axiosInstance';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Notification } from './useGetNotifications.query';
+import { NotificationModelType } from '@be-types/notifications/notifications.type';
 
+// Use backend type for creating notifications
 export interface CreateNotificationInput {
   title: string;
   message: string;
-  type: 'success' | 'warning' | 'info' | 'error';
-  status: 'sent' | 'failed' | 'scheduled';
+  type: NotificationModelType['type'];
+  status: NotificationModelType['status'];
 }
 
 interface CreateNotificationResponse {

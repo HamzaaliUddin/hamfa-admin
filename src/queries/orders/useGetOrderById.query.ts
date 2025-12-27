@@ -5,9 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Order } from './useGetOrders.query';
 
 interface GetOrderByIdResponse {
-  body: {
-    data: Order;
-  };
+  data: Order;
 }
 
 const fetchOrderById = async (id: number | string): Promise<GetOrderByIdResponse> => {

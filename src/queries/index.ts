@@ -14,5 +14,6 @@ export * from './orders';
 export * from './products';
 export * from './reports';
 export * from './settings';
+export * from './social-links';
 export * from './terms';
 export * from './users';

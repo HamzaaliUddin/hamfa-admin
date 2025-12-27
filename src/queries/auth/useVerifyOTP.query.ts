@@ -1,8 +1,8 @@
 'use client';
 
 import axiosInstance from '@/services/axiosInstance';
+import { authUtils } from '@/utils/auth';
 import { useMutation } from '@tanstack/react-query';
-import Cookies from 'js-cookie';
 import { toast } from 'sonner';
 
 interface VerifyOTPRequest {
@@ -50,7 +50,7 @@ export const useVerifyOTP = () => {
       return response as unknown as VerifyOTPResponse;
     },
     onSuccess: (response: VerifyOTPResponse) => {
-      // The actual data is in response.body
+      // The actual data is in response.body.data
       const data = response?.body?.data;
 
       console.log('Verify OTP Response:', response);
@@ -62,16 +62,11 @@ export const useVerifyOTP = () => {
         return;
       }
 
-      // Store tokens and user in localStorage
-      localStorage.setItem('admin_token', data.token);
-      localStorage.setItem('admin_user', JSON.stringify(data.user));
+      // Store token in cookies using authUtils
+      authUtils.setToken(data.token);
 
-      // Also set in cookies for middleware
-      Cookies.set('admin_token', data.token, {
-        expires: 30, // Expires in 30 days
-        secure: process.env.NODE_ENV === 'production', // Only secure in production
-        sameSite: 'strict', // Prevent CSRF attacks
-      });
+      // Store user data in localStorage
+      authUtils.setUser(data.user);
 
       toast.success('OTP verified successfully!');
 

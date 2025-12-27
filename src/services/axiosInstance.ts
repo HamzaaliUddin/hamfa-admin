@@ -1,4 +1,6 @@
+import { authUtils } from '@/utils/auth';
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
+import Cookies from 'js-cookie';
 
 export interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   noAuth?: boolean;
@@ -8,24 +10,19 @@ const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1',
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json'
-  }
+    'Content-Type': 'application/json',
+  },
 });
 
 // Request interceptor
 axiosInstance.interceptors.request.use(
   async (config: CustomAxiosRequestConfig) => {
-    // Get token from localStorage
-    const token = typeof window !== 'undefined' ? localStorage.getItem('admin_token') : null;
+    // Get token from cookies
+    const token = typeof window !== 'undefined' ? Cookies.get('admin_token') : null;
 
     // Check if we need to add an Authorization token
     if (!config.noAuth && token) {
       config.headers.Authorization = `Bearer ${token}`;
-      
-      // Set token in cookie for server-side middleware validation
-      if (typeof document !== 'undefined') {
-        document.cookie = `admin_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 days
-      }
     }
 
     // Return the modified config
@@ -38,7 +35,7 @@ axiosInstance.interceptors.request.use(
 
 // Response interceptor
 axiosInstance.interceptors.response.use(
-  (response) => {
+  response => {
     // Debug log
     console.log(
       `%cSuccess: ${response?.config?.url}`,
@@ -48,19 +45,19 @@ axiosInstance.interceptors.response.use(
 
     // Backend wraps responses in { status, message, body: {...}, errors }
     // We need to unwrap and return just the body content
-    if (response?.data?.body) {
-      return response.data;
+    if (response?.data?.body !== undefined) {
+      return response.data.body;
     }
-    
+
     // If no body property, return data as-is (for non-standard responses)
     return response?.data;
   },
-  async (error) => {
+  async error => {
     const error_response = {
       status: error?.response?.status,
-      data: error?.response?.data
+      data: error?.response?.data,
     };
-    
+
     // Debug log
     console.log(
       `%cError: ${error?.config?.url}`,
@@ -75,9 +72,10 @@ axiosInstance.interceptors.response.use(
       // Handle 401 Unauthorized - Auto logout
       if (status === 401) {
         if (typeof window !== 'undefined') {
-          localStorage.removeItem('admin_token');
-          localStorage.removeItem('admin_user');
-          window.location.href = '/login';
+          // Remove token from cookies
+          // authUtils.removeToken();
+          // Remove user from localStorage
+          // authUtils.removeUser();
         }
       }
 
@@ -97,4 +95,3 @@ axiosInstance.interceptors.response.use(
 );
 
 export default axiosInstance;
-

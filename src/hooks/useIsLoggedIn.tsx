@@ -1,22 +1,20 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { authUtils } from '@/utils/auth';
+import { useMemo } from 'react';
 
 /**
  * Hook for checking if user is logged in
  */
 export const useIsLoggedIn = (): boolean => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
+  const isLoggedIn = useMemo(() => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('admin_token');
-      setIsLoggedIn(!!token);
+      return authUtils.isAuthenticated();
     }
+    return false;
   }, []);
 
   return isLoggedIn;
 };
 
 export default useIsLoggedIn;
-

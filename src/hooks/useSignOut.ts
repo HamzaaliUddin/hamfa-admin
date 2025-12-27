@@ -1,5 +1,6 @@
 'use client';
 
+import { authUtils } from '@/utils/auth';
 import { useRouter } from 'next/navigation';
 import URLs from '@/utils/URLs.util';
 
@@ -10,17 +11,8 @@ export const useSignOut = () => {
   const router = useRouter();
 
   const signOut = () => {
-    // Clear localStorage
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('admin_token');
-      localStorage.removeItem('admin_user');
-      
-      // Clear cookie
-      document.cookie = 'admin_token=; path=/; max-age=0';
-    }
-
-    // Redirect to login
-    router.push(URLs.Login);
+    // Use authUtils to handle logout properly
+    authUtils.logout();
   };
 
   return { signOut };

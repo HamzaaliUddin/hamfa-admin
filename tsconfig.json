@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@be-types/*": ["../hamfa-be/src/types/*"]
     }
   },
   "include": [

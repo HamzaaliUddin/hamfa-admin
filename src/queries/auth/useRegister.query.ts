@@ -1,4 +1,5 @@
 import axiosInstance from '@/services/axiosInstance';
+import { authUtils } from '@/utils/auth';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
@@ -29,9 +30,9 @@ export const useRegister = () => {
       return response.data;
     },
     onSuccess: data => {
-      // Store token and user in localStorage
-      localStorage.setItem('admin_token', data.token);
-      localStorage.setItem('admin_user', JSON.stringify(data.user));
+      // Store token in cookies and user in localStorage using authUtils
+      authUtils.setToken(data.token);
+      authUtils.setUser(data.user as any);
 
       toast.success('Registration successful!');
     },

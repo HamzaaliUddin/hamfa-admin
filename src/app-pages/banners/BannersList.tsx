@@ -22,8 +22,8 @@ const BannersList = () => {
   });
 
   const { data, isLoading, isFetching } = useGetBanners(filters);
-  const banners = data?.body?.data || [];
-  const totalCount = data?.body?.count || 0;
+  const banners = data?.data || [];
+  const totalCount = data?.count || 0;
 
   const handleFilters = (newFilters: Record<string, string | number>) => {
     setFilters({

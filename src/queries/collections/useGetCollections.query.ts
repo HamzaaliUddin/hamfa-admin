@@ -27,10 +27,8 @@ export interface GetCollectionsParams {
 }
 
 interface GetCollectionsResponse {
-  body: {
   data: Collection[];
   count: number;
-  };
 }
 
 const fetchCollections = async (params?: GetCollectionsParams): Promise<GetCollectionsResponse> => {

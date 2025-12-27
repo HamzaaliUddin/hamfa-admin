@@ -19,6 +19,7 @@ export function useLoginForm() {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
+      console.log(data);
       const result = await loginMutation.mutateAsync(data);
       console.log('Login result:', result);
 

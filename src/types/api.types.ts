@@ -88,12 +88,14 @@ export interface ICategory {
   updated_at: string;
 }
 
+import { NotificationModelType } from '@be-types/notifications/notifications.type';
+
 export interface INotification {
   notification_id: string | number;
   title: string;
   message: string;
-  type: 'success' | 'warning' | 'info' | 'error';
-  status: 'sent' | 'failed' | 'scheduled';
+  type: NotificationModelType['type'];
+  status: NotificationModelType['status'];
   read: boolean;
   sent_at?: string;
   created_at: string;

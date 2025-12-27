@@ -1,3 +1,5 @@
+import Cookies from 'js-cookie';
+
 interface AdminUser {
   user_id: number;
   name: string;
@@ -18,20 +20,26 @@ interface AdminUser {
   };
 }
 
+const TOKEN_KEY = 'admin_token';
+const USER_KEY = 'admin_user';
+
 export const authUtils = {
   // Save auth token
   setToken: (token: string) => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('admin_token', token);
-      // Also set in cookie for middleware
-      document.cookie = `admin_token=${token}; path=/; max-age=${7 * 24 * 60 * 60}`; // 7 days
+      Cookies.set(TOKEN_KEY, token, {
+        expires: 30, // 30 days
+        path: '/',
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+      });
     }
   },
 
-  // Get auth token
+  // Get auth token from cookies
   getToken: (): string | null => {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('admin_token');
+      return Cookies.get(TOKEN_KEY) || null;
     }
     return null;
   },
@@ -39,23 +47,21 @@ export const authUtils = {
   // Remove auth token
   removeToken: () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('admin_token');
-      // Also remove from cookie
-      document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      Cookies.remove(TOKEN_KEY, { path: '/' });
     }
   },
 
-  // Save user data
+  // Save user data (keeping in localStorage for now, can be moved to cookies if needed)
   setUser: (user: AdminUser) => {
     if (typeof window !== 'undefined') {
-      localStorage.setItem('admin_user', JSON.stringify(user));
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
     }
   },
 
   // Get user data
   getUser: (): AdminUser | null => {
     if (typeof window !== 'undefined') {
-      const userStr = localStorage.getItem('admin_user');
+      const userStr = localStorage.getItem(USER_KEY);
       if (userStr) {
         try {
           return JSON.parse(userStr);
@@ -70,7 +76,7 @@ export const authUtils = {
   // Remove user data
   removeUser: () => {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('admin_user');
+      localStorage.removeItem(USER_KEY);
     }
   },
 
@@ -84,13 +90,10 @@ export const authUtils = {
     authUtils.removeToken();
     authUtils.removeUser();
     if (typeof window !== 'undefined') {
-      // Also remove refresh token and expiry
+      // Also remove refresh token and expiry if they exist
       localStorage.removeItem('admin_refresh_token');
       localStorage.removeItem('token_expires_in');
-      // Remove cookie
-      document.cookie = 'admin_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       window.location.href = '/login';
     }
   },
 };
-

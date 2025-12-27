@@ -27,10 +27,8 @@ export interface GetCategoriesParams {
 }
 
 interface GetCategoriesResponse {
-  body: {
   data: Category[];
   count: number;
-  };
 }
 
 const fetchCategories = async (params?: GetCategoriesParams): Promise<GetCategoriesResponse> => {

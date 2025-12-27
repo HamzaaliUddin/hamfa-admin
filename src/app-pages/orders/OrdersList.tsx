@@ -24,8 +24,8 @@ const OrdersList = () => {
   });
 
   const { data, isLoading, isFetching } = useGetOrders(filters);
-  const orders: Order[] = data?.body?.data || [];
-  const totalCount = data?.body?.count || 0;
+  const orders: Order[] = data?.data || [];
+  const totalCount = data?.count || 0;
 
   const handleFilters = (newFilters: { [key: string]: any }) => {
     setFilters({
@@ -36,7 +36,6 @@ const OrdersList = () => {
 
   const headers = ordersColumnHeaders();
   const paymentTexts = geOrderPaymentTexts();
-
   return (
     <>
       <div className="rounded-md border">

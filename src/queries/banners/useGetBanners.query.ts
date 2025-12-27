@@ -25,10 +25,8 @@ export interface GetBannersParams {
 }
 
 interface GetBannersResponse {
-  body: {
   data: Banner[];
   count: number;
-  };
 }
 
 const fetchBanners = async (params?: GetBannersParams): Promise<GetBannersResponse> => {

@@ -1,4 +1,5 @@
 import axiosInstance from '@/services/axiosInstance';
+import { authUtils } from '@/utils/auth';
 import { useMutation } from '@tanstack/react-query';
 
 interface RefreshTokenRequest {
@@ -20,8 +21,10 @@ export const useRefreshToken = () => {
       return response.data;
     },
     onSuccess: data => {
-      // Update tokens in localStorage
-      localStorage.setItem('admin_token', data.token);
+      // Update token in cookies using authUtils
+      authUtils.setToken(data.token);
+      
+      // Store refresh token in localStorage (if needed)
       localStorage.setItem('admin_refresh_token', data.refreshToken);
 
       console.log('✅ Token refreshed successfully');
@@ -30,11 +33,8 @@ export const useRefreshToken = () => {
       const errorMessage = error?.error || error?.message || 'Failed to refresh token';
       console.error('❌ Token refresh failed:', errorMessage);
 
-      // Clear storage and redirect to login
-      localStorage.removeItem('admin_token');
-      localStorage.removeItem('admin_refresh_token');
-      localStorage.removeItem('admin_user');
-      window.location.href = '/login';
+      // Use authUtils to handle logout properly
+      authUtils.logout();
     },
   });
 };

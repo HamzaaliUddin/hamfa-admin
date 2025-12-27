@@ -43,10 +43,8 @@ export interface GetProductsParams {
 }
 
 interface GetProductsResponse {
-  body: {
   data: Product[];
   count: number;
-  };
 }
 
 const fetchProducts = async (params?: GetProductsParams): Promise<GetProductsResponse> => {

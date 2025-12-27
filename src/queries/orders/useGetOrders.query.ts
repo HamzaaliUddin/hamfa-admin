@@ -36,10 +36,8 @@ export interface GetOrdersParams {
 }
 
 interface GetOrdersResponse {
-  body: {
-    data: Order[];
-    count: number;
-  };
+  data: Order[];
+  count: number;
 }
 
 const fetchOrders = async (params?: GetOrdersParams): Promise<GetOrdersResponse> => {

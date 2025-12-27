@@ -22,8 +22,8 @@ const BrandsList = () => {
   });
 
   const { data, isLoading, isFetching } = useGetBrands(filters);
-  const brands = (data?.body?.data || []) as unknown as Brand[];
-  const totalCount = data?.body?.count || 0;
+  const brands = (data?.data || []) as unknown as Brand[];
+  const totalCount = data?.count || 0;
   const handleFilters = (newFilters: Record<string, string | number>) => {
     setFilters({
       ...filters,

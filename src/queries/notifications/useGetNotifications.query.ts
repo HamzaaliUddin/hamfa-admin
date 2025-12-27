@@ -2,23 +2,10 @@
 
 import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
+import { NotificationModelType } from '@be-types/notifications/notifications.type';
 
-export interface Notification {
-  notification_id: number;
-  title: string;
-  message: string;
-  description?: string;
-  actor_type?: 'user' | 'super_admin' | 'admin' | 'moderator' | 'system';
-  actor_id?: number;
-  actor_name?: string;
-  action?: string;
-  type: 'success' | 'warning' | 'info' | 'error';
-  status: 'sent' | 'failed' | 'scheduled';
-  read: boolean;
-  sent_at?: string;
-  created_at?: string;
-  updated_at?: string;
-}
+// Use backend type directly
+export type Notification = NotificationModelType;
 
 export interface GetNotificationsParams {
   page?: number;
@@ -31,10 +18,8 @@ export interface GetNotificationsParams {
 }
 
 interface GetNotificationsResponse {
-  body: {
-    data: Notification[];
-    count: number;
-  };
+  data: Notification[];
+  count: number;
 }
 
 const fetchNotifications = async (
