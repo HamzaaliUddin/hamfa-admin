@@ -6,7 +6,6 @@ import { ArrowLeft } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import PageLoader from '@/components/common/PageLoader';
 import { useGetOrderById } from '@/queries/orders/useGetOrderById.query';
-import { Order } from '@/queries/orders/useGetOrders.query';
 import ROUTES from '@/utils/route';
 import PageEmpty from '@/components/common/PageEmpty';
 import OrdersViewProducts from './OrdersViewProducts';
@@ -21,8 +20,7 @@ type Props = {
 
 const OrdersView = ({ id }: Props) => {
   const router = useRouter();
-  const { data, isLoading, isFetching } = useGetOrderById(id);
-  const order = data?.data as Order;
+  const { data: order, isLoading, isFetching } = useGetOrderById(id);
 
   return (
     <>

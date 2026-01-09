@@ -3,31 +3,42 @@
 import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
 
+// Product status enum matching backend
+export type ProductStatus = 'active' | 'inactive' | 'out_of_stock';
+
+// Product size enum matching backend
+export type ProductSize = 'small' | 'medium' | 'large';
+
+// Product type enum matching backend
+export type ProductType = 'stitched' | 'unstitched';
+
 export interface Product {
   product_id: number;
   title: string;
+  slug: string;
   description: string;
   sku: string;
   image: string;
   images: string[];
   price: number;
-  discount_price?: number;
-  compare_price?: number;
-  cost?: number;
-  profit?: number;
   stock: number;
   low_stock_threshold: number;
   brand_id: number;
-  category_id: number;
-  status: 'active' | 'inactive' | 'out_of_stock';
-  featured: boolean;
-  size: 'small' | 'medium' | 'large';
-  product_type: 'stitched' | 'unstitched';
-  tags?: string[];
-  weight?: number;
-  dimensions?: string | object;
+  collection_id: number;
+  status: ProductStatus;
+  size: ProductSize;
+  product_type: ProductType;
   created_at?: string;
   updated_at?: string;
+  // Joined data (optional)
+  brand?: {
+    brand_id: number;
+    name: string;
+  };
+  collection?: {
+    collection_id: number;
+    title: string;
+  };
 }
 
 export interface GetProductsParams {
@@ -36,9 +47,10 @@ export interface GetProductsParams {
   sortKey?: string;
   sortValue?: 'ASC' | 'DESC';
   status?: string;
-  featured?: boolean;
   brand_id?: number;
-  category_id?: number;
+  collection_id?: number;
+  size?: ProductSize;
+  product_type?: ProductType;
   search?: string;
 }
 

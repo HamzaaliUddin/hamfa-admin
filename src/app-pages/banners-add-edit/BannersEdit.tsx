@@ -24,22 +24,17 @@ const BannersEdit = ({ id }: Props) => {
   const isUpdating = status === 'pending';
 
   const initialValues = {
-    status: banner?.status,
-    title_en: banner?.title?.en || '',
-    title_ar: banner?.title?.ar || '',
-    existing_image: banner?.image_url, // For FE Only
-    image_url: null
+    existing_image: banner?.image,
+    image: null
   };
 
   const handleRequest = (formData: any, setError: ErrorOption, reset: any) => {
     onUpdateBanner(
-      { ...formData, id },
+      { id, data: formData },
       {
         onSuccess: () => {
           toast.success('Banner updated successfully');
-
           reset();
-
           const url = makeURL(URLs.BannersView, { id });
           router.replace(url);
         },
@@ -55,7 +50,7 @@ const BannersEdit = ({ id }: Props) => {
       {!isLoading && (
         <BannersAddEditForm
           isEdit
-          title={banner?.title?.en}
+          title={`Banner #${banner?.banner_id}`}
           initialValues={initialValues}
           handleRequest={handleRequest}
         />
@@ -65,4 +60,3 @@ const BannersEdit = ({ id }: Props) => {
 };
 
 export default BannersEdit;
-

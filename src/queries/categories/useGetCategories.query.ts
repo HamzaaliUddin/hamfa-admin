@@ -3,17 +3,17 @@
 import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
 
+// Category interface matching backend - only has name and category_id
 export interface Category {
   category_id: number;
   name: string;
-  slug: string;
-  description: string;
-  parent_id?: number;
-  image: string;
-  status: 'active' | 'inactive';
-  product_count: number;
   created_at?: string;
   updated_at?: string;
+  // Joined data (optional)
+  collections?: Array<{
+    collection_id: number;
+    title: string;
+  }>;
 }
 
 export interface GetCategoriesParams {
@@ -21,8 +21,6 @@ export interface GetCategoriesParams {
   limit?: number;
   sortKey?: string;
   sortValue?: 'ASC' | 'DESC';
-  status?: string;
-  parent_id?: number;
   search?: string;
 }
 

@@ -14,15 +14,12 @@ interface UpdateProductParams {
 }
 
 interface UpdateProductResponse {
-  body: {
   data: Product;
-  };
-  message: string;
 }
 
 const updateProduct = async ({ id, data }: UpdateProductParams): Promise<Product> => {
   const response: UpdateProductResponse = await axiosInstance.put(`/product/${id}`, data);
-  return response.body.data;
+  return response.data;
 };
 
 export const useUpdateProduct = () => {
@@ -36,7 +33,7 @@ export const useUpdateProduct = () => {
       toast.success('Product updated successfully');
     },
     onError: (error: any) => {
-      const errorMessage = error?.error || error?.message || 'Failed to update product';
+      const errorMessage = error?.data?.message || error?.message || 'Failed to update product';
       toast.error(errorMessage);
     },
   });

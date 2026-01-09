@@ -1,20 +1,15 @@
 'use client';
 
 import { PageHeader } from '@/components/common/page-header';
+import { StatusBadge } from '@/components/common/StatusBadge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useGetProductById } from '@/queries/products/useGetProductById.query';
-import { ArrowLeft, Box, DollarSign, Edit, Loader2, Package, Tag, Trash2 } from 'lucide-react';
+import { ArrowLeft, Box, DollarSign, Edit, Loader2, Package, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-
-const statusColors = {
-  active: 'bg-green-100 text-green-800',
-  inactive: 'bg-gray-100 text-gray-800',
-  out_of_stock: 'bg-red-100 text-red-800',
-};
 
 export default function ProductViewPage() {
   const params = useParams();
@@ -69,23 +64,23 @@ export default function ProductViewPage() {
             <div className="flex items-center gap-3">
               <div>
                 <p className="text-muted-foreground text-sm">Status</p>
-                <Badge className={`mt-1 ${statusColors[product.status]}`}>
-                  {product.status.replace('_', ' ').toUpperCase()}
-                </Badge>
+                <StatusBadge status={product.status} />
               </div>
               <Separator orientation="vertical" className="hidden h-12 sm:block" />
               <div>
                 <p className="text-muted-foreground text-sm">Stock</p>
                 <p className="mt-1 font-semibold">{product.stock} units</p>
               </div>
-              {product.featured && (
-                <>
-                  <Separator orientation="vertical" className="hidden h-12 sm:block" />
-                  <div>
-                    <Badge variant="secondary">Featured</Badge>
-                  </div>
-                </>
-              )}
+              <Separator orientation="vertical" className="hidden h-12 sm:block" />
+              <div>
+                <p className="text-muted-foreground text-sm">Size</p>
+                <Badge variant="outline" className="mt-1 capitalize">{product.size}</Badge>
+              </div>
+              <Separator orientation="vertical" className="hidden h-12 sm:block" />
+              <div>
+                <p className="text-muted-foreground text-sm">Type</p>
+                <Badge variant="secondary" className="mt-1 capitalize">{product.product_type}</Badge>
+              </div>
             </div>
             <div className="flex gap-2">
               <Button onClick={() => router.push(`/products/edit/${product.product_id}`)}>
@@ -109,12 +104,18 @@ export default function ProductViewPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="relative aspect-square overflow-hidden rounded-lg bg-gray-100">
-              <Image
-                src={product.image || '/placeholder.png'}
-                alt={product.title}
-                fill
-                className="object-cover"
-              />
+              {product.image ? (
+                <Image
+                  src={product.image}
+                  alt={product.title}
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center">
+                  <Package className="h-16 w-16 text-muted-foreground" />
+                </div>
+              )}
             </div>
             {product.images && product.images.length > 0 && (
               <div className="grid grid-cols-3 gap-2">
@@ -152,6 +153,11 @@ export default function ProductViewPage() {
               </div>
               <Separator />
               <div>
+                <p className="text-muted-foreground text-sm">Slug</p>
+                <p className="font-mono text-sm">{product.slug}</p>
+              </div>
+              <Separator />
+              <div>
                 <p className="text-muted-foreground text-sm">Description</p>
                 <p className="text-sm">{product.description || 'No description'}</p>
               </div>
@@ -159,42 +165,30 @@ export default function ProductViewPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-muted-foreground text-sm">SKU</p>
-                  <p className="font-medium">{product.sku}</p>
+                  <p className="font-medium font-mono">{product.sku}</p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground text-sm">Category ID</p>
-                  <p className="font-medium">#{product.category_id}</p>
+                  <p className="text-muted-foreground text-sm">Collection</p>
+                  <p className="font-medium">
+                    {product.collection?.title || `#${product.collection_id}`}
+                  </p>
                 </div>
               </div>
               <Separator />
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-muted-foreground text-sm">Brand ID</p>
-                  <p className="font-medium">#{product.brand_id}</p>
+                  <p className="text-muted-foreground text-sm">Brand</p>
+                  <p className="font-medium">
+                    {product.brand?.name || `#${product.brand_id}`}
+                  </p>
                 </div>
                 <div>
                   <p className="text-muted-foreground text-sm">Product Type</p>
-                  <Badge variant="secondary">
-                    {product.product_type || 'N/A'}
+                  <Badge variant="secondary" className="capitalize">
+                    {product.product_type}
                   </Badge>
                 </div>
               </div>
-              {product.tags && product.tags.length > 0 && (
-                <>
-                  <Separator />
-                  <div>
-                    <p className="text-muted-foreground mb-2 text-sm">Tags</p>
-                    <div className="flex flex-wrap gap-2">
-                      {product.tags.map((tag, idx) => (
-                        <Badge key={idx} variant="outline">
-                          <Tag className="mr-1 h-3 w-3" />
-                          {tag}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                </>
-              )}
             </CardContent>
           </Card>
 
@@ -205,31 +199,18 @@ export default function ProductViewPage() {
                 Pricing & Stock
               </CardTitle>
             </CardHeader>
-             <CardContent className="space-y-4">
-               <div className="grid grid-cols-2 gap-4">
-                 <div>
-                   <p className="text-muted-foreground text-sm">Price</p>
-                   <p className="text-lg font-semibold">Rs {product.price.toFixed(2)}</p>
-                 </div>
-                 {product.compare_price && (
-                   <div>
-                     <p className="text-muted-foreground text-sm">Compare Price</p>
-                     <p className="text-lg font-semibold text-gray-500 line-through">
-                       Rs {product.compare_price.toFixed(2)}
-                     </p>
-                   </div>
-                 )}
-               </div>
-               <Separator />
-               {product.cost && (
-                 <>
-                   <div>
-                     <p className="text-muted-foreground text-sm">Cost</p>
-                     <p className="font-medium">Rs {product.cost.toFixed(2)}</p>
-                   </div>
-                   <Separator />
-                 </>
-               )}
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-muted-foreground text-sm">Price</p>
+                  <p className="text-lg font-semibold">Rs {product.price}</p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground text-sm">Size</p>
+                  <Badge variant="outline" className="capitalize">{product.size}</Badge>
+                </div>
+              </div>
+              <Separator />
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-muted-foreground text-sm">Stock</p>
@@ -252,38 +233,9 @@ export default function ProductViewPage() {
               )}
             </CardContent>
           </Card>
-
-          {product.weight && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Box className="h-5 w-5" />
-                  Shipping Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <p className="text-muted-foreground text-sm">Weight</p>
-                  <p className="font-medium">{product.weight} kg</p>
-                </div>
-                {product.dimensions && (
-                  <>
-                    <Separator />
-                    <div>
-                      <p className="text-muted-foreground mb-2 text-sm">Dimensions</p>
-                      <p className="text-sm">
-                        {typeof product.dimensions === 'string'
-                          ? product.dimensions
-                          : JSON.stringify(product.dimensions)}
-                      </p>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </div>
       </div>
     </div>
   );
 }
+

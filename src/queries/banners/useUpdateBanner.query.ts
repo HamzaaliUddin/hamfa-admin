@@ -10,19 +10,16 @@ type UpdateBannerInput = Partial<CreateBannerInput>;
 
 interface UpdateBannerParams {
   id: number | string;
-  data: UpdateBannerInput;
+  data: UpdateBannerInput | FormData;
 }
 
 interface UpdateBannerResponse {
-  body: {
   data: Banner;
-  };
-  message: string;
 }
 
 const updateBanner = async ({ id, data }: UpdateBannerParams): Promise<Banner> => {
   const response: UpdateBannerResponse = await axiosInstance.put(`/banner/${id}`, data);
-  return response.body.data;
+  return response.data;
 };
 
 export const useUpdateBanner = () => {
@@ -36,7 +33,7 @@ export const useUpdateBanner = () => {
       toast.success('Banner updated successfully');
     },
     onError: (error: any) => {
-      const errorMessage = error?.error || error?.message || 'Failed to update banner';
+      const errorMessage = error?.data?.message || error?.message || 'Failed to update banner';
       toast.error(errorMessage);
     },
   });

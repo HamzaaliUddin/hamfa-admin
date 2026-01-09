@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { ArrowLeft, User as UserIcon, Loader2, Edit, Trash2, Calendar, Mail, Shield } from 'lucide-react';
+import { ArrowLeft, User as UserIcon, Loader2, Edit, Calendar, Mail } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function UserViewPage() {
@@ -28,14 +28,14 @@ export default function UserViewPage() {
   if (error || !user) {
     return (
       <div className="space-y-6">
-        <PageHeader title="User Details" description="View user information" />
+        <PageHeader title="Customer Details" description="View customer information" />
         <div className="py-10 text-center">
           <UserIcon className="text-muted-foreground mx-auto mb-4 h-16 w-16" />
-          <h2 className="mb-2 text-2xl font-semibold">User not found</h2>
-          <p className="text-muted-foreground mb-6">The user you&apos;re looking for doesn&apos;t exist.</p>
+          <h2 className="mb-2 text-2xl font-semibold">Customer not found</h2>
+          <p className="text-muted-foreground mb-6">The customer you&apos;re looking for doesn&apos;t exist.</p>
           <Button onClick={() => router.push('/users')}>
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Users
+            Back to Customers
           </Button>
         </div>
       </div>
@@ -50,7 +50,7 @@ export default function UserViewPage() {
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div className="flex-1">
-          <PageHeader title={user.name} description={`User ID: ${user.user_id}`} />
+          <PageHeader title={user.name} description={`Customer ID: ${user.user_id}`} />
         </div>
       </div>
 
@@ -76,26 +76,11 @@ export default function UserViewPage() {
                   </div>
                 </>
               )}
-              {user.brand && (
-                <>
-                  <Separator orientation="vertical" className="hidden h-12 sm:block" />
-                  <div>
-                    <p className="text-muted-foreground text-sm">Brand</p>
-                    <Badge className="mt-1" variant="outline">
-                      {user.brand.name}
-                    </Badge>
-                  </div>
-                </>
-              )}
             </div>
             <div className="flex gap-2">
               <Button onClick={() => router.push(`/users/edit/${user.user_id}`)}>
                 <Edit className="mr-2 h-4 w-4" />
-                Edit User
-              </Button>
-              <Button variant="destructive">
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
+                Edit Status
               </Button>
             </div>
           </div>
@@ -103,12 +88,12 @@ export default function UserViewPage() {
       </Card>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* User Information */}
+        {/* Customer Information */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <UserIcon className="h-5 w-5" />
-              User Information
+              Customer Information
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -128,7 +113,7 @@ export default function UserViewPage() {
             </div>
             <Separator />
             <div>
-              <p className="text-muted-foreground text-sm">User ID</p>
+              <p className="text-muted-foreground text-sm">Customer ID</p>
               <p className="font-medium">#{user.user_id}</p>
             </div>
             <Separator />
@@ -141,58 +126,7 @@ export default function UserViewPage() {
           </CardContent>
         </Card>
 
-        {/* Role & Brand Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5" />
-              Role & Brand
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {user.role ? (
-              <>
-                <div>
-                  <p className="text-muted-foreground text-sm">Role</p>
-                  <p className="font-medium">{user.role.name}</p>
-                </div>
-                <Separator />
-                <div>
-                  <p className="text-muted-foreground text-sm">Role ID</p>
-                  <p className="font-medium">#{user.role.role_id}</p>
-                </div>
-              </>
-            ) : (
-              <div>
-                <p className="text-muted-foreground text-sm">No role assigned</p>
-              </div>
-            )}
-            {user.brand && (
-              <>
-                <Separator />
-                <div>
-                  <p className="text-muted-foreground text-sm">Brand</p>
-                  <Button
-                    variant="link"
-                    className="h-auto p-0 font-medium"
-                    onClick={() => router.push(`/brands/${user.brand?.brand_id}`)}
-                  >
-                    {user.brand.name}
-                  </Button>
-                </div>
-                <Separator />
-                <div>
-                  <p className="text-muted-foreground text-sm">Brand ID</p>
-                  <p className="font-medium">#{user.brand.brand_id}</p>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Timeline */}
-      {(user.created_at || user.updated_at) && (
+        {/* Timeline */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -218,8 +152,7 @@ export default function UserViewPage() {
             )}
           </CardContent>
         </Card>
-      )}
+      </div>
     </div>
   );
 }
-

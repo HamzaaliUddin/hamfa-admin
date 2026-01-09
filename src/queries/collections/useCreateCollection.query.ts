@@ -6,25 +6,20 @@ import { toast } from 'sonner';
 import { Collection } from './useGetCollections.query';
 
 export interface CreateCollectionInput {
-  name: string;
-  slug: string;
-  description: string;
+  title: string;
+  slug?: string; // Optional - auto-generated if not provided
   image: string;
-  status: 'active' | 'inactive';
-  featured?: boolean;
-  sort_order: number;
+  category_id?: number;
+  show_in_nav?: boolean;
 }
 
 interface CreateCollectionResponse {
-  body: {
   data: Collection;
-  };
-  message: string;
 }
 
 const createCollection = async (data: CreateCollectionInput): Promise<Collection> => {
   const response: CreateCollectionResponse = await axiosInstance.post('/collection', data);
-  return response.body.data;
+  return response.data;
 };
 
 export const useCreateCollection = () => {
@@ -34,9 +29,10 @@ export const useCreateCollection = () => {
     mutationFn: createCollection,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['collections'] });
+      toast.success('Collection created successfully');
     },
     onError: (error: any) => {
-      const errorMessage = error?.error || error?.message || 'Failed to create collection';
+      const errorMessage = error?.data?.message || error?.message || 'Failed to create collection';
       toast.error(errorMessage);
     },
   });

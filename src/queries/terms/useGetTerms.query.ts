@@ -3,15 +3,21 @@
 import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
 
+// Term type enum matching backend
+export type TermType = 'terms' | 'privacy' | 'refund' | 'shipping';
+
+// Term status enum matching backend
+export type TermStatus = 'active' | 'inactive' | 'draft';
+
+// Term interface matching backend
 export interface Term {
   term_id: number;
   title: string;
-  slug: string;
-  type?: string;
-  description?: string;
+  type: TermType;
+  description: string;
   content: string;
   version: string;
-  status: 'active' | 'draft';
+  status: TermStatus;
   effective_date: string;
   created_at?: string;
   updated_at?: string;
@@ -22,7 +28,8 @@ export interface GetTermsParams {
   limit?: number;
   sortKey?: string;
   sortValue?: 'ASC' | 'DESC';
-  status?: string;
+  type?: TermType;
+  status?: TermStatus;
   search?: string;
 }
 

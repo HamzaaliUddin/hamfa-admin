@@ -3,9 +3,11 @@
 import { StatusBadge } from '@/components/common/StatusBadge';
 import { Pagination } from '@/components/Pagination';
 import { Table } from '@/components/Table';
+import { Badge } from '@/components/ui/badge';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Brand, useGetBrands } from '@/queries/brands/useGetBrands.query';
 import { isEmpty } from 'lodash';
+import Image from 'next/image';
 import { useState } from 'react';
 import { BrandActions } from './BrandActions';
 import BrandListFilters from './BrandListFilters';
@@ -15,8 +17,8 @@ import BrandsDelete from './BrandsDelete';
 const BrandsList = () => {
   const [filters, setFilters] = useState({
     search: '',
-    sortKey: 'name',
-    sortValue: 'ASC' as 'ASC' | 'DESC',
+    sortKey: 'brand_id',
+    sortValue: 'DESC' as 'ASC' | 'DESC',
     page: 1,
     limit: 10,
   });
@@ -24,6 +26,7 @@ const BrandsList = () => {
   const { data, isLoading, isFetching } = useGetBrands(filters);
   const brands = (data?.data || []) as unknown as Brand[];
   const totalCount = data?.count || 0;
+  
   const handleFilters = (newFilters: Record<string, string | number>) => {
     setFilters({
       ...filters,
@@ -32,7 +35,7 @@ const BrandsList = () => {
   };
 
   const headers = brandsColumnHeaders();
-  console.log(brands);
+  
   return (
     <>
       <div className="rounded-md border">
@@ -42,16 +45,22 @@ const BrandsList = () => {
             <TableRow key={row?.brand_id}>
               <TableCell>{row?.brand_id}</TableCell>
               <TableCell>
-                <img
-                  src={row?.logo}
-                  alt={row?.name}
-                  width={100}
-                  height={50}
-                  className="object-contain"
-                />
+                {row?.logo && (
+                  <Image
+                    src={row.logo}
+                    alt={row.name}
+                    width={80}
+                    height={40}
+                    className="object-contain"
+                  />
+                )}
               </TableCell>
               <TableCell>{row?.name}</TableCell>
-              <TableCell>
+              <TableCell className="font-mono text-sm text-muted-foreground">{row?.slug}</TableCell>
+              <TableCell className="text-center">
+                <Badge variant="secondary">{row?.collection_count || 0}</Badge>
+              </TableCell>
+              <TableCell className="text-center">
                 <StatusBadge status={row?.status} />
               </TableCell>
               <TableCell>

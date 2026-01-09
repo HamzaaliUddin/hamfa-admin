@@ -5,27 +5,18 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Banner } from './useGetBanners.query';
 
+// Banner only has image in backend
 export interface CreateBannerInput {
-  title: string;
-  description: string;
   image: string;
-  status: 'active' | 'inactive';
-  redirect_url?: string;
-  sort_order: number;
-  start_date?: string;
-  end_date?: string;
 }
 
 interface CreateBannerResponse {
-  body: {
   data: Banner;
-  };
-  message: string;
 }
 
 const createBanner = async (data: CreateBannerInput): Promise<Banner> => {
   const response: CreateBannerResponse = await axiosInstance.post('/banner', data);
-  return response.body.data;
+  return response.data;
 };
 
 export const useCreateBanner = () => {
@@ -38,7 +29,7 @@ export const useCreateBanner = () => {
       toast.success('Banner created successfully');
     },
     onError: (error: any) => {
-      const errorMessage = error?.error || error?.message || 'Failed to create banner';
+      const errorMessage = error?.data?.message || error?.message || 'Failed to create banner';
       toast.error(errorMessage);
     },
   });

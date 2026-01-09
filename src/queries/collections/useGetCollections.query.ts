@@ -3,17 +3,22 @@
 import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
 
+// Collection interface matching backend
 export interface Collection {
   collection_id: number;
   title: string;
   slug: string;
-  description: string;
   image: string;
-  categories_count: number;
-  status: 'active' | 'inactive';
-  featured: boolean;
+  category_id?: number;
+  show_in_nav?: boolean;
   created_at?: string;
   updated_at?: string;
+  // Joined data (optional)
+  category?: {
+    category_id: number;
+    name: string;
+  };
+  products_count?: number;
 }
 
 export interface GetCollectionsParams {
@@ -21,8 +26,8 @@ export interface GetCollectionsParams {
   limit?: number;
   sortKey?: string;
   sortValue?: 'ASC' | 'DESC';
-  status?: string;
-  featured?: boolean;
+  category_id?: number;
+  show_in_nav?: boolean;
   search?: string;
 }
 

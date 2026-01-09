@@ -1,34 +1,30 @@
 import { TableHeaderProps } from '@/components/Table/Table';
 
+// Users (Customers) have: user_id, name, email, is_active in backend
 export const usersColumnHeaders = (): TableHeaderProps[] => [
   {
     title: 'ID',
-    width: '8%',
+    width: '10%',
     align: 'left'
   },
   {
     title: 'Name',
-    width: '20%',
-    align: 'left'
-  },
-  {
-    title: 'Email',
     width: '25%',
     align: 'left'
   },
   {
-    title: 'Role',
-    width: '15%',
+    title: 'Email',
+    width: '35%',
     align: 'left'
   },
   {
     title: 'Status',
-    width: '12%',
-    align: 'left'
+    width: '15%',
+    align: 'center'
   },
   {
     title: 'Actions',
-    width: '20%',
+    width: '15%',
     align: 'center'
   }
 ];
@@ -38,4 +34,3 @@ export const userStatusFormRules = () => ({
     required: 'Status is required'
   }
 });
-

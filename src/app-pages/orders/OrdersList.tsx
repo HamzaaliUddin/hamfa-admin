@@ -15,9 +15,8 @@ import OrdersPaymentStatus from './OrdersPaymentStatus';
 
 const OrdersList = () => {
   const [filters, setFilters] = useState({
-    status: '',
     search: '',
-    sortKey: 'created_at',
+    sortKey: 'order_id',
     sortValue: 'DESC' as 'ASC' | 'DESC',
     page: 1,
     limit: 10,
@@ -43,11 +42,13 @@ const OrdersList = () => {
         <Table headers={headers} noData={isEmpty(orders)} isLoading={isLoading || isFetching}>
           {orders.map((row: Order) => (
             <TableRow key={row?.order_id}>
-              <TableCell className="text-center">{row?.order_id}</TableCell>
+              <TableCell>{row?.order_number || `#${row?.order_id}`}</TableCell>
               <TableCell>
                 {row?.created_at ? dayjs(row?.created_at).format('DD MMM YYYY, hh:mm A') : '-'}
               </TableCell>
-              <TableCell>{row?.user_id || '-'}</TableCell>
+              <TableCell>
+                {row?.user?.name || row?.guest_email || `Guest #${row?.guest_session_id?.slice(0, 8)}` || '-'}
+              </TableCell>
               <TableCell className="text-center">QAR {row?.total || '-'}</TableCell>
               <TableCell className="text-center">
                 {paymentTexts[row.payment_method] || '-'}
@@ -58,7 +59,6 @@ const OrdersList = () => {
               <TableCell className="text-center">
                 <OrdersDeliveryStatus row={row} />
               </TableCell>
-
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
                   <OrderActions row={row} />

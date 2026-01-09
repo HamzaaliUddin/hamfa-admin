@@ -39,7 +39,7 @@ export const ROUTES = {
   CATEGORIES: {
     LIST: '/categories',
     ADD: '/categories/add',
-    DETAIL: (id: string | number) => `/categories/${id}`,
+    DETAIL: (id: string | number) => `/categories/view/${id}`,
     EDIT: (id: string | number) => `/categories/edit/${id}`,
     SUB: '/categories/sub',
     ASSIGN: '/categories/assign',
@@ -65,7 +65,7 @@ export const ROUTES = {
   COLLECTIONS: {
     LIST: '/collections',
     ADD: '/collections/add',
-    DETAIL: (id: string | number) => `/collections/${id}`,
+    DETAIL: (id: string | number) => `/collections/view/${id}`,
     EDIT: (id: string | number) => `/collections/edit/${id}`,
     ASSIGN: '/collections/assign',
   },

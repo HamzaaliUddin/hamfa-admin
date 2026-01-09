@@ -3,39 +3,31 @@
 import axiosInstance from '@/services/axiosInstance';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Product } from './useGetProducts.query';
+import { Product, ProductSize, ProductStatus, ProductType } from './useGetProducts.query';
 
 export interface CreateProductInput {
   title: string;
   description: string;
-  sku: string;
+  sku?: string; // Optional - auto-generated if not provided
   image: string;
-  images: string[];
+  images?: string[];
   price: number;
-  compare_price?: number;
-  cost?: number;
   stock: number;
-  low_stock_threshold: number;
+  low_stock_threshold?: number;
   brand_id: number;
-  category_id: number;
-  tags?: string[];
-  status: 'active' | 'inactive' | 'out_of_stock';
-  featured?: boolean;
-  has_variants?: boolean;
-  weight?: number;
-  dimensions?: any;
+  collection_id: number;
+  status?: ProductStatus;
+  size: ProductSize;
+  product_type: ProductType;
 }
 
 interface CreateProductResponse {
-  body: {
   data: Product;
-  };
-  message: string;
 }
 
 const createProduct = async (data: CreateProductInput): Promise<Product> => {
   const response: CreateProductResponse = await axiosInstance.post('/product', data);
-  return response.body.data;
+  return response.data;
 };
 
 export const useCreateProduct = () => {
@@ -48,7 +40,7 @@ export const useCreateProduct = () => {
       toast.success('Product created successfully');
     },
     onError: (error: any) => {
-      const errorMessage = error?.error || error?.message || 'Failed to create product';
+      const errorMessage = error?.data?.message || error?.message || 'Failed to create product';
       toast.error(errorMessage);
     },
   });

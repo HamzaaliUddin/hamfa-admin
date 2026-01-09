@@ -3,14 +3,10 @@
 import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
 
+// Banner interface matching backend - only has banner_id and image
 export interface Banner {
   banner_id: number;
-  title: string;
-  description: string;
   image: string;
-  status: 'active' | 'inactive';
-  start_date?: string;
-  end_date?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -20,8 +16,6 @@ export interface GetBannersParams {
   limit?: number;
   sortKey?: string;
   sortValue?: 'ASC' | 'DESC';
-  status?: string;
-  search?: string;
 }
 
 interface GetBannersResponse {

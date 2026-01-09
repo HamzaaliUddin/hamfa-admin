@@ -3,16 +3,23 @@
 import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
 
+// Brand status enum matching backend
+export type BrandStatus = 'active' | 'inactive';
+
 export interface Brand {
   brand_id: number;
   name: string;
-  description: string;
+  slug: string;
   logo: string;
-  status: 'active' | 'inactive';
+  status: BrandStatus;
   collection_count: number;
-  featured: boolean;
   created_at?: string;
   updated_at?: string;
+  // Joined data (optional)
+  collections?: Array<{
+    collection_id: number;
+    title: string;
+  }>;
 }
 
 export interface GetBrandsParams {
@@ -21,7 +28,6 @@ export interface GetBrandsParams {
   sortKey?: string;
   sortValue?: 'ASC' | 'DESC';
   status?: string;
-  featured?: boolean;
   search?: string;
 }
 

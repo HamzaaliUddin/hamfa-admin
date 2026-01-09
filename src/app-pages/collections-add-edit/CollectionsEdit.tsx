@@ -29,6 +29,7 @@ const CollectionsEdit = ({ id }: Props) => {
     image: null,
     image_url: '',
     category_id: collection?.category_id?.toString() || '',
+    show_in_nav: collection?.show_in_nav || false,
   };
 
   const handleRequest = (formData: any, setError: ErrorOption, reset: any) => {

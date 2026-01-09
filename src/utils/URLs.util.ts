@@ -8,7 +8,7 @@ const URLs = {
   Products: '/products',
   ProductsAdd: '/products/add',
   ProductsEdit: '/products/edit/:id',
-  ProductsView: '/products/view/:id',
+  ProductsView: '/products/:id',
 
   Categories: '/categories',
   CategoriesAdd: '/categories/add',
@@ -40,7 +40,7 @@ const URLs = {
   OrdersView: '/orders/view/:id',
 
   Users: '/users',
-  UsersView: '/users/view/:id',
+  UsersView: '/users/:id',
 
   Admins: '/admins',
   AdminsAdd: '/admins/add',

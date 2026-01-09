@@ -2,6 +2,7 @@
 
 import { Pagination } from '@/components/Pagination';
 import { Table } from '@/components/Table';
+import { Badge } from '@/components/ui/badge';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { useGetUsers, User } from '@/queries/users/useGetUsers.query';
 import { isEmpty } from 'lodash';
@@ -14,8 +15,9 @@ import UsersDelete from './UsersDelete';
 const UsersList = () => {
   const [filters, setFilters] = useState({
     search: '',
-    sortKey: 'name',
-    sortValue: 'ASC' as 'ASC' | 'DESC',
+    sortKey: 'user_id',
+    sortValue: 'DESC' as 'ASC' | 'DESC',
+    role: 'Customer',
     page: 1,
     limit: 10,
   });
@@ -42,8 +44,11 @@ const UsersList = () => {
               <TableCell>{row?.user_id}</TableCell>
               <TableCell>{row?.name}</TableCell>
               <TableCell>{row?.email}</TableCell>
-              <TableCell>{row?.role?.name || '-'}</TableCell>
-              <TableCell>{row?.is_active ? 'Active' : 'Inactive'}</TableCell>
+              <TableCell className="text-center">
+                <Badge variant={row?.is_active ? 'default' : 'secondary'}>
+                  {row?.is_active ? 'Active' : 'Inactive'}
+                </Badge>
+              </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
                   <UserActions row={row} />
@@ -67,4 +72,3 @@ const UsersList = () => {
 };
 
 export default UsersList;
-

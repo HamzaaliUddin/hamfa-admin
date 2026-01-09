@@ -14,9 +14,8 @@ import BannersDelete from './BannersDelete';
 
 const BannersList = () => {
   const [filters, setFilters] = useState({
-    search: '',
-    sortKey: 'title',
-    sortValue: 'ASC' as 'ASC' | 'DESC',
+    sortKey: 'banner_id',
+    sortValue: 'DESC' as 'ASC' | 'DESC',
     page: 1,
     limit: 10,
   });
@@ -42,11 +41,16 @@ const BannersList = () => {
             <TableRow key={row?.banner_id}>
               <TableCell>{row?.banner_id}</TableCell>
               <TableCell>
-                <Image src={row?.image} alt={row?.title} width={100} height={50} />
+                {row?.image && (
+                  <Image
+                    src={row.image}
+                    alt={`Banner ${row.banner_id}`}
+                    width={200}
+                    height={80}
+                    className="rounded-md object-cover"
+                  />
+                )}
               </TableCell>
-              <TableCell>{row?.title}</TableCell>
-              {/* Removed redirect_url column - not in backend model */}
-              <TableCell>{row?.status}</TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
                   <BannerActions row={row} />
@@ -70,4 +74,3 @@ const BannersList = () => {
 };
 
 export default BannersList;
-

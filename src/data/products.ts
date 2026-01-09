@@ -1,53 +1,40 @@
 // ============================================
-// PRODUCTS MOCK DATA
+// PRODUCTS TYPES - Matching Backend Models
 // ============================================
 
+export type ProductStatus = 'active' | 'inactive' | 'out_of_stock';
+export type ProductSize = 'small' | 'medium' | 'large';
+export type ProductType = 'stitched' | 'unstitched';
+
 export type Product = {
-  id: string;
+  product_id: number;
   title: string;
+  slug: string;
   description: string;
   sku: string;
   image: string;
   images: string[];
   price: number;
-  comparePrice?: number;
-  cost?: number;
   stock: number;
-  lowStockThreshold: number;
-  brand: string;
-  brandId: string;
-  category: string;
-  categoryId: string;
-  tags: string[];
-  status: 'active' | 'inactive' | 'out_of_stock';
-  featured: boolean;
-  hasVariants: boolean;
-  variants?: ProductVariant[];
-  weight?: number;
-  dimensions?: {
-    length: number;
-    width: number;
-    height: number;
+  low_stock_threshold: number;
+  brand_id: number;
+  collection_id: number;
+  status: ProductStatus;
+  size: ProductSize;
+  product_type: ProductType;
+  created_at?: string;
+  updated_at?: string;
+  // Joined data
+  brand?: {
+    brand_id: number;
+    name: string;
   };
-  createdAt: string;
-  updatedAt: string;
-};
-
-export type ProductVariant = {
-  id: string;
-  name: string;
-  sku: string;
-  price: number;
-  stock: number;
-  image?: string;
-  attributes: {
-    size?: string;
-    color?: string;
-    material?: string;
+  collection?: {
+    collection_id: number;
+    title: string;
   };
 };
 
 export const products: Product[] = [];
 
 export default products;
-

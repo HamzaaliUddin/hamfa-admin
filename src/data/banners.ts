@@ -1,23 +1,14 @@
 // ============================================
-// BANNERS MOCK DATA
+// BANNERS TYPES - Matching Backend Models
 // ============================================
 
 export type Banner = {
-  id: string;
-  title: string;
-  description: string;
+  banner_id: number;
   image: string;
-  status: 'active' | 'inactive';
-  redirectUrl: string;
-  sortOrder: number;
-  startDate?: string;
-  endDate?: string;
-  clickCount: number;
-  createdAt: string;
-  updatedAt: string;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export const banners: Banner[] = [];
 
 export default banners;
-

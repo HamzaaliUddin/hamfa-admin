@@ -1,7 +1,9 @@
 'use client';
 
+import { StatusBadge } from '@/components/common/StatusBadge';
 import { Pagination } from '@/components/Pagination';
 import { Table } from '@/components/Table';
+import { Badge } from '@/components/ui/badge';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Product, useGetProducts } from '@/queries/products/useGetProducts.query';
 import { isEmpty } from 'lodash';
@@ -15,8 +17,8 @@ import ProductsDelete from './ProductsDelete';
 const ProductsList = () => {
   const [filters, setFilters] = useState({
     search: '',
-    sortKey: 'title',
-    sortValue: 'ASC' as 'ASC' | 'DESC',
+    sortKey: 'product_id',
+    sortValue: 'DESC' as 'ASC' | 'DESC',
     page: 1,
     limit: 10,
   });
@@ -42,13 +44,27 @@ const ProductsList = () => {
             <TableRow key={row?.product_id}>
               <TableCell>{row?.product_id}</TableCell>
               <TableCell>
-                <Image src={row?.image} alt={row?.title} width={100} height={50} />
+                {row?.image && (
+                  <Image src={row.image} alt={row.title} width={60} height={60} className="rounded-md object-cover" />
+                )}
               </TableCell>
               <TableCell>{row?.title}</TableCell>
-              <TableCell>{row?.sku}</TableCell>
+              <TableCell className="font-mono text-xs">{row?.sku}</TableCell>
               <TableCell>${row?.price}</TableCell>
               <TableCell>{row?.stock}</TableCell>
-              <TableCell>{row?.status}</TableCell>
+              <TableCell>
+                <Badge variant="outline" className="capitalize">
+                  {row?.size}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <Badge variant="secondary" className="capitalize">
+                  {row?.product_type}
+                </Badge>
+              </TableCell>
+              <TableCell>
+                <StatusBadge status={row?.status} />
+              </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
                   <ProductActions row={row} />

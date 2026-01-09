@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useRouter } from 'next/navigation';
@@ -7,8 +8,8 @@ import { Edit } from 'lucide-react';
 import PageLoader from '@/components/common/PageLoader';
 import URLs, { makeURL } from '@/utils/URLs.util';
 import { useGetCollectionById } from '@/queries/collections/useGetCollectionById.query';
-import { ICollection } from '@/types/api.types';
 import { CrudLayout } from '@/components/common/crud-layout';
+import Image from 'next/image';
 
 type Props = {
   id: string;
@@ -18,7 +19,7 @@ const CollectionsView = ({ id }: Props) => {
   const router = useRouter();
 
   const { data, isLoading } = useGetCollectionById(id);
-  const collection: ICollection = data as any;
+  const collection = data as any;
   const editURL = makeURL(URLs.CollectionsEdit, { id });
 
   if (isLoading) {
@@ -61,68 +62,116 @@ const CollectionsView = ({ id }: Props) => {
         </div>
       }
     >
-      <div className="space-y-6">
-        {/* Collection Information */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Collection Information</CardTitle>
-            <CardDescription>Basic details about the collection</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Collection Title</label>
-              <p className="mt-1 text-base font-medium">{collection.title}</p>
-            </div>
+      <div className="grid gap-6 md:grid-cols-3">
+        {/* Main Content - Left Side */}
+        <div className="space-y-6 md:col-span-2">
+          {/* Collection Information */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Collection Information</CardTitle>
+              <CardDescription>Basic details about the collection</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Collection Title</label>
+                <p className="mt-1 text-base font-medium">{collection.title}</p>
+              </div>
 
-            <Separator />
+              <Separator />
 
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Slug</label>
-              <p className="mt-1 text-base font-mono text-sm">{collection.slug}</p>
-            </div>
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Slug</label>
+                <p className="mt-1 font-mono text-sm">{collection.slug}</p>
+              </div>
 
-            {(collection.created_at || collection.updated_at) && (
-              <>
-                <Separator />
-                <div className="space-y-3">
-                  {collection.created_at && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Created At</label>
-                      <p className="mt-1 text-sm">
-                        {new Date(collection.created_at).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </div>
-                  )}
+              <Separator />
 
-                  {collection.updated_at && (
-                    <div>
-                      <label className="text-sm font-medium text-muted-foreground">Updated At</label>
-                      <p className="mt-1 text-sm">
-                        {new Date(collection.updated_at).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </p>
-                    </div>
-                  )}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Show in Navigation</label>
+                  <div className="mt-1">
+                    <Badge variant={collection.show_in_nav ? 'default' : 'secondary'}>
+                      {collection.show_in_nav ? 'Yes' : 'No'}
+                    </Badge>
+                  </div>
                 </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Category</label>
+                  <p className="mt-1 text-base font-medium">
+                    {collection.category?.name || (collection.category_id ? `#${collection.category_id}` : 'None')}
+                  </p>
+                </div>
+              </div>
+
+              {(collection.created_at || collection.updated_at) && (
+                <>
+                  <Separator />
+                  <div className="grid grid-cols-2 gap-4">
+                    {collection.created_at && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">Created At</label>
+                        <p className="mt-1 text-sm">
+                          {new Date(collection.created_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                    )}
+
+                    {collection.updated_at && (
+                      <div>
+                        <label className="text-sm font-medium text-muted-foreground">Updated At</label>
+                        <p className="mt-1 text-sm">
+                          {new Date(collection.updated_at).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Side - Image */}
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Collection Image</CardTitle>
+              <CardDescription>Collection cover image</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {collection.image ? (
+                <div className="relative aspect-square overflow-hidden rounded-lg border bg-muted/50">
+                  <Image
+                    src={collection.image}
+                    alt={collection.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="flex aspect-square items-center justify-center rounded-lg border bg-muted/50">
+                  <p className="text-sm text-muted-foreground">No image available</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </CrudLayout>
   );
 };
 
 export default CollectionsView;
-

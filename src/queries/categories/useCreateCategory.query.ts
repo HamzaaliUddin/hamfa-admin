@@ -5,27 +5,18 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { Category } from './useGetCategories.query';
 
+// Category only has name in backend
 export interface CreateCategoryInput {
   name: string;
-  slug: string;
-  description: string;
-  parent_id?: number;
-  image: string;
-  icon?: string;
-  status: 'active' | 'inactive';
-  sort_order: number;
 }
 
 interface CreateCategoryResponse {
-  body: {
   data: Category;
-  };
-  message: string;
 }
 
 const createCategory = async (data: CreateCategoryInput): Promise<Category> => {
   const response: CreateCategoryResponse = await axiosInstance.post('/category', data);
-  return response.body.data;
+  return response.data;
 };
 
 export const useCreateCategory = () => {
@@ -35,9 +26,10 @@ export const useCreateCategory = () => {
     mutationFn: createCategory,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success('Category created successfully');
     },
     onError: (error: any) => {
-      const errorMessage = error?.error || error?.message || 'Failed to create category';
+      const errorMessage = error?.data?.message || error?.message || 'Failed to create category';
       toast.error(errorMessage);
     },
   });

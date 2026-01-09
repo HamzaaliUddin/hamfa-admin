@@ -5,14 +5,12 @@ import { useQuery } from '@tanstack/react-query';
 import { Banner } from './useGetBanners.query';
 
 interface GetBannerByIdResponse {
-  body: {
   data: Banner;
-  };
 }
 
 const fetchBannerById = async (id: number | string): Promise<Banner> => {
   const response: GetBannerByIdResponse = await axiosInstance.get(`/banner/${id}`);
-  return response.body.data;
+  return response.data;
 };
 
 export const useGetBannerById = (id: number | string | null) => {

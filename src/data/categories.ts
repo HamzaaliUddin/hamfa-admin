@@ -1,23 +1,19 @@
 // ============================================
-// CATEGORIES MOCK DATA
+// CATEGORIES TYPES - Matching Backend Models
 // ============================================
 
 export type Category = {
-  id: string;
+  category_id: number;
   name: string;
-  slug: string;
-  description: string;
-  parentId: string | null;
-  image: string;
-  icon?: string;
-  status: 'active' | 'inactive';
-  sortOrder: number;
-  productCount: number;
-  createdAt: string;
-  updatedAt: string;
+  created_at?: string;
+  updated_at?: string;
+  // Joined data
+  collections?: Array<{
+    collection_id: number;
+    title: string;
+  }>;
 };
 
 export const categories: Category[] = [];
 
 export default categories;
-

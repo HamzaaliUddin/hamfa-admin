@@ -50,15 +50,6 @@ const OrdersViewInfo = ({ order }: Props) => {
           </p>
         </div>
       )}
-
-      {order?.notes && (
-        <div>
-          <p className="text-sm font-medium">Notes</p>
-          <p className="text-sm text-muted-foreground">
-            {order?.notes}
-          </p>
-        </div>
-      )}
     </div>
   );
 };

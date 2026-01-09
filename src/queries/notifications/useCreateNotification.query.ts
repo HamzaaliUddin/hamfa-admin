@@ -2,15 +2,20 @@
 
 import axiosInstance from '@/services/axiosInstance';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Notification } from './useGetNotifications.query';
-import { NotificationModelType } from '@be-types/notifications/notifications.type';
+import { toast } from 'sonner';
+import { Notification, NotificationActorType, NotificationStatus, NotificationType } from './useGetNotifications.query';
 
-// Use backend type for creating notifications
+// Create notification input matching backend
 export interface CreateNotificationInput {
   title: string;
   message: string;
-  type: NotificationModelType['type'];
-  status: NotificationModelType['status'];
+  description?: string;
+  actor_type?: NotificationActorType;
+  actor_id?: number;
+  actor_name?: string;
+  action?: string;
+  type: NotificationType;
+  status?: NotificationStatus;
 }
 
 interface CreateNotificationResponse {
@@ -29,7 +34,11 @@ export const useCreateNotification = () => {
     mutationFn: createNotification,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notifications'] });
+      toast.success('Notification created successfully');
+    },
+    onError: (error: any) => {
+      const errorMessage = error?.data?.message || error?.message || 'Failed to create notification';
+      toast.error(errorMessage);
     },
   });
 };
-

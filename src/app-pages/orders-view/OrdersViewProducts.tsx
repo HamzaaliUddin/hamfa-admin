@@ -2,12 +2,12 @@ import { isEmpty } from 'lodash';
 import Image from 'next/image';
 import { Table } from '@/components/Table';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { IOrderItem } from '@/types/api.types';
+import { OrderItem } from '@/queries/orders/useGetOrders.query';
 import PriceText from '@/components/common/PriceText';
 
 type Props = {
   isLoading: boolean;
-  products: IOrderItem[];
+  products: OrderItem[];
 };
 
 const OrdersViewProducts = ({ isLoading, products = [] }: Props) => {
@@ -17,27 +17,27 @@ const OrdersViewProducts = ({ isLoading, products = [] }: Props) => {
       noData={isEmpty(products)}
       isLoading={isLoading}
     >
-      {products.map((row: IOrderItem) => {
-        const price = parseFloat(row?.price || '0');
-        const total = price * row?.quantity;
+      {products.map((row: OrderItem) => {
+        const price = row?.price || 0;
+        const total = row?.total || (price * row?.quantity);
         
         return (
-          <TableRow key={row?.product_id}>
+          <TableRow key={row?.order_item_id}>
             <TableCell>
               <div className="flex items-center gap-3">
                 <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
-                  {row?.image_url && (
+                  {row?.image && (
                     <Image
-                      src={row?.image_url}
+                      src={row.image}
                       fill
-                      alt={row?.name?.en || 'Product'}
+                      alt={row?.title || 'Product'}
                       className="object-cover"
                     />
                   )}
                 </div>
                 <div className="flex flex-col">
-                  <p className="text-sm font-medium">{row?.name?.en}</p>
-                  <p className="text-sm text-muted-foreground">{row?.name?.ar}</p>
+                  <p className="text-sm font-medium">{row?.title}</p>
+                  <p className="text-sm text-muted-foreground font-mono">{row?.sku}</p>
                 </div>
               </div>
             </TableCell>
@@ -59,4 +59,3 @@ const OrdersViewProducts = ({ isLoading, products = [] }: Props) => {
 };
 
 export default OrdersViewProducts;
-

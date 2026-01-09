@@ -21,11 +21,9 @@ const BannersAdd = () => {
       {
         onSuccess: (data: any) => {
           toast.success('Banner added successfully');
-
           reset();
-
           const url = makeURL(URLs.BannersView, {
-            id: data?.data?.banner_id || ''
+            id: data?.banner_id || ''
           });
           router.push(url);
         },
@@ -43,4 +41,3 @@ const BannersAdd = () => {
 };
 
 export default BannersAdd;
-

@@ -1,6 +1,5 @@
 'use client';
 
-import { StatusBadge } from '@/components/common/StatusBadge';
 import { Pagination } from '@/components/Pagination';
 import { Table } from '@/components/Table';
 import { TableCell, TableRow } from '@/components/ui/table';
@@ -15,8 +14,8 @@ import CategoriesDelete from './CategoriesDelete';
 const CategoriesList = () => {
   const [filters, setFilters] = useState({
     search: '',
-    sortKey: 'name',
-    sortValue: 'ASC' as 'ASC' | 'DESC',
+    sortKey: 'category_id',
+    sortValue: 'DESC' as 'ASC' | 'DESC',
     page: 1,
     limit: 10,
   });
@@ -42,19 +41,7 @@ const CategoriesList = () => {
           {categories?.map((row: Category) => (
             <TableRow key={row?.category_id}>
               <TableCell>{row?.category_id}</TableCell>
-              <TableCell>
-                <img
-                  src={row?.image}
-                  alt={row?.name}
-                  width={100}
-                  height={50}
-                  className="object-contain"
-                />
-              </TableCell>
               <TableCell>{row?.name}</TableCell>
-              <TableCell>
-                <StatusBadge status={row?.status} />
-              </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
                   <CategoryActions row={row} />
@@ -78,4 +65,3 @@ const CategoriesList = () => {
 };
 
 export default CategoriesList;
-

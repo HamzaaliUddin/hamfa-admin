@@ -4,15 +4,11 @@ import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
 import { Brand } from './useGetBrands.query';
 
-interface GetBrandByIdResponse {
-  body: {
-    data: Brand;
-  };
-}
-
+// The axios interceptor already unwraps the body, so we get the data directly
 const fetchBrandById = async (id: number | string): Promise<Brand> => {
-  const response: GetBrandByIdResponse = await axiosInstance.get(`/brand/${id}`);
-  return response.body.data;
+  const response = await axiosInstance.get(`/brand/${id}`);
+  // axiosInstance already unwraps body, so response contains the data directly
+  return response?.data || response;
 };
 
 export const useGetBrandById = (id: number | string | null) => {
@@ -23,4 +19,3 @@ export const useGetBrandById = (id: number | string | null) => {
     staleTime: 60 * 1000,
   });
 };
-

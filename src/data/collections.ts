@@ -1,23 +1,24 @@
 // ============================================
-// COLLECTIONS MOCK DATA
+// COLLECTIONS TYPES - Matching Backend Models
 // ============================================
 
 export type Collection = {
-  id: string;
+  collection_id: number;
   title: string;
   slug: string;
-  description: string;
   image: string;
-  products: string[]; // Product IDs
-  productCount: number;
-  status: 'active' | 'inactive';
-  featured: boolean;
-  sortOrder: number;
-  createdAt: string;
-  updatedAt: string;
+  category_id?: number;
+  show_in_nav?: boolean;
+  created_at?: string;
+  updated_at?: string;
+  // Joined data
+  category?: {
+    category_id: number;
+    name: string;
+  };
+  products_count?: number;
 };
 
 export const collections: Collection[] = [];
 
 export default collections;
-

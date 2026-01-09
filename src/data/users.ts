@@ -1,32 +1,23 @@
 // ============================================
-// USERS MOCK DATA
+// USERS TYPES - Matching Backend Models
 // ============================================
 
 export type User = {
-  id: string;
+  user_id: number;
   name: string;
   email: string;
-  phone: string;
-  avatar?: string;
-  role: 'customer' | 'admin' | 'moderator';
-  status: 'active' | 'blocked' | 'inactive';
-  emailVerified: boolean;
-  phoneVerified: boolean;
-  totalOrders: number;
-  totalSpent: number;
-  address?: {
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-    country: string;
+  role_id: number;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
+  // Joined data
+  role?: {
+    role_id: number;
+    name: string;
+    description?: string;
   };
-  lastLogin?: string;
-  createdAt: string;
-  updatedAt: string;
 };
 
 export const users: User[] = [];
 
 export default users;
-

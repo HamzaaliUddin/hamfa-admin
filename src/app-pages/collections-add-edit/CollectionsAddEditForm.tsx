@@ -3,9 +3,11 @@ import FormInput from '@/components/Form/FormInput';
 import FormSelect from '@/components/Form/FormSelect';
 import FormWrapper from '@/components/Form/FormWrapper';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import URLs from '@/utils/URLs.util';
 import { useRouter } from 'next/navigation';
-import { FormProvider, useForm } from 'react-hook-form';
+import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { collectionsFormRules } from './CollectionsAddEdit.helper';
 import CollectionsAddEditMedia from './CollectionsAddEditMedia';
@@ -14,9 +16,7 @@ import { useGetCategories } from '@/queries';
 type Props = {
   isEdit?: boolean;
   title?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialValues?: Record<string, any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   handleRequest: (formData: FormData, setError: any, reset: any) => void;
 };
 
@@ -32,27 +32,30 @@ const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }:
           image: null,
           image_url: '',
           category_id: '',
+          show_in_nav: false,
         },
   });
   const { handleSubmit, control, setError, reset } = methods;
   const formRules = collectionsFormRules();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleForm = (values: Record<string, any>) => {
     const formData = new FormData();
     const selectedFirstFile = values?.image?.[0];
     const imageUrl = values?.image_url?.trim();
 
     formData.append('title', values.title);
-    formData.append('category_id', values.category_id);
+    if (values.category_id) {
+      formData.append('category_id', values.category_id);
+    }
+    formData.append('show_in_nav', values.show_in_nav ? 'true' : 'false');
 
     // Handle file upload or URL - send as "image" field
     if (selectedFirstFile) {
       formData.append('image', selectedFirstFile);
     } else if (imageUrl) {
       formData.append('image', imageUrl);
-    } else {
-      // If no image is provided, show error
+    } else if (!isEdit) {
+      // If no image is provided for new collection, show error
       toast.error('Please provide a collection image (file or URL)');
       return;
     }
@@ -88,9 +91,8 @@ const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }:
 
                 <FormSelect
                   name="category_id"
-                  label="Category"
+                  label="Category (Optional)"
                   control={control}
-                  rules={formRules.category_id}
                   placeholder="Select a category"
                   options={
                     categoriesData?.data?.map((category: any) => ({
@@ -99,6 +101,22 @@ const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }:
                     })) || []
                   }
                 />
+
+                <div className="flex items-center space-x-2">
+                  <Controller
+                    name="show_in_nav"
+                    control={control}
+                    render={({ field: { value, onChange, ...field } }) => (
+                      <Checkbox
+                        {...field}
+                        id="show_in_nav"
+                        checked={value}
+                        onCheckedChange={onChange}
+                      />
+                    )}
+                  />
+                  <Label htmlFor="show_in_nav">Show in Navigation</Label>
+                </div>
               </div>
             </div>
 

@@ -13,26 +13,22 @@ const OrdersViewInvoice = ({ order }: Props) => {
 
       <div className="space-y-2">
         <LabelValue
-          label="Delivery Fee"
-          value={`QAR ${order?.shipping || '0.00'}`}
+          label="Subtotal"
+          value={`QAR ${order?.subtotal || '0.00'}`}
         />
         <LabelValue
-          label="Tax"
-          value={`QAR ${order?.tax || '0.00'}`}
+          label="Shipping"
+          value={`QAR ${order?.shipping || '0.00'}`}
         />
         <LabelValue
           label="Discount"
           value={`QAR ${order?.discount || '0.00'}`}
         />
-        <LabelValue
-          label="Sub Total"
-          value={`QAR ${order?.subtotal || '0.00'}`}
-        />
 
         <Separator />
 
         <LabelValue
-          label="Grand Total"
+          label="Total"
           value={`QAR ${order?.total || '0.00'}`}
           className="text-lg font-semibold"
         />
@@ -42,4 +38,3 @@ const OrdersViewInvoice = ({ order }: Props) => {
 };
 
 export default OrdersViewInvoice;
-

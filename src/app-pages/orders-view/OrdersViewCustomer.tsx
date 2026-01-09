@@ -6,18 +6,10 @@ type Props = {
 };
 
 const OrdersViewCustomer = ({ order }: Props) => {
-  // Parse shipping address if it's a JSON string
-  let shippingAddress = null;
-  try {
-    shippingAddress = typeof order?.shipping_address === 'string' 
-      ? JSON.parse(order.shipping_address) 
-      : order?.shipping_address;
-  } catch (e) {
-    shippingAddress = null;
-  }
+  const address = order?.address;
 
-  const fullAddress = shippingAddress
-    ? `${shippingAddress.street || ''}, ${shippingAddress.city || ''}, ${shippingAddress.state || ''} ${shippingAddress.zip || ''}, ${shippingAddress.country || ''}`
+  const fullAddress = address
+    ? `${address.street_address || ''}, ${address.city || ''}, ${address.state || ''} ${address.postal_code || ''}, ${address.country || ''}`
     : '-';
 
   return (
@@ -26,17 +18,36 @@ const OrdersViewCustomer = ({ order }: Props) => {
 
       <div className="space-y-2">
         <LabelValue
-          label="User ID"
-          value={order?.user_id?.toString() || '-'}
+          label="Customer"
+          value={order?.user?.name || order?.guest_email || `Guest #${order?.guest_session_id?.slice(0, 8)}` || '-'}
         />
         <LabelValue
-          label="Shipping Address"
-          value={fullAddress}
+          label="Email"
+          value={order?.user?.email || order?.guest_email || '-'}
         />
+        {address && (
+          <>
+            <LabelValue
+              label="Contact Name"
+              value={address.name || '-'}
+            />
+            <LabelValue
+              label="Phone"
+              value={address.phone || '-'}
+            />
+            <LabelValue
+              label="Address"
+              value={fullAddress}
+            />
+            <LabelValue
+              label="Address Type"
+              value={address.address_type || '-'}
+            />
+          </>
+        )}
       </div>
     </div>
   );
 };
 
 export default OrdersViewCustomer;
-

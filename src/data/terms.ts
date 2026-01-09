@@ -1,21 +1,23 @@
 // ============================================
-// TERMS & CONDITIONS MOCK DATA
+// TERMS & CONDITIONS TYPES - Matching Backend Models
 // ============================================
 
+export type TermType = 'terms' | 'privacy' | 'refund' | 'shipping';
+export type TermStatus = 'active' | 'inactive' | 'draft';
+
 export type Term = {
-  id: string;
+  term_id: number;
   title: string;
-  type: 'terms' | 'privacy' | 'refund' | 'shipping';
+  type: TermType;
   description: string;
   content: string;
   version: string;
-  status: 'active' | 'inactive' | 'draft';
-  effectiveDate: string;
-  updatedAt: string;
-  createdAt: string;
+  status: TermStatus;
+  effective_date: string;
+  created_at?: string;
+  updated_at?: string;
 };
 
 export const terms: Term[] = [];
 
 export default terms;
-
