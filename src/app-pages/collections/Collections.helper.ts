@@ -3,27 +3,22 @@ import { TableHeaderProps } from '@/components/Table/Table';
 export const collectionsColumnHeaders = (): TableHeaderProps[] => [
   {
     title: 'ID',
-    width: '10%',
-    align: 'left',
-  },
-  {
-    title: 'Image',
-    width: '20%',
+    width: '15%',
     align: 'left',
   },
   {
     title: 'Title',
-    width: '30%',
+    width: '45%',
     align: 'left',
   },
   {
-    title: 'Status',
-    width: '20%',
+    title: 'Slug',
+    width: '30%',
     align: 'left',
   },
   {
     title: 'Actions',
-    width: '30%',
+    width: '10%',
     align: 'center',
   },
 ];

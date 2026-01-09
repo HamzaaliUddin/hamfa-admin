@@ -66,11 +66,6 @@ export interface ICollection {
   collection_id: string | number;
   title: string;
   slug: string;
-  description: string;
-  image: string;
-  categories_count: number;
-  status: 'active' | 'inactive';
-  featured: boolean;
   created_at: string;
   updated_at: string;
 }

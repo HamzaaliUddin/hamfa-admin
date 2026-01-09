@@ -24,19 +24,22 @@ export function useVerifyOTPForm() {
   const {
     control,
     handleSubmit,
+    watch,
+    setValue,
   } = useForm<VerifyOTPFormData>({
     defaultValues: verifyOTPDefaultValues,
     mode: 'onBlur',
     resolver: async (data) => {
       const errors: Record<string, any> = {};
-      
+
       // Validate OTP code
       if (verifyOTPValidationRules.otp_code.required && !data.otp_code) {
         errors.otp_code = {
           type: 'required',
-          message: typeof verifyOTPValidationRules.otp_code.required === 'string' 
-            ? verifyOTPValidationRules.otp_code.required 
-            : 'OTP code is required',
+          message:
+            typeof verifyOTPValidationRules.otp_code.required === 'string'
+              ? verifyOTPValidationRules.otp_code.required
+              : 'OTP code is required',
         };
       } else if (verifyOTPValidationRules.otp_code.pattern && data.otp_code) {
         const pattern = verifyOTPValidationRules.otp_code.pattern;
@@ -49,13 +52,15 @@ export function useVerifyOTPForm() {
           }
         }
       }
-      
+
       return {
         values: Object.keys(errors).length === 0 ? data : {},
         errors,
       };
     },
   });
+
+  const otpValue = watch('otp_code');
 
   // Countdown timer for resend
   useEffect(() => {
@@ -84,6 +89,7 @@ export function useVerifyOTPForm() {
       await verifyOTPMutation.mutateAsync({
         user_id: parseInt(userId),
         otp_code: data.otp_code,
+        remember_me: data.remember_me,
       });
     } catch (error) {
       console.error('OTP verification error:', error);
@@ -97,10 +103,15 @@ export function useVerifyOTPForm() {
       await resendOTPMutation.mutateAsync({ user_id: parseInt(userId) });
       setCountdown(60);
       setCanResend(false);
+      setValue('otp_code', '');
       toast.success(verifyOTPErrorMessages.RESEND_SUCCESS);
     } catch (error) {
       console.error('Resend OTP error:', error);
     }
+  };
+
+  const handleBack = () => {
+    router.push(ROUTES.AUTH.LOGIN);
   };
 
   return {
@@ -113,5 +124,7 @@ export function useVerifyOTPForm() {
     canResend,
     handleResendOTP,
     isResending: resendOTPMutation.isPending,
+    handleBack,
+    otpValue,
   };
 }

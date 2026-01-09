@@ -17,11 +17,6 @@ export const bannersColumnHeaders = (): TableHeaderProps[] => [
     align: 'left'
   },
   {
-    title: 'Redirect URL',
-    width: '20%',
-    align: 'left'
-  },
-  {
     title: 'Status',
     width: '12%',
     align: 'left'

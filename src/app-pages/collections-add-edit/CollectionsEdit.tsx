@@ -25,12 +25,10 @@ const CollectionsEdit = ({ id }: Props) => {
 
   const initialValues = {
     title: collection?.title || '',
-    description: collection?.description || '',
-    status: collection?.status || 'active',
-    featured: collection?.featured || false,
-    existing_image: collection?.image, // For FE Only
+    existing_image: collection?.image || '',
     image: null,
-    image_url: ''
+    image_url: '',
+    category_id: collection?.category_id?.toString() || '',
   };
 
   const handleRequest = (formData: any, setError: ErrorOption, reset: any) => {

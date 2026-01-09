@@ -1,6 +1,5 @@
 'use client';
 
-import { StatusBadge } from '@/components/common/StatusBadge';
 import { Pagination } from '@/components/Pagination';
 import { Table } from '@/components/Table';
 import { TableCell, TableRow } from '@/components/ui/table';
@@ -42,19 +41,8 @@ const CollectionsList = () => {
           {collections?.map((row: Collection) => (
             <TableRow key={row?.collection_id}>
               <TableCell>{row?.collection_id}</TableCell>
-              <TableCell>
-                <img
-                  src={row?.image}
-                  alt={row?.title}
-                  width={100}
-                  height={50}
-                  className="object-contain"
-                />
-              </TableCell>
               <TableCell>{row?.title}</TableCell>
-              <TableCell>
-                <StatusBadge status={row?.status} />
-              </TableCell>
+              <TableCell className="font-mono text-sm text-muted-foreground">{row?.slug}</TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
                   <CollectionActions row={row} />

@@ -1,8 +1,6 @@
 import { CrudLayout } from '@/components/common/crud-layout';
-import FormCheckbox from '@/components/Form/FormCheckbox';
 import FormInput from '@/components/Form/FormInput';
 import FormSelect from '@/components/Form/FormSelect';
-import FormTextarea from '@/components/Form/FormTextarea';
 import FormWrapper from '@/components/Form/FormWrapper';
 import { Button } from '@/components/ui/button';
 import URLs from '@/utils/URLs.util';
@@ -29,11 +27,9 @@ const BrandsAddEditForm = ({ isEdit, title, initialValues, handleRequest }: Prop
       ? initialValues
       : {
           name: '',
-          description: '',
           image: null,
           image_url: '',
           status: 'active',
-          featured: false,
         },
   });
   const { handleSubmit, control, setError, reset } = methods;
@@ -46,9 +42,7 @@ const BrandsAddEditForm = ({ isEdit, title, initialValues, handleRequest }: Prop
     const imageUrl = values?.image_url?.trim();
 
     formData.append('name', values.name);
-    formData.append('description', values.description);
     formData.append('status', values.status || 'active');
-    formData.append('featured', values.featured ? 'true' : 'false');
 
     // Handle file upload or URL - send as "logo" field
     if (selectedFirstFile) {
@@ -94,13 +88,6 @@ const BrandsAddEditForm = ({ isEdit, title, initialValues, handleRequest }: Prop
                   rules={formRules.name}
                   placeholder="Enter brand name"
                 />
-                <FormTextarea
-                  name="description"
-                  label="Description"
-                  control={control}
-                  placeholder="Enter brand description"
-                  rows={5}
-                />
               </div>
             </div>
 
@@ -115,7 +102,6 @@ const BrandsAddEditForm = ({ isEdit, title, initialValues, handleRequest }: Prop
                   control={control}
                   rules={formRules.status}
                 />
-                <FormCheckbox name="featured" label="Featured Brand" control={control} />
               </div>
             </div>
           </div>

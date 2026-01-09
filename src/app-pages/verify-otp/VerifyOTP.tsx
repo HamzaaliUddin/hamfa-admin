@@ -14,20 +14,24 @@ export function VerifyOTP() {
     canResend,
     handleResendOTP,
     isResending,
+    handleBack,
+    otpValue,
   } = useVerifyOTPForm();
 
   return (
     <div className="relative flex min-h-screen items-center justify-center p-4">
-        <VerifyOTPForm
-          onSubmit={handleSubmit(onSubmit)}
-          control={control}
-          email={email}
-          isLoading={isLoading}
-          countdown={countdown}
-          canResend={canResend}
-          handleResendOTP={handleResendOTP}
-          isResending={isResending}
-        />
+      <VerifyOTPForm
+        onSubmit={handleSubmit(onSubmit)}
+        control={control}
+        email={email}
+        isLoading={isLoading}
+        countdown={countdown}
+        canResend={canResend}
+        handleResendOTP={handleResendOTP}
+        isResending={isResending}
+        onBack={handleBack}
+        otpValue={otpValue}
+      />
     </div>
   );
 }

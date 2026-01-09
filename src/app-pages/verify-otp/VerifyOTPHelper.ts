@@ -2,6 +2,39 @@ import { RegisterOptions } from 'react-hook-form';
 import { VerifyOTPFormData } from './verifyOTP.schema';
 
 /**
+ * OTP Configuration
+ */
+export const otpConfig = {
+  otpLength: 6,
+  email: 'your@email.com', // This will be dynamic in real app
+  phone: '+1 (555) 000-0000', // This will be dynamic in real app
+};
+
+/**
+ * OTP Messages
+ */
+export const otpMessages = {
+  success: {
+    title: 'Verification successful!',
+    description: 'Your account has been verified.',
+  },
+  error: {
+    title: 'Invalid code',
+    description: 'The code you entered is incorrect. Please try again.',
+  },
+  resendSuccess: {
+    title: 'Code resent!',
+    description: 'A new verification code has been sent.',
+  },
+  resendError: {
+    title: 'Failed to resend',
+    description: 'Please try again later.',
+  },
+  loading: 'Verifying...',
+  submit: 'Verify',
+};
+
+/**
  * Validation rules for verify OTP form fields
  */
 export const verifyOTPValidationRules: Record<
@@ -55,4 +88,3 @@ export const verifyOTPFormFields = {
     label: 'Remember me for 30 days',
   },
 } as const;
-

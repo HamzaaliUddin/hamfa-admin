@@ -5,35 +5,39 @@ import { FormProvider, useForm } from 'react-hook-form';
 import FormInput from '@/components/Form/FormInput';
 import FormTextarea from '@/components/Form/FormTextarea';
 import FormSelect from '@/components/Form/FormSelect';
-import FormCheckbox from '@/components/Form/FormCheckbox';
 import { productFormRules } from './Products.helper';
+import ProductsAddEditMedia from './ProductsAddEditMedia';
+import { toast } from 'sonner';
+import { useGetCollections } from '@/queries/collections/useGetCollections.query';
+import { useGetBrands } from '@/queries/brands/useGetBrands.query';
+import { CrudFormSection } from '@/components/common/crud-layout';
 
 type Props = {
   initialValues?: any;
   handleRequest?: any;
   onClose: any;
+  isEdit?: boolean;
 };
 
-const ProductAddEditForm = ({ initialValues, handleRequest, onClose }: Props) => {
+const ProductAddEditForm = ({ initialValues, handleRequest, onClose, isEdit }: Props) => {
+  const { data: collectionsData } = useGetCollections();
+  const { data: brandsData } = useGetBrands();
+
   const methods = useForm({
     defaultValues: initialValues
       ? initialValues
       : {
           title: '',
           description: '',
-          sku: '',
           image: null,
+          image_url: '',
           images: [],
           price: '',
-          discount_price: '',
-          cost: '',
-          profit: '',
           stock: '0',
           low_stock_threshold: '10',
           brand_id: '',
-          category_id: '',
+          collection_id: '',
           status: 'active',
-          featured: false,
           size: 'medium',
           product_type: 'unstitched'
         }
@@ -43,21 +47,29 @@ const ProductAddEditForm = ({ initialValues, handleRequest, onClose }: Props) =>
 
   const handleForm = (values: any) => {
     const formData = new FormData();
+    const selectedFirstFile = values?.image?.[0]; // For file upload
+    const imageUrl = values?.image_url?.trim(); // For URL input
+
     formData.append('title', values.title);
     formData.append('description', values.description);
-    formData.append('sku', values.sku);
     formData.append('price', values.price);
-    if (values.discount_price) formData.append('discount_price', values.discount_price);
-    if (values.cost) formData.append('cost', values.cost);
-    if (values.profit) formData.append('profit', values.profit);
     formData.append('stock', values.stock || '0');
     formData.append('low_stock_threshold', values.low_stock_threshold || '10');
     formData.append('brand_id', values.brand_id);
-    formData.append('category_id', values.category_id);
+    formData.append('collection_id', values.collection_id);
     formData.append('status', values.status || 'active');
-    formData.append('featured', String(values.featured || false));
     formData.append('size', values.size);
     formData.append('product_type', values.product_type);
+
+    // Handle file upload or URL - send as "image" field
+    if (selectedFirstFile) {
+      formData.append('image', selectedFirstFile);
+    } else if (imageUrl) {
+      formData.append('image', imageUrl);
+    } else if (!isEdit) {
+      toast.error('Please provide a product image (file or URL)');
+      return;
+    }
 
     handleRequest(formData, setError, reset);
   };
@@ -79,118 +91,140 @@ const ProductAddEditForm = ({ initialValues, handleRequest, onClose }: Props) =>
     { value: 'unstitched', label: 'Unstitched' }
   ];
 
+  // Prepare collection options from API
+  const collectionOptions =
+    collectionsData?.data?.map((collection: any) => ({
+      label: collection.title,
+      value: collection.collection_id.toString(),
+    })) || [];
+
+  // Prepare brand options from API
+  const brandOptions =
+    brandsData?.data?.map((brand: any) => ({
+      label: brand.name,
+      value: brand.brand_id.toString(),
+    })) || [];
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(handleForm)}>
-        <div className="space-y-4 p-6">
-          <FormInput
-            name="title"
-            label="Product Title"
-            control={control}
-            rules={formRules.title}
-            required
-          />
-          <FormTextarea
-            name="description"
-            label="Description"
-            control={control}
-            rules={formRules.description}
-            required
-          />
-          <FormInput
-            name="sku"
-            label="SKU"
-            control={control}
-            rules={formRules.sku}
-            required
-          />
-          <FormInput
-            name="price"
-            label="Price"
-            type="number"
-            control={control}
-            rules={formRules.price}
-            required
-          />
-          <FormInput
-            name="discount_price"
-            label="Discount Price"
-            type="number"
-            control={control}
-          />
-          <FormInput
-            name="cost"
-            label="Cost"
-            type="number"
-            control={control}
-          />
-          <FormInput
-            name="profit"
-            label="Profit"
-            type="number"
-            control={control}
-          />
-          <FormInput
-            name="stock"
-            label="Stock"
-            type="number"
-            control={control}
-          />
-          <FormInput
-            name="low_stock_threshold"
-            label="Low Stock Threshold"
-            type="number"
-            control={control}
-          />
-          <FormInput
-            name="brand_id"
-            label="Brand ID"
-            type="number"
-            control={control}
-            required
-          />
-          <FormInput
-            name="category_id"
-            label="Category ID"
-            type="number"
-            control={control}
-            required
-          />
-          <FormSelect
-            name="status"
-            label="Status"
-            options={statusOptions}
-            control={control}
-            required
-          />
-          <FormSelect
-            name="size"
-            label="Size"
-            options={sizeOptions}
-            control={control}
-            required
-          />
-          <FormSelect
-            name="product_type"
-            label="Product Type"
-            options={productTypeOptions}
-            control={control}
-            required
-          />
-          <FormCheckbox
-            name="featured"
-            label="Featured Product"
-            control={control}
-          />
+        <div className="grid gap-6 md:grid-cols-3">
+          {/* Left Section - Main Form (2 columns) */}
+          <div className="space-y-6 md:col-span-2">
+            {/* Basic Information */}
+            <CrudFormSection title="Basic Information">
+              <div className="space-y-4">
+                <FormInput
+                  name="title"
+                  label="Product Title"
+                  control={control}
+                  rules={formRules.title}
+                  placeholder="Enter product title"
+                  required
+                />
+                <FormTextarea
+                  name="description"
+                  label="Description"
+                  control={control}
+                  rules={formRules.description}
+                  placeholder="Enter product description"
+                  required
+                />
+              </div>
+            </CrudFormSection>
 
-          <div className="flex flex-col gap-2 pt-2">
-            <Button type="submit" size="lg">
-              Save
-            </Button>
-            <Button type="button" variant="secondary" onClick={onClose}>
-              Cancel
-            </Button>
+            {/* Pricing & Inventory */}
+            <CrudFormSection title="Pricing & Inventory">
+              <div className="space-y-4">
+                <FormInput
+                  name="price"
+                  label="Price (Rs)"
+                  type="number"
+                  control={control}
+                  rules={formRules.price}
+                  placeholder="0.00"
+                  required
+                />
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormInput
+                    name="stock"
+                    label="Stock Quantity"
+                    type="number"
+                    control={control}
+                    placeholder="0"
+                  />
+                  <FormInput
+                    name="low_stock_threshold"
+                    label="Low Stock Threshold"
+                    type="number"
+                    control={control}
+                    placeholder="10"
+                  />
+                </div>
+              </div>
+            </CrudFormSection>
+
+            {/* Organization */}
+            <CrudFormSection title="Organization">
+              <div className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <FormSelect
+                    name="brand_id"
+                    label="Brand"
+                    options={brandOptions}
+                    control={control}
+                    placeholder="Select brand"
+                    required
+                  />
+                  <FormSelect
+                    name="collection_id"
+                    label="Collection"
+                    options={collectionOptions}
+                    control={control}
+                    placeholder="Select collection"
+                    required
+                  />
+                </div>
+                <div className="grid gap-4 md:grid-cols-3">
+                  <FormSelect
+                    name="status"
+                    label="Status"
+                    options={statusOptions}
+                    control={control}
+                    required
+                  />
+                  <FormSelect
+                    name="size"
+                    label="Size"
+                    options={sizeOptions}
+                    control={control}
+                    required
+                  />
+                  <FormSelect
+                    name="product_type"
+                    label="Product Type"
+                    options={productTypeOptions}
+                    control={control}
+                    required
+                  />
+                </div>
+              </div>
+            </CrudFormSection>
           </div>
+
+          {/* Right Section - Product Image (1 column) */}
+          <div className="space-y-6">
+            <CrudFormSection title="Product Image">
+              <ProductsAddEditMedia isEdit={isEdit} />
+            </CrudFormSection>
+          </div>
+        </div>
+
+        <div className="mt-6 flex items-center justify-end gap-4">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit">Save Product</Button>
         </div>
       </form>
     </FormProvider>

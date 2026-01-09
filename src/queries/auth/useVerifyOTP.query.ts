@@ -11,36 +11,34 @@ interface VerifyOTPRequest {
   remember_me?: boolean;
 }
 
-interface VerifyOTPResponse {
-  status: number;
-  message: string;
-  body: {
-    data: {
-      user: {
-        user_id: number;
-        name: string;
-        email: string;
-        role: {
-          role_id: number;
-          name: string;
-          permissions?: Array<{
-            permission_id: number;
-            module: string;
-            action: string;
-            description: string;
-          }>;
-        };
-        brand?: {
-          brand_id: number;
-          name: string;
-        };
-      };
-      token: string;
-      refreshToken: string;
-      expiresIn: string;
+interface VerifyOTPResponseData {
+  user: {
+    user_id: number;
+    name: string;
+    email: string;
+    role: {
+      role_id: number;
+      name: string;
+      permissions?: Array<{
+        permission_id: number;
+        module: string;
+        action: string;
+        description: string;
+      }>;
+    };
+    brand?: {
+      brand_id: number;
+      name: string;
     };
   };
-  errors: null;
+  token: string;
+  refreshToken: string;
+  expiresIn: string;
+}
+
+// The axios interceptor unwraps body, so response is { data: {...} }
+interface VerifyOTPResponse {
+  data: VerifyOTPResponseData;
 }
 
 export const useVerifyOTP = () => {
@@ -50,8 +48,8 @@ export const useVerifyOTP = () => {
       return response as unknown as VerifyOTPResponse;
     },
     onSuccess: (response: VerifyOTPResponse) => {
-      // The actual data is in response.body.data
-      const data = response?.body?.data;
+      // The axios interceptor already unwraps body, so data is at response.data
+      const data = response?.data;
 
       console.log('Verify OTP Response:', response);
       console.log('Token from response:', data?.token);

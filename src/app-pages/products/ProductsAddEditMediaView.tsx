@@ -12,23 +12,23 @@ interface FileProps extends Props {
   file?: File;
 }
 
-// Collection image preview (video/banner aspect) [Existing Media]
-const CollectionsAddEditExistingMedia = ({ url, handleClear, title, ...props }: Props) => {
+// Product image preview (square aspect) [Existing Media]
+const ProductsAddEditExistingMedia = ({ url, handleClear, title, ...props }: Props) => {
   if (!url) return null;
 
   // Check if it's a base64 data URL
   const isBase64 = url.startsWith('data:');
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
+    <div className="relative aspect-square w-full overflow-hidden rounded-lg border">
       {isBase64 ? (
         // Use regular img tag for base64 images
-        <img src={url} alt={title || 'collection-image'} className="h-full w-full object-cover" />
+        <img src={url} alt={title || 'product-image'} className="h-full w-full object-cover" />
       ) : (
         // Use Next.js Image for external URLs
         <Image
           src={url}
-          alt={title || 'collection-image'}
+          alt={title || 'product-image'}
           fill
           className="object-cover"
           {...props}
@@ -47,14 +47,14 @@ const CollectionsAddEditExistingMedia = ({ url, handleClear, title, ...props }: 
   );
 };
 
-// Collection image preview (video/banner aspect) [Newly uploaded media]
-const CollectionsAddEditNewMedia = ({ url, file, handleClear, ...props }: FileProps) => {
+// Product image preview (square aspect) [Newly uploaded media]
+const ProductsAddEditNewMedia = ({ url, file, handleClear, ...props }: FileProps) => {
   const imageURL = file ? URL.createObjectURL(file) : url;
 
   if (!imageURL) return null;
 
   return (
-    <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
+    <div className="relative aspect-square w-full overflow-hidden rounded-lg border">
       <Image
         src={imageURL}
         alt={file?.name || 'uploaded-image'}
@@ -75,4 +75,5 @@ const CollectionsAddEditNewMedia = ({ url, file, handleClear, ...props }: FilePr
   );
 };
 
-export { CollectionsAddEditExistingMedia, CollectionsAddEditNewMedia };
+export { ProductsAddEditExistingMedia, ProductsAddEditNewMedia };
+

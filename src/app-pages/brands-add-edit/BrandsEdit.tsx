@@ -25,9 +25,7 @@ const BrandsEdit = ({ id }: Props) => {
 
   const initialValues = {
     name: brand?.name || '',
-    description: brand?.description || '',
     status: brand?.status || 'active',
-    featured: brand?.featured || false,
     existing_logo: brand?.logo, // For FE Only
     image: null,
     image_url: ''

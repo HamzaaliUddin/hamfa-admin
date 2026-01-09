@@ -1,8 +1,6 @@
 import { CrudLayout } from '@/components/common/crud-layout';
-import FormCheckbox from '@/components/Form/FormCheckbox';
 import FormInput from '@/components/Form/FormInput';
 import FormSelect from '@/components/Form/FormSelect';
-import FormTextarea from '@/components/Form/FormTextarea';
 import FormWrapper from '@/components/Form/FormWrapper';
 import { Button } from '@/components/ui/button';
 import URLs from '@/utils/URLs.util';
@@ -11,6 +9,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { collectionsFormRules } from './CollectionsAddEdit.helper';
 import CollectionsAddEditMedia from './CollectionsAddEditMedia';
+import { useGetCategories } from '@/queries';
 
 type Props = {
   isEdit?: boolean;
@@ -23,17 +22,16 @@ type Props = {
 
 const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }: Props) => {
   const router = useRouter();
+  const { data: categoriesData } = useGetCategories();
 
   const methods = useForm({
     defaultValues: initialValues
       ? initialValues
       : {
           title: '',
-          description: '',
           image: null,
           image_url: '',
-          status: 'active',
-          featured: false,
+          category_id: '',
         },
   });
   const { handleSubmit, control, setError, reset } = methods;
@@ -46,9 +44,7 @@ const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }:
     const imageUrl = values?.image_url?.trim();
 
     formData.append('title', values.title);
-    formData.append('description', values.description);
-    formData.append('status', values.status || 'active');
-    formData.append('featured', values.featured ? 'true' : 'false');
+    formData.append('category_id', values.category_id);
 
     // Handle file upload or URL - send as "image" field
     if (selectedFirstFile) {
@@ -67,11 +63,6 @@ const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }:
   const handleGoBack = () => {
     router.back();
   };
-
-  const statusOptions = [
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'Inactive' },
-  ];
 
   return (
     <CrudLayout
@@ -94,29 +85,25 @@ const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }:
                   rules={formRules.title}
                   placeholder="Enter collection title"
                 />
-                <FormTextarea
-                  name="description"
-                  label="Description"
+
+                <FormSelect
+                  name="category_id"
+                  label="Category"
                   control={control}
-                  placeholder="Enter collection description"
-                  rows={5}
+                  rules={formRules.category_id}
+                  placeholder="Select a category"
+                  options={
+                    categoriesData?.data?.map((category: any) => ({
+                      label: category.name,
+                      value: category.category_id.toString(),
+                    })) || []
+                  }
                 />
               </div>
             </div>
 
             <div className="space-y-6">
               <CollectionsAddEditMedia isEdit={isEdit} />
-
-              <div className="space-y-4">
-                <FormSelect
-                  options={statusOptions}
-                  name="status"
-                  label="Status"
-                  control={control}
-                  rules={formRules.status}
-                />
-                <FormCheckbox name="featured" label="Featured Collection" control={control} />
-              </div>
             </div>
           </div>
 
@@ -133,4 +120,3 @@ const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }:
 };
 
 export default CollectionsAddEditForm;
-

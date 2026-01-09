@@ -25,13 +25,6 @@ const CategoriesEdit = ({ id }: Props) => {
 
   const initialValues = {
     name: category?.name || '',
-    slug: category?.slug || '',
-    description: category?.description || '',
-    parent_id: category?.parent_id || null,
-    status: category?.status || 'active',
-    existing_image: category?.image, // For FE Only
-    image: null,
-    image_url: ''
   };
 
   const handleRequest = (formData: any, setError: ErrorOption, reset: any) => {
@@ -68,4 +61,3 @@ const CategoriesEdit = ({ id }: Props) => {
 };
 
 export default CategoriesEdit;
-

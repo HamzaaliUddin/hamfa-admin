@@ -4,13 +4,14 @@ export const collectionsFormRules = () => ({
     validate: (value: string) =>
       (value && String(value).trim()?.length > 0) || 'Collection title is required'
   },
-  description: {
-    required: 'Description is required',
+  image: {
+    required: 'Collection image is required',
     validate: (value: string) =>
-      (value && String(value).trim()?.length > 0) || 'Description is required'
+      (value && String(value).trim()?.length > 0) || 'Collection image is required'
   },
-  status: {
-    required: 'Status is required'
+  category_id: {
+    required: 'Category is required',
+    validate: (value: string) =>
+      (value && String(value).trim()?.length > 0) || 'Category is required'
   }
 });
-

@@ -7,9 +7,9 @@ import { isEmpty, isString } from 'lodash';
 import { Upload } from 'lucide-react';
 import { useState } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
-import { CollectionsAddEditExistingMedia, CollectionsAddEditNewMedia } from './CollectionsAddEditMediaView';
+import { ProductsAddEditExistingMedia, ProductsAddEditNewMedia } from './ProductsAddEditMediaView';
 
-const CollectionsAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
+const ProductsAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
   const {
     watch,
     setValue,
@@ -56,8 +56,8 @@ const CollectionsAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
 
   return (
     <div className="space-y-4">
-      {/* Toggle between Upload and URL */}
-      {!hasUrlPreview && !newFile && (
+      {/* Toggle between Upload and URL - Always show unless there's a preview */}
+      {!hasUrlPreview && !newFile && !isAlreadyAdded && (
         <div className="flex items-center justify-between rounded-lg border p-3">
           <div className="flex items-center gap-2">
             <Upload className="text-muted-foreground h-4 w-4" />
@@ -74,13 +74,16 @@ const CollectionsAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
 
       {/* Priority 1: New URL preview (highest priority) */}
       {hasUrlPreview ? (
-        <CollectionsAddEditExistingMedia url={imageUrl} handleClear={handleRemove} />
+        <ProductsAddEditExistingMedia url={imageUrl} handleClear={handleRemove} />
       ) : /* Priority 2: New file preview */
       newFile || !isEmpty(selectedFile) ? (
-        <CollectionsAddEditNewMedia file={newFile ? newFile : selectedFile} handleClear={handleRemove} />
+        <ProductsAddEditNewMedia
+          file={newFile ? newFile : selectedFile}
+          handleClear={handleRemove}
+        />
       ) : /* Priority 3: Existing image (fallback) */
       isAlreadyAdded ? (
-        <CollectionsAddEditExistingMedia url={existingFile} handleClear={handleRemove} />
+        <ProductsAddEditExistingMedia url={existingFile} handleClear={handleRemove} />
       ) : null}
 
       {/* Image URL Input - Show when URL toggle is ON */}
@@ -95,7 +98,7 @@ const CollectionsAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
                 {...field}
                 id="image_url"
                 type="url"
-                placeholder="https://example.com/collection-image.jpg"
+                placeholder="https://example.com/product-image.jpg"
                 className={errors.image_url ? 'border-red-500' : ''}
                 onChange={e => {
                   field.onChange(e);
@@ -119,7 +122,7 @@ const CollectionsAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
           <div className="relative">
             <label
               htmlFor="image"
-              className={`hover:bg-accent flex aspect-video w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed ${
+              className={`hover:bg-accent flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed ${
                 errors.image ? 'border-red-500' : ''
               }`}
             >
@@ -128,10 +131,10 @@ const CollectionsAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
                 Click to browse or drag and drop a file here
               </span>
               <span className="text-muted-foreground px-4 text-center text-xs">
-                Upload a collection image (banner/hero image)
+                Upload a product image
               </span>
               <span className="text-muted-foreground text-xs">
-                <strong>Recommended:</strong> 1200x400px or larger
+                <strong>Recommended:</strong> 800x800px or larger
               </span>
             </label>
             <input
@@ -152,4 +155,4 @@ const CollectionsAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
   );
 };
 
-export default CollectionsAddEditMedia;
+export default ProductsAddEditMedia;

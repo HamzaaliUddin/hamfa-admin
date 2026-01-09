@@ -3,7 +3,7 @@
 import { Pagination } from '@/components/Pagination';
 import { Table } from '@/components/Table';
 import { TableCell, TableRow } from '@/components/ui/table';
-import { useGetProducts, Product } from '@/queries/products/useGetProducts.query';
+import { Product, useGetProducts } from '@/queries/products/useGetProducts.query';
 import { isEmpty } from 'lodash';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -72,4 +72,3 @@ const ProductsList = () => {
 };
 
 export default ProductsList;
-
