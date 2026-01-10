@@ -9,7 +9,7 @@ type Props = {
   className?: string;
 };
 
-const PriceText = ({ amount, currency = 'USD', locale = 'en-US', className }: Props) => {
+const PriceText = ({ amount, currency = 'PKR', locale = 'en-PK', className }: Props) => {
   return <span className={className}>{formatCurrency(amount, currency, locale)}</span>;
 };
 

@@ -14,22 +14,22 @@ const OrdersViewInvoice = ({ order }: Props) => {
       <div className="space-y-2">
         <LabelValue
           label="Subtotal"
-          value={`QAR ${order?.subtotal || '0.00'}`}
+          value={`Rs ${order?.subtotal || '0.00'}`}
         />
         <LabelValue
           label="Shipping"
-          value={`QAR ${order?.shipping || '0.00'}`}
+          value={`Rs ${order?.shipping || '0.00'}`}
         />
         <LabelValue
           label="Discount"
-          value={`QAR ${order?.discount || '0.00'}`}
+          value={`Rs ${order?.discount || '0.00'}`}
         />
 
         <Separator />
 
         <LabelValue
           label="Total"
-          value={`QAR ${order?.total || '0.00'}`}
+          value={`Rs ${order?.total || '0.00'}`}
           className="text-lg font-semibold"
         />
       </div>

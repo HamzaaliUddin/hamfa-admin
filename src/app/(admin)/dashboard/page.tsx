@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useGetDashboardStats } from '@/queries/reports/useGetDashboardStats.query';
 import { useGetRecentOrders } from '@/queries/reports/useGetRecentOrders.query';
 import { authUtils } from '@/utils/auth';
-import { DollarSign, Package, ShoppingCart, TrendingDown, TrendingUp, Users } from 'lucide-react';
+import { IndianRupee, Package, ShoppingCart, TrendingDown, TrendingUp, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function DashboardPage() {
@@ -39,7 +39,7 @@ export default function DashboardPage() {
         currency: 'PKR',
       }).format(stats.totalRevenue),
       description: `${stats.revenueGrowth >= 0 ? '+' : ''}${stats.revenueGrowth}% from last month`,
-      icon: DollarSign,
+      icon: IndianRupee,
       trend: stats.revenueGrowth >= 0 ? 'up' : 'down',
     },
     {
@@ -156,9 +156,9 @@ export default function DashboardPage() {
                         {order.status}
                       </Badge>
                       <p className="text-sm font-medium">
-                        {new Intl.NumberFormat('en-US', {
+                        {new Intl.NumberFormat('en-PK', {
                           style: 'currency',
-                          currency: 'USD',
+                          currency: 'PKR',
                         }).format(order.total)}
                       </p>
                     </div>

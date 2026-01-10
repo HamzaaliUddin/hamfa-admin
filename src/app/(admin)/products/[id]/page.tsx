@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useGetProductById } from '@/queries/products/useGetProductById.query';
-import { ArrowLeft, Box, DollarSign, Edit, Loader2, Package, Trash2 } from 'lucide-react';
+import { ArrowLeft, Box, IndianRupee, Edit, Loader2, Package, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 
@@ -195,7 +195,7 @@ export default function ProductViewPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5" />
+                <IndianRupee className="h-5 w-5" />
                 Pricing & Stock
               </CardTitle>
             </CardHeader>

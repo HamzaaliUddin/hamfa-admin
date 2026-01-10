@@ -49,7 +49,7 @@ const OrdersList = () => {
               <TableCell>
                 {row?.user?.name || row?.guest_email || `Guest #${row?.guest_session_id?.slice(0, 8)}` || '-'}
               </TableCell>
-              <TableCell className="text-center">QAR {row?.total || '-'}</TableCell>
+              <TableCell className="text-center">Rs {row?.total || '-'}</TableCell>
               <TableCell className="text-center">
                 {paymentTexts[row.payment_method] || '-'}
               </TableCell>

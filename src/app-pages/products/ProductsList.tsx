@@ -50,7 +50,7 @@ const ProductsList = () => {
               </TableCell>
               <TableCell>{row?.title}</TableCell>
               <TableCell className="font-mono text-xs">{row?.sku}</TableCell>
-              <TableCell>${row?.price}</TableCell>
+              <TableCell>Rs {row?.price}</TableCell>
               <TableCell>{row?.stock}</TableCell>
               <TableCell>
                 <Badge variant="outline" className="capitalize">

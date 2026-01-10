@@ -3,8 +3,8 @@
  */
 export const formatCurrency = (
   amount: number,
-  currency: string = 'USD',
-  locale: string = 'en-US'
+  currency: string = 'PKR',
+  locale: string = 'en-PK'
 ): string => {
   if (amount === null || amount === undefined) return '';
   
