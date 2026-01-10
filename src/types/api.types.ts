@@ -39,7 +39,7 @@ export interface LocaleTextType {
 // Banner Types
 export enum BannerStatusEnums {
   Active = 'active',
-  Inactive = 'inactive'
+  Inactive = 'inactive',
 }
 
 export interface IBanner {
@@ -55,7 +55,7 @@ export interface IBanner {
 // Brand Types
 export interface IBrand {
   brand_id: string | number;
-  logo:string;
+  logo: string;
   name: string;
   status: string;
   created_at: string;
@@ -83,14 +83,15 @@ export interface ICategory {
   updated_at: string;
 }
 
-import { NotificationModelType } from '@be-types/notifications/notifications.type';
+export type NotificationType = 'order' | 'promotion' | 'system' | 'user';
+export type NotificationStatus = 'sent' | 'pending' | 'failed';
 
 export interface INotification {
   notification_id: string | number;
   title: string;
   message: string;
-  type: NotificationModelType['type'];
-  status: NotificationModelType['status'];
+  type: NotificationType;
+  status: NotificationStatus;
   read: boolean;
   sent_at?: string;
   created_at: string;
@@ -101,26 +102,26 @@ export interface INotification {
 export enum OrderTypeEnums {
   Current = 'Current',
   Past = 'Delivered',
-  Cancelled = 'Cancelled'
+  Cancelled = 'Cancelled',
 }
 
 export enum OrderStageEnums {
   Ordered = 'Ordered',
   Preparing = 'Preparing',
   Delivering = 'Delivering',
-  Delivered = 'Delivered'
+  Delivered = 'Delivered',
 }
 
 export enum PaymentTypeEnums {
   COD = 'COD',
   CREDIT = 'CREDIT',
-  DEBIT = 'DEBIT'
+  DEBIT = 'DEBIT',
 }
 
 export enum PaymentStageEnums {
   Pending = 'Pending',
   Paid = 'Paid',
-  Refunded = 'Refunded'
+  Refunded = 'Refunded',
 }
 
 export interface IAddress {
@@ -185,4 +186,3 @@ export interface IOrder {
   refund_date?: string;
   refund_status?: string;
 }
-
