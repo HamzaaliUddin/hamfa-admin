@@ -49,7 +49,7 @@ const BannersAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
     <div className="space-y-4">
       {hasNewFile ? (
         <BannersAddEditNewMedia
-          file={newFile ? newFile : normalizedFiles}
+          file={newFile}
           handleClear={handleRemove}
         />
       ) : isAlreadyAdded ? (
