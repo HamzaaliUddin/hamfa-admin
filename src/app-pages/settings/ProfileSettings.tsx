@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +8,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAdmin } from '@/hooks/use-permissions';
 import { useChangePassword } from '@/queries/auth';
-import { useState } from 'react';
 import { PasswordChangeData, ProfileSettingsData } from './Settings.helper';
 
 const ProfileSettings = () => {
@@ -15,9 +15,9 @@ const ProfileSettings = () => {
   const changePasswordMutation = useChangePassword();
   
   const [profileData, setProfileData] = useState<ProfileSettingsData>({
-    name: admin?.name || '',
-    email: admin?.email || '',
-    avatar: admin?.avatar || '',
+    name: '',
+    email: '',
+    avatar: '',
   });
 
   const [passwordData, setPasswordData] = useState<PasswordChangeData>({
@@ -27,6 +27,17 @@ const ProfileSettings = () => {
   });
 
   const [profileLoading, setProfileLoading] = useState(false);
+
+  // Update profile data when admin data loads
+  useEffect(() => {
+    if (admin) {
+      setProfileData({
+        name: admin.name || '',
+        email: admin.email || '',
+        avatar: admin.avatar || '',
+      });
+    }
+  }, [admin]);
 
   const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -61,6 +72,9 @@ const ProfileSettings = () => {
     });
   };
 
+  // Format role name for display
+  const displayRole = admin?.role ? admin.role.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 'Super Admin';
+
   return (
     <div className="space-y-6">
       {/* Profile Information */}
@@ -76,12 +90,12 @@ const ProfileSettings = () => {
               <Avatar className="h-20 w-20">
                 <AvatarImage src={profileData.avatar} />
                 <AvatarFallback className="text-xl bg-primary text-primary-foreground">
-                  {(profileData.name?.charAt(0) || admin?.name?.charAt(0) || 'A').toUpperCase()}
+                  {(profileData.name?.charAt(0) || 'A').toUpperCase()}
                 </AvatarFallback>
               </Avatar>
               <div>
-                <p className="font-medium">{profileData.name || admin?.name || 'Admin'}</p>
-                <p className="text-sm text-muted-foreground">{profileData.email || admin?.email || ''}</p>
+                <p className="font-medium">{profileData.name || 'Loading...'}</p>
+                <p className="text-sm text-muted-foreground">{profileData.email || ''}</p>
               </div>
             </div>
 
@@ -91,7 +105,7 @@ const ProfileSettings = () => {
                 id="name"
                 name="name"
                 placeholder="Your name"
-                value={profileData.name || admin?.name || ''}
+                value={profileData.name}
                 onChange={handleProfileChange}
                 required
               />
@@ -103,8 +117,8 @@ const ProfileSettings = () => {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="admin@hamfa.com"
-                value={profileData.email || admin?.email || ''}
+                placeholder="admin@example.com"
+                value={profileData.email}
                 onChange={handleProfileChange}
                 required
               />
@@ -112,10 +126,7 @@ const ProfileSettings = () => {
 
             <div className="space-y-2">
               <Label htmlFor="role">Role</Label>
-              <Input id="role" defaultValue={admin?.role || ''} disabled />
-              <p className="text-sm text-muted-foreground">
-                Contact super admin to change your role
-              </p>
+              <Input id="role" value={displayRole} disabled />
             </div>
 
             <Button type="submit" disabled={profileLoading}>
@@ -186,4 +197,3 @@ const ProfileSettings = () => {
 };
 
 export default ProfileSettings;
-

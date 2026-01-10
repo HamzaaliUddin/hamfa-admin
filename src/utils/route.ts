@@ -87,15 +87,6 @@ export const ROUTES = {
     EDIT: (id: string | number) => `/users/edit/${id}`,
   },
 
-  // ==================== ADMIN ROUTES ====================
-  ADMINS: {
-    LIST: '/admins',
-    ADD: '/admins/add',
-    DETAIL: (id: string | number) => `/admins/${id}`,
-    EDIT: (id: string | number) => `/admins/edit/${id}`,
-    PERMISSIONS: (id: string | number) => `/admins/${id}/permissions`,
-  },
-
   // ==================== SETTINGS ROUTES ====================
   SETTINGS: {
     MAIN: '/settings/contact',
@@ -139,7 +130,6 @@ export const PROTECTED_ROUTES = [
   ROUTES.COLLECTIONS.LIST,
   ROUTES.NOTIFICATIONS.LIST,
   ROUTES.USERS.LIST,
-  ROUTES.ADMINS.LIST,
   ROUTES.SETTINGS.MAIN,
   ROUTES.TERMS.LIST,
 ] as const;
@@ -191,11 +181,6 @@ export const NavigationHelper = {
    * Navigate to user detail
    */
   toUserDetail: (id: string | number) => ROUTES.USERS.DETAIL(id),
-
-  /**
-   * Navigate to admin detail
-   */
-  toAdminDetail: (id: string | number) => ROUTES.ADMINS.DETAIL(id),
 
   /**
    * Navigate to category detail

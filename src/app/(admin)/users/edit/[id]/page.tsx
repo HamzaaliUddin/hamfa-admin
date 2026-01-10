@@ -14,8 +14,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CrudLayout } from '@/components/common/crud-layout';
-import { PermissionGuard } from '@/components/common/permission-guard';
-import { Module, Permission } from '@/types/permissions';
 
 export default function EditUserPage() {
   const params = useParams();
@@ -59,86 +57,83 @@ export default function EditUserPage() {
   }
 
   return (
-    <PermissionGuard module={Module.USERS} permission={Permission.UPDATE}>
-      <CrudLayout
-        title="Edit User"
-        description="Update user information"
-        backButton={{
-          label: 'Back to Users',
-          href: '/users',
-        }}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>User Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First Name *</Label>
-                <Input id="firstName" placeholder="Enter first name" defaultValue="John" required />
-              </div>
+    <CrudLayout
+      title="Edit User"
+      description="Update user information"
+      backButton={{
+        label: 'Back to Users',
+        href: '/users',
+      }}
+    >
+      <Card>
+        <CardHeader>
+          <CardTitle>User Information</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">First Name *</Label>
+              <Input id="firstName" placeholder="Enter first name" defaultValue="John" required />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name *</Label>
-                <Input id="lastName" placeholder="Enter last name" defaultValue="Doe" required />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name *</Label>
+              <Input id="lastName" placeholder="Enter last name" defaultValue="Doe" required />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter email"
-                  defaultValue="john.doe@example.com"
-                  required
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Enter email"
+                defaultValue="john.doe@example.com"
+                required
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="Enter phone number"
-                  defaultValue="+91 98765 43210"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="Enter phone number"
+                defaultValue="+91 98765 43210"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="status">Account Status *</Label>
-                <Select value={status} onValueChange={setStatus} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="blocked">Blocked</SelectItem>
-                    <SelectItem value="suspended">Suspended</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="status">Account Status *</Label>
+              <Select value={status} onValueChange={setStatus} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="blocked">Blocked</SelectItem>
+                  <SelectItem value="suspended">Suspended</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-              <div className="flex items-center space-x-2">
-                <input type="checkbox" id="emailVerified" defaultChecked className="h-4 w-4" />
-                <Label htmlFor="emailVerified" className="cursor-pointer">
-                  Email verified
-                </Label>
-              </div>
+            <div className="flex items-center space-x-2">
+              <input type="checkbox" id="emailVerified" defaultChecked className="h-4 w-4" />
+              <Label htmlFor="emailVerified" className="cursor-pointer">
+                Email verified
+              </Label>
+            </div>
 
-              <div className="flex gap-4">
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Updating...' : 'Update User'}
-                </Button>
-                <Button type="button" variant="outline" onClick={() => router.back()}>
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </CrudLayout>
-    </PermissionGuard>
+            <div className="flex gap-4">
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Updating...' : 'Update User'}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => router.back()}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </CrudLayout>
   );
 }
-

@@ -68,12 +68,6 @@ export const MODULE_CONFIGS: Record<Module, ModuleConfig> = {
     icon: 'FileText',
     availablePermissions: [Permission.VIEW, Permission.CREATE, Permission.UPDATE, Permission.DELETE],
   },
-  [Module.ADMIN_MANAGEMENT]: {
-    name: 'Admin Management',
-    description: 'Manage admin users and permissions (SuperAdmin only)',
-    icon: 'Shield',
-    availablePermissions: [Permission.VIEW, Permission.CREATE, Permission.UPDATE, Permission.DELETE],
-  },
   [Module.SETTINGS]: {
     name: 'Settings',
     description: 'Configure website settings',
@@ -91,36 +85,12 @@ export const SUPER_ADMIN_PERMISSIONS = Object.values(Module).map(module => ({
 }));
 
 /**
- * Default permissions for new Admin role
- */
-export const DEFAULT_ADMIN_PERMISSIONS = [
-  { module: Module.DASHBOARD, permissions: [Permission.VIEW] },
-  { module: Module.PRODUCTS, permissions: [Permission.VIEW, Permission.CREATE, Permission.UPDATE] },
-  { module: Module.ORDERS, permissions: [Permission.VIEW, Permission.UPDATE] },
-  { module: Module.USERS, permissions: [Permission.VIEW] },
-];
-
-/**
- * Default permissions for Moderator role
- */
-export const DEFAULT_MODERATOR_PERMISSIONS = [
-  { module: Module.DASHBOARD, permissions: [Permission.VIEW] },
-  { module: Module.PRODUCTS, permissions: [Permission.VIEW] },
-  { module: Module.ORDERS, permissions: [Permission.VIEW] },
-  { module: Module.USERS, permissions: [Permission.VIEW] },
-];
-
-/**
  * Get default permissions for a role
  */
 export const getDefaultPermissionsForRole = (role: AdminRole) => {
   switch (role) {
     case AdminRole.SUPER_ADMIN:
       return SUPER_ADMIN_PERMISSIONS;
-    case AdminRole.ADMIN:
-      return DEFAULT_ADMIN_PERMISSIONS;
-    case AdminRole.MODERATOR:
-      return DEFAULT_MODERATOR_PERMISSIONS;
     default:
       return [];
   }
@@ -129,7 +99,7 @@ export const getDefaultPermissionsForRole = (role: AdminRole) => {
 /**
  * Modules that require special permissions
  */
-export const RESTRICTED_MODULES = [Module.ADMIN_MANAGEMENT, Module.SETTINGS];
+export const RESTRICTED_MODULES = [Module.SETTINGS];
 
 /**
  * Permission display names
@@ -146,16 +116,11 @@ export const PERMISSION_LABELS: Record<Permission, string> = {
  */
 export const ROLE_LABELS: Record<AdminRole, string> = {
   [AdminRole.SUPER_ADMIN]: 'Super Admin',
-  [AdminRole.ADMIN]: 'Admin',
-  [AdminRole.MODERATOR]: 'Moderator',
 };
 
 /**
  * Role descriptions
  */
 export const ROLE_DESCRIPTIONS: Record<AdminRole, string> = {
-  [AdminRole.SUPER_ADMIN]: 'Full access to all features including admin management',
-  [AdminRole.ADMIN]: 'Manage products, orders, and content',
-  [AdminRole.MODERATOR]: 'View-only access with limited update permissions',
+  [AdminRole.SUPER_ADMIN]: 'Full access to all features in admin panel',
 };
-

@@ -131,13 +131,6 @@ const menuItems: MenuItem[] = [
     module: Module.TERMS,
   },
   {
-    title: 'Admin Management',
-    href: '/admins',
-    icon: Shield,
-    module: Module.ADMIN_MANAGEMENT,
-    superAdminOnly: true,
-  },
-  {
     title: 'Settings',
     icon: Settings,
     module: Module.SETTINGS,
@@ -166,7 +159,6 @@ export function AppSidebar() {
   const canAccessUsers = useCanAccessModule(Module.USERS);
   const canAccessNotifications = useCanAccessModule(Module.NOTIFICATIONS);
   const canAccessTerms = useCanAccessModule(Module.TERMS);
-  const canAccessAdminManagement = useCanAccessModule(Module.ADMIN_MANAGEMENT);
   const canAccessSettings = useCanAccessModule(Module.SETTINGS);
 
   // Create a map for easy lookup
@@ -182,7 +174,6 @@ export function AppSidebar() {
       [Module.USERS]: canAccessUsers,
       [Module.NOTIFICATIONS]: canAccessNotifications,
       [Module.TERMS]: canAccessTerms,
-      [Module.ADMIN_MANAGEMENT]: canAccessAdminManagement,
       [Module.SETTINGS]: canAccessSettings,
     }),
     [
@@ -196,7 +187,6 @@ export function AppSidebar() {
       canAccessUsers,
       canAccessNotifications,
       canAccessTerms,
-      canAccessAdminManagement,
       canAccessSettings,
     ]
   );

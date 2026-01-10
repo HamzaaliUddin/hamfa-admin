@@ -4,34 +4,36 @@
 
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Module, Permission, AdminRole, Admin, PermissionCheckResult } from '@/types/permissions';
 import { SUPER_ADMIN_PERMISSIONS } from '@/constants/permissions';
+import { authUtils } from '@/utils/auth';
 
 /**
- * Mock admin data - Replace with actual auth context
- * TODO: Integrate with your authentication system
- */
-const mockAdmin: Admin = {
-  id: '1',
-  name: 'John Doe',
-  email: 'admin@hamfa.com',
-  role: AdminRole.SUPER_ADMIN,
-  permissions: SUPER_ADMIN_PERMISSIONS,
-  isActive: true,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
-
-/**
- * Hook to get current admin user
- * Replace this with actual auth context
+ * Hook to get current admin user from auth storage
  */
 export function useAdmin(): Admin | null {
-  // TODO: Replace with actual auth context
-  // const { admin } = useAuth();
-  // return admin;
-  return mockAdmin;
+  const [admin, setAdmin] = useState<Admin | null>(null);
+
+  useEffect(() => {
+    const userData = authUtils.getUser();
+    if (userData) {
+      setAdmin({
+        id: String(userData.user_id),
+        name: userData.name,
+        email: userData.email,
+        role: AdminRole.SUPER_ADMIN, // Only Super Admin can access admin panel now
+        permissions: SUPER_ADMIN_PERMISSIONS,
+        isActive: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      });
+    } else {
+      setAdmin(null);
+    }
+  }, []);
+
+  return admin;
 }
 
 /**
@@ -127,10 +129,7 @@ export function useAccessibleModules(): Module[] {
 /**
  * Hook to get detailed permission check with error message
  */
-export function usePermissionCheck(
-  module: Module,
-  permission: Permission
-): PermissionCheckResult {
+export function usePermissionCheck(module: Module, permission: Permission): PermissionCheckResult {
   const hasPermission = usePermission(module, permission);
 
   return useMemo(() => {
@@ -162,4 +161,3 @@ export function checkPermission(
   const modulePermission = admin.permissions.find(p => p.module === module);
   return modulePermission?.permissions.includes(permission) ?? false;
 }
-

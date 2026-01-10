@@ -13,8 +13,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { CrudLayout } from '@/components/common/crud-layout';
-import { PermissionGuard } from '@/components/common/permission-guard';
-import { Module, Permission } from '@/types/permissions';
 import { Textarea } from '@/components/ui/textarea';
 
 export default function EditOrderPage() {
@@ -61,89 +59,86 @@ export default function EditOrderPage() {
   }
 
   return (
-    <PermissionGuard module={Module.ORDERS} permission={Permission.UPDATE}>
-      <CrudLayout
-        title="Edit Order"
-        description="Update order status and details"
-        backButton={{
-          label: 'Back to Orders',
-          href: '/orders',
-        }}
-      >
-        <Card>
-          <CardHeader>
-            <CardTitle>Order Status Update</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="orderNumber">Order Number</Label>
-                <div className="text-sm font-medium text-muted-foreground">ORD-2024-001</div>
-              </div>
+    <CrudLayout
+      title="Edit Order"
+      description="Update order status and details"
+      backButton={{
+        label: 'Back to Orders',
+        href: '/orders',
+      }}
+    >
+      <Card>
+        <CardHeader>
+          <CardTitle>Order Status Update</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="space-y-2">
+              <Label htmlFor="orderNumber">Order Number</Label>
+              <div className="text-sm font-medium text-muted-foreground">ORD-2024-001</div>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="orderStatus">Order Status *</Label>
-                <Select value={orderStatus} onValueChange={setOrderStatus} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select order status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="processing">Processing</SelectItem>
-                    <SelectItem value="shipped">Shipped</SelectItem>
-                    <SelectItem value="delivered">Delivered</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="orderStatus">Order Status *</Label>
+              <Select value={orderStatus} onValueChange={setOrderStatus} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select order status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="processing">Processing</SelectItem>
+                  <SelectItem value="shipped">Shipped</SelectItem>
+                  <SelectItem value="delivered">Delivered</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="paymentStatus">Payment Status *</Label>
-                <Select value={paymentStatus} onValueChange={setPaymentStatus} required>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select payment status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="paid">Paid</SelectItem>
-                    <SelectItem value="failed">Failed</SelectItem>
-                    <SelectItem value="refunded">Refunded</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="paymentStatus">Payment Status *</Label>
+              <Select value={paymentStatus} onValueChange={setPaymentStatus} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select payment status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="paid">Paid</SelectItem>
+                  <SelectItem value="failed">Failed</SelectItem>
+                  <SelectItem value="refunded">Refunded</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="trackingNumber">Tracking Number</Label>
-                <input
-                  type="text"
-                  id="trackingNumber"
-                  placeholder="Enter tracking number"
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="trackingNumber">Tracking Number</Label>
+              <input
+                type="text"
+                id="trackingNumber"
+                placeholder="Enter tracking number"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="notes">Internal Notes</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Add any internal notes about this order..."
-                  rows={4}
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="notes">Internal Notes</Label>
+              <Textarea
+                id="notes"
+                placeholder="Add any internal notes about this order..."
+                rows={4}
+              />
+            </div>
 
-              <div className="flex gap-4">
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Updating...' : 'Update Order'}
-                </Button>
-                <Button type="button" variant="outline" onClick={() => router.back()}>
-                  Cancel
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-      </CrudLayout>
-    </PermissionGuard>
+            <div className="flex gap-4">
+              <Button type="submit" disabled={loading}>
+                {loading ? 'Updating...' : 'Update Order'}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => router.back()}>
+                Cancel
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
+    </CrudLayout>
   );
 }
-

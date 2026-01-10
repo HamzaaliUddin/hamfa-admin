@@ -16,7 +16,6 @@ export enum Module {
   ORDERS = 'orders',
   NOTIFICATIONS = 'notifications',
   TERMS = 'terms',
-  ADMIN_MANAGEMENT = 'admin_management',
   SETTINGS = 'settings',
 }
 
@@ -31,12 +30,10 @@ export enum Permission {
 }
 
 /**
- * Admin roles
+ * Admin roles - Only Super Admin can access admin panel
  */
 export enum AdminRole {
   SUPER_ADMIN = 'super_admin',
-  ADMIN = 'admin',
-  MODERATOR = 'moderator',
 }
 
 /**
@@ -99,4 +96,3 @@ export type AdminFormData = {
 export type PermissionMatrix = {
   [key in Module]?: Permission[];
 };
-
