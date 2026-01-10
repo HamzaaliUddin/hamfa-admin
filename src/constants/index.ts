@@ -43,12 +43,6 @@ export const API_ENDPOINTS = {
   BLOCK_USER: (id: string) => `/users/${id}/block`,
   UNBLOCK_USER: (id: string) => `/users/${id}/unblock`,
 
-  // Reports
-  SALES_REPORT: '/reports/sales',
-  ORDER_REPORT: '/reports/orders',
-  USER_GROWTH_REPORT: '/reports/users',
-  PRODUCT_PERFORMANCE: '/reports/products',
-
   // Settings
   SETTINGS: '/settings/contact',
   CONTACT_SETTINGS: '/settings/contact',
@@ -119,12 +113,6 @@ export const ROUTES = {
   USERS_DETAILS: '/users/details',
   USER_PROFILE: (id: string) => `/users/${id}`,
   USERS_EDIT: (id: string) => `/users/edit/${id}`,
-
-  // Reports
-  REPORTS_SALES: '/reports/sales',
-  REPORTS_ORDERS: '/reports/orders',
-  REPORTS_USERS: '/reports/users',
-  REPORTS_PRODUCTS: '/reports/products',
 
   // Settings
   SETTINGS: '/settings/contact',

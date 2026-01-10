@@ -2,7 +2,6 @@
 
 import {
   Award,
-  BarChart3,
   Bell,
   CheckCircle,
   ChevronDown,
@@ -20,7 +19,6 @@ import {
   Share2,
   Shield,
   ShoppingCart,
-  TrendingUp,
   UserCircle,
   Users,
   XCircle,
@@ -140,17 +138,6 @@ const menuItems: MenuItem[] = [
     superAdminOnly: true,
   },
   {
-    title: 'Reports',
-    icon: BarChart3,
-    module: Module.REPORTS,
-    items: [
-      { title: 'Sales Report', href: '/reports/sales', icon: TrendingUp },
-      { title: 'Order Report', href: '/reports/orders', icon: ShoppingCart },
-      { title: 'User Growth', href: '/reports/users', icon: Users },
-      { title: 'Product Performance', href: '/reports/products', icon: Package },
-    ],
-  },
-  {
     title: 'Settings',
     icon: Settings,
     module: Module.SETTINGS,
@@ -180,7 +167,6 @@ export function AppSidebar() {
   const canAccessNotifications = useCanAccessModule(Module.NOTIFICATIONS);
   const canAccessTerms = useCanAccessModule(Module.TERMS);
   const canAccessAdminManagement = useCanAccessModule(Module.ADMIN_MANAGEMENT);
-  const canAccessReports = useCanAccessModule(Module.REPORTS);
   const canAccessSettings = useCanAccessModule(Module.SETTINGS);
 
   // Create a map for easy lookup
@@ -197,7 +183,6 @@ export function AppSidebar() {
       [Module.NOTIFICATIONS]: canAccessNotifications,
       [Module.TERMS]: canAccessTerms,
       [Module.ADMIN_MANAGEMENT]: canAccessAdminManagement,
-      [Module.REPORTS]: canAccessReports,
       [Module.SETTINGS]: canAccessSettings,
     }),
     [
@@ -212,7 +197,6 @@ export function AppSidebar() {
       canAccessNotifications,
       canAccessTerms,
       canAccessAdminManagement,
-      canAccessReports,
       canAccessSettings,
     ]
   );

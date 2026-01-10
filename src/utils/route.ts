@@ -96,14 +96,6 @@ export const ROUTES = {
     PERMISSIONS: (id: string | number) => `/admins/${id}/permissions`,
   },
 
-  // ==================== REPORT ROUTES ====================
-  REPORTS: {
-    SALES: '/reports/sales',
-    ORDERS: '/reports/orders',
-    USERS: '/reports/users',
-    PRODUCTS: '/reports/products',
-  },
-
   // ==================== SETTINGS ROUTES ====================
   SETTINGS: {
     MAIN: '/settings/contact',
@@ -148,7 +140,6 @@ export const PROTECTED_ROUTES = [
   ROUTES.NOTIFICATIONS.LIST,
   ROUTES.USERS.LIST,
   ROUTES.ADMINS.LIST,
-  ROUTES.REPORTS.SALES,
   ROUTES.SETTINGS.MAIN,
   ROUTES.TERMS.LIST,
 ] as const;

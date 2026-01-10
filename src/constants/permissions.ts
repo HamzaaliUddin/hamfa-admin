@@ -80,12 +80,6 @@ export const MODULE_CONFIGS: Record<Module, ModuleConfig> = {
     icon: 'Settings',
     availablePermissions: [Permission.VIEW, Permission.UPDATE],
   },
-  [Module.REPORTS]: {
-    name: 'Reports',
-    description: 'View sales and analytics reports',
-    icon: 'BarChart3',
-    availablePermissions: [Permission.VIEW],
-  },
 };
 
 /**
@@ -104,7 +98,6 @@ export const DEFAULT_ADMIN_PERMISSIONS = [
   { module: Module.PRODUCTS, permissions: [Permission.VIEW, Permission.CREATE, Permission.UPDATE] },
   { module: Module.ORDERS, permissions: [Permission.VIEW, Permission.UPDATE] },
   { module: Module.USERS, permissions: [Permission.VIEW] },
-  { module: Module.REPORTS, permissions: [Permission.VIEW] },
 ];
 
 /**

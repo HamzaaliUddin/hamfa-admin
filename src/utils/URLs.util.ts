@@ -50,11 +50,6 @@ const URLs = {
 
   Notifications: '/notifications',
 
-  Reports: '/reports',
-  ReportsSales: '/reports/sales',
-  ReportsRevenue: '/reports/revenue',
-  ReportsInventory: '/reports/inventory',
-
   Settings: '/settings/contact',
   SettingsContact: '/settings/contact',
   SettingsPayment: '/settings/payment',

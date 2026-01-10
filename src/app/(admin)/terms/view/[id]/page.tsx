@@ -1,6 +1,14 @@
 import { TermsView } from '@/app-pages/terms-view';
 
-export default function TermViewPage({ params }: { params: { id: string } }) {
-  return <TermsView id={params.id} />;
-}
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+const TermViewPage = async ({ params }: Props) => {
+  const pageParams = await params;
+
+  return <TermsView id={pageParams?.id} />;
+};
+
+export default TermViewPage;
 

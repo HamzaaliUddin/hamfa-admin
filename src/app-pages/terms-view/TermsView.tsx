@@ -27,12 +27,31 @@ const TermsView = ({ id }: Props) => {
     router.push(url);
   };
 
-  return (
-    <>
-      <PageLoader isOpen={isLoading} />
+  if (isLoading) {
+    return <PageLoader isOpen={isLoading} />;
+  }
 
-      {!isLoading && term && (
-        <CrudLayout
+  if (!term) {
+    return (
+      <CrudLayout
+        title="Term Not Found"
+        description="The term you're looking for doesn't exist"
+        backButton={{
+          label: 'Back to Terms',
+          href: URLs.Terms
+        }}
+      >
+        <Card>
+          <CardContent className="py-10 text-center">
+            <p className="text-muted-foreground">Term not found</p>
+          </CardContent>
+        </Card>
+      </CrudLayout>
+    );
+  }
+
+  return (
+    <CrudLayout
           title={term?.title || 'Term Details'}
           description="View term and conditions information"
           backButton={{
@@ -152,8 +171,6 @@ const TermsView = ({ id }: Props) => {
             </Card>
           </div>
         </CrudLayout>
-      )}
-    </>
   );
 };
 

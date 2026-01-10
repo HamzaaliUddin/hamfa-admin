@@ -4,13 +4,11 @@ import axiosInstance from '@/services/axiosInstance';
 import { useQuery } from '@tanstack/react-query';
 import { Term } from './useGetTerms.query';
 
-interface GetTermsByIdResponse {
-  data: Term;
-}
-
+// The axios interceptor already unwraps the body, so we get the data directly
 const fetchTermsById = async (id: number | string): Promise<Term> => {
-  const response: GetTermsByIdResponse = await axiosInstance.get(`/term/${id}`);
-  return response.data;
+  const response = await axiosInstance.get(`/term/${id}`);
+  // axiosInstance already unwraps body, so response contains the data directly
+  return response?.data || response;
 };
 
 export const useGetTermsById = (id: number | string | null) => {

@@ -18,7 +18,6 @@ export enum Module {
   TERMS = 'terms',
   ADMIN_MANAGEMENT = 'admin_management',
   SETTINGS = 'settings',
-  REPORTS = 'reports',
 }
 
 /**
