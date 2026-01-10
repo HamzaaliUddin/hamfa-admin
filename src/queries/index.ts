@@ -4,7 +4,6 @@
 export * from './auth';
 
 // Module Queries
-export * from './admins';
 export * from './banners';
 export * from './brands';
 export * from './categories';
