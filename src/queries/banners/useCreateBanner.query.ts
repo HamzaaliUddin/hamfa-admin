@@ -14,8 +14,11 @@ interface CreateBannerResponse {
   data: Banner;
 }
 
-const createBanner = async (data: CreateBannerInput): Promise<Banner> => {
-  const response: CreateBannerResponse = await axiosInstance.post('/banner', data);
+const createBanner = async (data: CreateBannerInput | FormData): Promise<Banner> => {
+  const isFormData = data instanceof FormData;
+  const response: CreateBannerResponse = await axiosInstance.post('/banner', data, {
+    headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+  });
   return response.data;
 };
 

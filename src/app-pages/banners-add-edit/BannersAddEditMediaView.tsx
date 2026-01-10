@@ -1,6 +1,7 @@
 import { X } from 'lucide-react';
 import Image, { ImageProps } from 'next/image';
 import { Button } from '@/components/ui/button';
+import useImageURL from '@/hooks/useImageURL';
 
 interface Props extends Omit<ImageProps, 'src' | 'alt'> {
   url?: string;
@@ -50,10 +51,8 @@ const BannersAddEditNewMedia = ({
   handleClear,
   ...props
 }: FileProps) => {
-  const imageURL = file ? URL.createObjectURL(file) : url;
-
+  const imageURL = useImageURL(file, url);
   if (!imageURL) return null;
-
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
       <Image
@@ -61,6 +60,7 @@ const BannersAddEditNewMedia = ({
         alt={file?.name || 'uploaded-banner'}
         fill
         className="object-cover object-center"
+        unoptimized
         {...props}
       />
       <Button

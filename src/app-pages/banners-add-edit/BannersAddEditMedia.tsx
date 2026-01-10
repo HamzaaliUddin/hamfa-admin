@@ -1,6 +1,6 @@
 import { isEmpty, isString } from 'lodash';
 import { Upload } from 'lucide-react';
-import { useFormContext } from 'react-hook-form';
+import { Controller, useFormContext } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import { UPLOAD_IMAGE_TYPES } from '@/utils/File.util';
 import { isValidUrl } from '@/utils/General.util';
@@ -11,7 +11,12 @@ import {
 } from './BannersAddEditMediaView';
 
 const BannersAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
-  const { watch, setValue, formState: { errors } } = useFormContext();
+  const {
+    watch,
+    setValue,
+    control,
+    formState: { errors }
+  } = useFormContext();
 
   const existingFile = watch('existing_image');
   const selectedFile = watch('image');
@@ -21,12 +26,10 @@ const BannersAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
     setValue('image', null);
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const fileArray = Array.from(files);
-      setValue('image', fileArray);
-    }
+  const normalizeFiles = (value: FileList | File[] | null | undefined) => {
+    if (!value) return [];
+    if (Array.isArray(value)) return value;
+    return Array.from(value);
   };
 
   const formRules = bannersFormRules();
@@ -36,24 +39,24 @@ const BannersAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
     existingFile &&
     isString(existingFile) &&
     isValidUrl(existingFile);
-  const newFile = selectedFile && selectedFile?.[0];
+  const normalizedFiles = normalizeFiles(selectedFile);
+  const newFile = normalizedFiles?.[0];
 
-  const showUpload = !isAlreadyAdded && !newFile;
+  const hasNewFile = Boolean(newFile || !isEmpty(normalizedFiles));
+  const showUpload = !isAlreadyAdded && !hasNewFile;
 
   return (
     <div className="space-y-4">
-      {isAlreadyAdded ? (
+      {hasNewFile ? (
+        <BannersAddEditNewMedia
+          file={newFile ? newFile : normalizedFiles}
+          handleClear={handleRemove}
+        />
+      ) : isAlreadyAdded ? (
         <BannersAddEditExistingMedia
           url={existingFile}
           handleClear={handleRemove}
         />
-      ) : selectedFile ? (
-        newFile || !isEmpty(selectedFile) ? (
-          <BannersAddEditNewMedia
-            file={newFile ? newFile : selectedFile}
-            handleClear={handleRemove}
-          />
-        ) : null
       ) : null}
 
       {showUpload && (
@@ -74,13 +77,29 @@ const BannersAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
                 <strong>Recommended size:</strong> 1920x600px
               </span>
             </label>
-            <input
-              id="image"
-              type="file"
-              accept={UPLOAD_IMAGE_TYPES.join(',')}
-              className="hidden"
-              onChange={handleFileChange}
-              multiple={false}
+            <Controller
+              name="image"
+              control={control}
+              rules={formRules.image}
+              shouldUnregister={false}
+              render={({ field }) => (
+                <input
+                  id="image"
+                  type="file"
+                  accept={UPLOAD_IMAGE_TYPES.join(',')}
+                  className="hidden"
+                  multiple={false}
+                  ref={field.ref}
+                  onChange={(e) => {
+                    const files = e.target.files ? Array.from(e.target.files) : [];
+                    // Debug: log selected files for preview troubleshooting
+                    // eslint-disable-next-line no-console
+                    console.log('Banner upload selected files:', files);
+                    setValue('existing_image', null);
+                    field.onChange(files);
+                  }}
+                />
+              )}
             />
           </div>
           {errors.image && (

@@ -18,7 +18,10 @@ interface UpdateBannerResponse {
 }
 
 const updateBanner = async ({ id, data }: UpdateBannerParams): Promise<Banner> => {
-  const response: UpdateBannerResponse = await axiosInstance.put(`/banner/${id}`, data);
+  const isFormData = data instanceof FormData;
+  const response: UpdateBannerResponse = await axiosInstance.put(`/banner/${id}`, data, {
+    headers: isFormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
+  });
   return response.data;
 };
 
