@@ -1,7 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { ErrorOption } from 'react-hook-form';
-import { toast } from 'sonner';
 import PageLoader from '@/components/common/PageLoader';
 import { throwFormError } from '@/utils/Errors.util';
 import URLs, { makeURL } from '@/utils/URLs.util';
@@ -20,7 +19,6 @@ const BannersAdd = () => {
       formData,
       {
         onSuccess: (data: any) => {
-          toast.success('Banner added successfully');
           reset();
           const url = makeURL(URLs.BannersView, {
             id: data?.banner_id || ''

@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { useGetCollections } from '@/queries/collections/useGetCollections.query';
 import { useGetBrands } from '@/queries/brands/useGetBrands.query';
 import { CrudFormSection } from '@/components/common/crud-layout';
+import { useEffect } from 'react';
 
 type Props = {
   initialValues?: any;
@@ -19,29 +20,36 @@ type Props = {
   isEdit?: boolean;
 };
 
+const defaultFormValues = {
+  title: '',
+  description: '',
+  sku: '',
+  image: '',
+  images: [],
+  price: '',
+  stock: '0',
+  low_stock_threshold: '10',
+  brand_id: '',
+  collection_id: '',
+  status: 'active',
+  size: 'medium',
+  product_type: 'unstitched'
+};
+
 const ProductAddEditForm = ({ initialValues, handleRequest, onClose, isEdit }: Props) => {
   const { data: collectionsData } = useGetCollections();
   const { data: brandsData } = useGetBrands();
 
   const methods = useForm({
-    defaultValues: initialValues
-      ? initialValues
-      : {
-          title: '',
-          description: '',
-          sku: '',
-          image: '',
-          images: [],
-          price: '',
-          stock: '0',
-          low_stock_threshold: '10',
-          brand_id: '',
-          collection_id: '',
-          status: 'active',
-          size: 'medium',
-          product_type: 'unstitched'
-        }
+    defaultValues: isEdit && initialValues ? initialValues : defaultFormValues,
   });
+
+  // Reset form with initial values when they become available (for edit mode)
+  useEffect(() => {
+    if (initialValues && isEdit && initialValues.title) {
+      methods.reset(initialValues);
+    }
+  }, [initialValues?.title, initialValues?.image, initialValues?.price, isEdit, methods]);
   const { handleSubmit, control, setError, reset } = methods;
   const formRules = productFormRules();
 
@@ -52,23 +60,28 @@ const ProductAddEditForm = ({ initialValues, handleRequest, onClose, isEdit }: P
       return;
     }
 
-    const payload = {
-      title: values.title,
-      description: values.description,
-      sku: values.sku || undefined,
-      image: values.image,
-      images: values.images || [],
-      price: values.price,
-      stock: values.stock || '0',
-      low_stock_threshold: values.low_stock_threshold || '10',
-      brand_id: values.brand_id,
-      collection_id: values.collection_id,
-      status: values.status || 'active',
-      size: values.size,
-      product_type: values.product_type
-    };
+    // Use FormData for backend compatibility
+    const formData = new FormData();
+    formData.append('title', values.title);
+    formData.append('description', values.description);
+    if (values.sku) {
+      formData.append('sku', values.sku);
+    }
+    if (values.image) {
+      formData.append('image', values.image);
+    }
+    // Send images as JSON string array
+    formData.append('images', JSON.stringify(values.images || []));
+    formData.append('price', values.price);
+    formData.append('stock', values.stock || '0');
+    formData.append('low_stock_threshold', values.low_stock_threshold || '10');
+    formData.append('brand_id', values.brand_id);
+    formData.append('collection_id', values.collection_id);
+    formData.append('status', values.status || 'active');
+    formData.append('size', values.size);
+    formData.append('product_type', values.product_type);
 
-    handleRequest(payload, setError, reset);
+    handleRequest(formData, setError, reset);
   };
 
   const statusOptions = [

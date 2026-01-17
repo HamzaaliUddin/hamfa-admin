@@ -1,17 +1,12 @@
 'use client';
-import { useRouter } from 'next/navigation';
 import { ErrorOption } from 'react-hook-form';
-import { toast } from 'sonner';
 import PageLoader from '@/components/common/PageLoader';
 import { throwFormError } from '@/utils/Errors.util';
-import URLs, { makeURL } from '@/utils/URLs.util';
 import { useCreateCategory } from '@/queries/categories/useCreateCategory.query';
 import { ErrorResponseType } from '@/types/api.types';
 import CategoriesAddEditForm from './CategoriesAddEditForm';
 
 const CategoriesAdd = () => {
-  const router = useRouter();
-
   const { mutate: onAddCategory, status } = useCreateCategory();
   const isLoading = status === 'pending';
 
@@ -19,8 +14,7 @@ const CategoriesAdd = () => {
     onAddCategory(
       formData,
       {
-        onSuccess: (data: any) => {
-          toast.success('Category added successfully');
+        onSuccess: () => {
           reset();
           // Don't redirect - stay on the add page
         },

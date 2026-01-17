@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import URLs from '@/utils/URLs.util';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { collectionsFormRules } from './CollectionsAddEdit.helper';
@@ -17,7 +18,14 @@ type Props = {
   isEdit?: boolean;
   title?: string;
   initialValues?: Record<string, any>;
-  handleRequest: (formData: FormData, setError: any, reset: any) => void;
+  handleRequest: (payload: any, setError: any, reset: any) => void;
+};
+
+const defaultFormValues = {
+  title: '',
+  image: '',
+  category_id: '',
+  show_in_nav: false,
 };
 
 const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }: Props) => {
@@ -25,40 +33,36 @@ const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }:
   const { data: categoriesData } = useGetCategories();
 
   const methods = useForm({
-    defaultValues: initialValues
-      ? initialValues
-      : {
-          title: '',
-          image: null,
-          image_url: '',
-          category_id: '',
-          show_in_nav: false,
-        },
+    defaultValues: isEdit && initialValues ? initialValues : defaultFormValues,
   });
+
+  // Reset form with initial values when they become available (for edit mode)
+  // Use title as a stable dependency to detect when data has loaded
+  useEffect(() => {
+    if (initialValues && isEdit && initialValues.title) {
+      methods.reset(initialValues);
+    }
+  }, [initialValues?.title, initialValues?.image, initialValues?.category_id, initialValues?.show_in_nav, isEdit, methods]);
   const { handleSubmit, control, setError, reset } = methods;
   const formRules = collectionsFormRules();
 
   const handleForm = (values: Record<string, any>) => {
-    const formData = new FormData();
-    const selectedFirstFile = values?.image?.[0];
-    const imageUrl = values?.image_url?.trim();
+    // Validate image URL
+    if (!values.image && !isEdit) {
+      toast.error('Please provide a collection image URL');
+      return;
+    }
 
+    // Use FormData for backend compatibility
+    const formData = new FormData();
     formData.append('title', values.title);
+    if (values.image) {
+      formData.append('image', values.image);
+    }
     if (values.category_id) {
       formData.append('category_id', values.category_id);
     }
     formData.append('show_in_nav', values.show_in_nav ? 'true' : 'false');
-
-    // Handle file upload or URL - send as "image" field
-    if (selectedFirstFile) {
-      formData.append('image', selectedFirstFile);
-    } else if (imageUrl) {
-      formData.append('image', imageUrl);
-    } else if (!isEdit) {
-      // If no image is provided for new collection, show error
-      toast.error('Please provide a collection image (file or URL)');
-      return;
-    }
 
     handleRequest(formData, setError, reset);
   };
@@ -121,7 +125,7 @@ const CollectionsAddEditForm = ({ isEdit, title, initialValues, handleRequest }:
             </div>
 
             <div className="space-y-6">
-              <CollectionsAddEditMedia isEdit={isEdit} />
+              <CollectionsAddEditMedia />
             </div>
           </div>
 

@@ -1,7 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { ErrorOption } from 'react-hook-form';
-import { toast } from 'sonner';
 import PageLoader from '@/components/common/PageLoader';
 import URLs, { makeURL } from '@/utils/URLs.util';
 import { throwFormError } from '@/utils/Errors.util';
@@ -9,6 +8,7 @@ import { useUpdateBrand } from '@/queries/brands/useUpdateBrand.query';
 import { useGetBrandById } from '@/queries/brands/useGetBrandById.query';
 import { ErrorResponseType } from '@/types/api.types';
 import BrandsAddEditForm from './BrandsAddEditForm';
+import { useMemo } from 'react';
 
 type Props = {
   id: string;
@@ -17,29 +17,25 @@ type Props = {
 const BrandsEdit = ({ id }: Props) => {
   const router = useRouter();
 
-  const { data, isLoading } = useGetBrandById(id);
+  const { data, isLoading, isSuccess } = useGetBrandById(id);
   const brand = data as any;
 
   const { mutate: onUpdateBrand, status } = useUpdateBrand();
   const isUpdating = status === 'pending';
 
-  const initialValues = {
+  // Memoize initialValues to prevent unnecessary re-renders
+  const initialValues = useMemo(() => ({
     name: brand?.name || '',
     status: brand?.status || 'active',
-    existing_logo: brand?.logo, // For FE Only
-    image: null,
-    image_url: ''
-  };
+    image: brand?.logo || ''
+  }), [brand?.name, brand?.status, brand?.logo]);
 
   const handleRequest = (formData: any, setError: ErrorOption, reset: any) => {
     onUpdateBrand(
       { id, data: formData },
       {
         onSuccess: () => {
-          toast.success('Brand updated successfully');
-
           reset();
-
           const url = makeURL(URLs.BrandsView, { id });
           router.replace(url);
         },
@@ -47,12 +43,15 @@ const BrandsEdit = ({ id }: Props) => {
       }
     );
   };
+
+  // Wait for both loading to complete AND data to be available
+  const isDataReady = !isLoading && isSuccess && brand;
   
   return (
     <>
-      <PageLoader isOpen={isLoading || isUpdating} />
+      <PageLoader isOpen={isLoading || isUpdating || !isDataReady} />
 
-      {!isLoading && (
+      {isDataReady && (
         <BrandsAddEditForm
           isEdit
           title={brand?.name}

@@ -1,7 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { ErrorOption } from 'react-hook-form';
-import { toast } from 'sonner';
 import PageLoader from '@/components/common/PageLoader';
 import { throwFormError } from '@/utils/Errors.util';
 import { useCreateProduct } from '@/queries/products/useCreateProduct.query';
@@ -20,8 +19,7 @@ const ProductsAddPage = () => {
     onAddProduct(
       formData,
       {
-        onSuccess: (data: any) => {
-          toast.success('Product added successfully');
+        onSuccess: () => {
           reset();
           router.push(URLs.Products);
         },

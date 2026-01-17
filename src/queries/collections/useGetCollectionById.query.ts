@@ -6,7 +6,7 @@ import { Collection } from './useGetCollections.query';
 
 // The axios interceptor already unwraps the body, so we get the data directly
 const fetchCollectionById = async (id: number | string): Promise<Collection> => {
-  const response = await axiosInstance.get(`/collection/${id}`);
+  const response = await axiosInstance.get(`/collection/id/${id}`);
   // axiosInstance already unwraps body, so response contains the data directly
   return response?.data || response;
 };

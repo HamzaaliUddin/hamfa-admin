@@ -5,6 +5,7 @@ import FormWrapper from '@/components/Form/FormWrapper';
 import { Button } from '@/components/ui/button';
 import URLs from '@/utils/URLs.util';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { brandsFormRules } from './BrandsAddEdit.helper';
@@ -13,47 +14,44 @@ import BrandsAddEditMedia from './BrandsAddEditMedia';
 type Props = {
   isEdit?: boolean;
   title?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   initialValues?: Record<string, any>;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handleRequest: (formData: FormData, setError: any, reset: any) => void;
+  handleRequest: (payload: any, setError: any, reset: any) => void;
+};
+
+const defaultFormValues = {
+  name: '',
+  image: '',
+  status: 'active',
 };
 
 const BrandsAddEditForm = ({ isEdit, title, initialValues, handleRequest }: Props) => {
   const router = useRouter();
 
   const methods = useForm({
-    defaultValues: initialValues
-      ? initialValues
-      : {
-          name: '',
-          image: null,
-          image_url: '',
-          status: 'active',
-        },
+    defaultValues: isEdit && initialValues ? initialValues : defaultFormValues,
   });
+
+  // Reset form with initial values when they become available (for edit mode)
+  useEffect(() => {
+    if (initialValues && isEdit && initialValues.name) {
+      methods.reset(initialValues);
+    }
+  }, [initialValues?.name, initialValues?.image, initialValues?.status, isEdit, methods]);
   const { handleSubmit, control, setError, reset } = methods;
   const formRules = brandsFormRules();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleForm = (values: Record<string, any>) => {
-    const formData = new FormData();
-    const selectedFirstFile = values?.image?.[0];
-    const imageUrl = values?.image_url?.trim();
-
-    formData.append('name', values.name);
-    formData.append('status', values.status || 'active');
-
-    // Handle file upload or URL - send as "logo" field
-    if (selectedFirstFile) {
-      formData.append('logo', selectedFirstFile);
-    } else if (imageUrl) {
-      formData.append('logo', imageUrl);
-    } else {
-      // If no image is provided, show error
-      toast.error('Please provide a brand logo (file or URL)');
+    // Validate logo URL
+    if (!values.image) {
+      toast.error('Please provide a brand logo URL');
       return;
     }
+
+    // Use FormData for backend compatibility
+    const formData = new FormData();
+    formData.append('name', values.name);
+    formData.append('logo', values.image);
+    formData.append('status', values.status || 'active');
 
     handleRequest(formData, setError, reset);
   };
@@ -92,7 +90,7 @@ const BrandsAddEditForm = ({ isEdit, title, initialValues, handleRequest }: Prop
             </div>
 
             <div className="space-y-6">
-              <BrandsAddEditMedia isEdit={isEdit} />
+              <BrandsAddEditMedia />
 
               <div className="space-y-4">
                 <FormSelect

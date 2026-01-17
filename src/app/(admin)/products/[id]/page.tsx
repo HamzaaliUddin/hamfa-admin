@@ -18,6 +18,21 @@ export default function ProductViewPage() {
 
   const { data: product, isLoading, error } = useGetProductById(productId);
 
+  // Parse images if it's a string (JSON)
+  const productImages = (() => {
+    if (!product?.images) return [];
+    if (Array.isArray(product.images)) return product.images;
+    if (typeof product.images === 'string') {
+      try {
+        const parsed = JSON.parse(product.images);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  })();
+
   if (isLoading) {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
@@ -117,9 +132,9 @@ export default function ProductViewPage() {
                 </div>
               )}
             </div>
-            {product.images && product.images.length > 0 && (
+            {productImages.length > 0 && (
               <div className="grid grid-cols-3 gap-2">
-                {product.images.slice(0, 6).map((img, idx) => (
+                {productImages.slice(0, 6).map((img: string, idx: number) => (
                   <div
                     key={idx}
                     className="relative aspect-square overflow-hidden rounded-lg bg-gray-100"

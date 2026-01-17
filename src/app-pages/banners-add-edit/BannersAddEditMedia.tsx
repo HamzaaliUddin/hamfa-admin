@@ -1,6 +1,6 @@
 import { isEmpty, isString } from 'lodash';
 import { Upload } from 'lucide-react';
-import { Controller, useFormContext } from 'react-hook-form';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 import { Label } from '@/components/ui/label';
 import { UPLOAD_IMAGE_TYPES } from '@/utils/File.util';
 import { isValidUrl } from '@/utils/General.util';
@@ -12,18 +12,18 @@ import {
 
 const BannersAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
   const {
-    watch,
     setValue,
     control,
     formState: { errors }
   } = useFormContext();
 
-  const existingFile = watch('existing_image');
-  const selectedFile = watch('image');
+  // Use useWatch for reactive updates
+  const existingFile = useWatch({ control, name: 'existing_image' });
+  const selectedFile = useWatch({ control, name: 'image' });
 
   const handleRemove = () => {
-    setValue('existing_image', null);
-    setValue('image', null);
+    setValue('existing_image', null, { shouldDirty: true });
+    setValue('image', null, { shouldDirty: true });
   };
 
   const normalizeFiles = (value: FileList | File[] | null | undefined) => {
@@ -92,10 +92,7 @@ const BannersAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
                   ref={field.ref}
                   onChange={(e) => {
                     const files = e.target.files ? Array.from(e.target.files) : [];
-                    // Debug: log selected files for preview troubleshooting
-                    // eslint-disable-next-line no-console
-                    console.log('Banner upload selected files:', files);
-                    setValue('existing_image', null);
+                    setValue('existing_image', null, { shouldDirty: true });
                     field.onChange(files);
                   }}
                 />

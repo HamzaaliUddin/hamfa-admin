@@ -1,7 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { ErrorOption } from 'react-hook-form';
-import { toast } from 'sonner';
 import PageLoader from '@/components/common/PageLoader';
 import URLs, { makeURL } from '@/utils/URLs.util';
 import { throwFormError } from '@/utils/Errors.util';
@@ -32,10 +31,7 @@ const CategoriesEdit = ({ id }: Props) => {
       { id, data: formData },
       {
         onSuccess: () => {
-          toast.success('Category updated successfully');
-
           reset();
-
           const url = makeURL(URLs.CategoriesView, { id });
           router.replace(url);
         },
