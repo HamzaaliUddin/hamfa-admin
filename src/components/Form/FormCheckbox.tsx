@@ -8,6 +8,7 @@ type Props<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
   label?: string;
+  description?: string;
   disabled?: boolean;
   className?: string;
 };
@@ -16,6 +17,7 @@ export function FormCheckbox<T extends FieldValues>({
   control,
   name,
   label,
+  description,
   disabled = false,
   className
 }: Props<T>) {
@@ -25,14 +27,20 @@ export function FormCheckbox<T extends FieldValues>({
       name={name}
       render={({ field, fieldState: { error } }) => (
         <div className={className}>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-start space-x-2">
             <Checkbox
               id={name}
               checked={field.value}
               onCheckedChange={field.onChange}
               disabled={disabled}
+              className="mt-0.5"
             />
-            {label && <Label htmlFor={name} className="cursor-pointer">{label}</Label>}
+            <div className="space-y-1">
+              {label && <Label htmlFor={name} className="cursor-pointer">{label}</Label>}
+              {description && (
+                <p className="text-sm text-muted-foreground">{description}</p>
+              )}
+            </div>
           </div>
           {error && <p className="mt-1 text-sm text-destructive">{error.message}</p>}
         </div>

@@ -72,7 +72,7 @@ const NotificationsList = () => {
     <>
       <div className="rounded-md border">
         <NotificationListFilters filters={filters} handleFilters={handleFilters} />
-        <Table headers={headers} noData={isEmpty(notifications)} isLoading={isLoading || isFetching}>
+        <Table headers={headers} noData={isEmpty(notifications)} isLoading={isLoading || isFetching} skeletonRows={filters.limit}>
           {notifications?.map((row: Notification) => (
             <TableRow key={row?.notification_id} className={!row?.read ? 'bg-muted/30' : ''}>
               <TableCell className="text-center">

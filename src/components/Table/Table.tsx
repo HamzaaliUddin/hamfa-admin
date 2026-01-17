@@ -25,6 +25,8 @@ type Props = {
   isLoading?: boolean;
   minWidth?: number;
   isDense?: boolean;
+  /** Number of skeleton rows to show while loading. Defaults to 10 to match typical page limits. */
+  skeletonRows?: number;
 };
 
 const Table = ({ 
@@ -33,9 +35,9 @@ const Table = ({
   noData = false, 
   isLoading = false,
   minWidth,
-  isDense = false
+  isDense = false,
+  skeletonRows = 10
 }: Props) => {
-  const skeletonRows = 5;
 
   return (
     <div className="overflow-x-auto">

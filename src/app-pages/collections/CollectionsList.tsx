@@ -39,7 +39,7 @@ const CollectionsList = () => {
     <>
       <div className="rounded-md border">
         <CollectionListFilters filters={filters} handleFilters={handleFilters} />
-        <Table headers={headers} noData={isEmpty(collections)} isLoading={isLoading || isFetching}>
+        <Table headers={headers} noData={isEmpty(collections)} isLoading={isLoading || isFetching} skeletonRows={filters.limit}>
           {collections?.map((row: Collection) => (
             <TableRow key={row?.collection_id}>
               <TableCell>{row?.collection_id}</TableCell>

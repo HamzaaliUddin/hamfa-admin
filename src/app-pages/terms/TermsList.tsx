@@ -37,7 +37,7 @@ const TermsList = () => {
     <>
       <div className="rounded-md border">
         <TermListFilters filters={filters} handleFilters={handleFilters} />
-        <Table headers={headers} noData={isEmpty(terms)} isLoading={isLoading || isFetching}>
+        <Table headers={headers} noData={isEmpty(terms)} isLoading={isLoading || isFetching} skeletonRows={filters.limit}>
           {terms.map((row: Term) => (
             <TableRow key={row?.term_id}>
               <TableCell>{row?.term_id}</TableCell>

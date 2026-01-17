@@ -39,7 +39,7 @@ const ProductsList = () => {
     <>
       <div className="rounded-md border">
         <ProductListFilters filters={filters} handleFilters={handleFilters} />
-        <Table headers={headers} noData={isEmpty(products)} isLoading={isLoading || isFetching}>
+        <Table headers={headers} noData={isEmpty(products)} isLoading={isLoading || isFetching} skeletonRows={filters.limit}>
           {products.map((row: Product) => (
             <TableRow key={row?.product_id}>
               <TableCell>{row?.product_id}</TableCell>

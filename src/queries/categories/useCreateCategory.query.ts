@@ -3,11 +3,14 @@
 import axiosInstance from '@/services/axiosInstance';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { Category } from './useGetCategories.query';
+import { Category, CategoryStatus } from './useGetCategories.query';
 
-// Category only has name in backend
 export interface CreateCategoryInput {
   name: string;
+  position?: number | null;
+  image?: string | null;
+  show_on_home?: boolean;
+  status: CategoryStatus;
 }
 
 interface CreateCategoryResponse {

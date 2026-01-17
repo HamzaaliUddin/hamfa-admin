@@ -36,7 +36,7 @@ const BannersList = () => {
     <>
       <div className="rounded-md border">
         <BannerListFilters filters={filters} handleFilters={handleFilters} />
-        <Table headers={headers} noData={isEmpty(banners)} isLoading={isLoading || isFetching}>
+        <Table headers={headers} noData={isEmpty(banners)} isLoading={isLoading || isFetching} skeletonRows={filters.limit}>
           {banners.map((row: Banner) => (
             <TableRow key={row?.banner_id}>
               <TableCell>{row?.banner_id}</TableCell>

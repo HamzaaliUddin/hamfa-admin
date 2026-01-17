@@ -39,7 +39,7 @@ const OrdersList = () => {
     <>
       <div className="rounded-md border">
         <OrdersListFilters filters={filters} handleFilters={handleFilters} />
-        <Table headers={headers} noData={isEmpty(orders)} isLoading={isLoading || isFetching}>
+        <Table headers={headers} noData={isEmpty(orders)} isLoading={isLoading || isFetching} skeletonRows={filters.limit}>
           {orders.map((row: Order) => (
             <TableRow key={row?.order_id}>
               <TableCell>{row?.order_number || `#${row?.order_id}`}</TableCell>

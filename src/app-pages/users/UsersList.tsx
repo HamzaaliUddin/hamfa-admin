@@ -38,7 +38,7 @@ const UsersList = () => {
     <>
       <div className="rounded-md border">
         <UserListFilters filters={filters} handleFilters={handleFilters} />
-        <Table headers={headers} noData={isEmpty(users)} isLoading={isLoading || isFetching}>
+        <Table headers={headers} noData={isEmpty(users)} isLoading={isLoading || isFetching} skeletonRows={filters.limit}>
           {users.map((row: User) => (
             <TableRow key={row?.user_id}>
               <TableCell>{row?.user_id}</TableCell>

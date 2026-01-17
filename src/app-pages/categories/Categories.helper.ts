@@ -1,16 +1,35 @@
 import { TableHeaderProps } from '@/components/Table/Table';
 
-// Categories only have: category_id, name in backend
 export const categoriesColumnHeaders = (): TableHeaderProps[] => [
   {
     title: 'ID',
-    width: '20%',
+    width: '6%',
     align: 'left',
   },
   {
     title: 'Name',
-    width: '50%',
+    width: '18%',
     align: 'left',
+  },
+  {
+    title: 'Slug',
+    width: '18%',
+    align: 'left',
+  },
+  {
+    title: 'Position',
+    width: '8%',
+    align: 'center',
+  },
+  {
+    title: 'Show on Home',
+    width: '10%',
+    align: 'center',
+  },
+  {
+    title: 'Status',
+    width: '10%',
+    align: 'center',
   },
   {
     title: 'Actions',

@@ -80,6 +80,44 @@ const CategoriesView = ({ id }: Props) => {
               <p className="mt-1 text-base font-medium">{category.name}</p>
             </div>
 
+            <Separator />
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Status</label>
+                <p className="mt-1 text-base font-medium capitalize">{category.status || 'active'}</p>
+              </div>
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Show on Home</label>
+                <p className="mt-1 text-base font-medium">{category.show_on_home ? 'Yes' : 'No'}</p>
+              </div>
+            </div>
+
+            <Separator />
+
+            {!category.show_on_home && (
+              <div>
+                <label className="text-sm font-medium text-muted-foreground">Position</label>
+                <p className="mt-1 text-base font-medium">{category.position ?? 'N/A'}</p>
+              </div>
+            )}
+
+            {category.image && (
+              <>
+                <Separator />
+                <div>
+                  <label className="text-sm font-medium text-muted-foreground">Image</label>
+                  <div className="mt-2 relative aspect-square w-32 overflow-hidden rounded-lg border">
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className="object-cover w-full h-full"
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
             {(category.created_at || category.updated_at) && (
               <>
                 <Separator />
