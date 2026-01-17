@@ -29,8 +29,8 @@ const ProductAddEditForm = ({ initialValues, handleRequest, onClose, isEdit }: P
       : {
           title: '',
           description: '',
-          image: null,
-          image_url: '',
+          sku: '',
+          image: '',
           images: [],
           price: '',
           stock: '0',
@@ -46,32 +46,29 @@ const ProductAddEditForm = ({ initialValues, handleRequest, onClose, isEdit }: P
   const formRules = productFormRules();
 
   const handleForm = (values: any) => {
-    const formData = new FormData();
-    const selectedFirstFile = values?.image?.[0]; // For file upload
-    const imageUrl = values?.image_url?.trim(); // For URL input
-
-    formData.append('title', values.title);
-    formData.append('description', values.description);
-    formData.append('price', values.price);
-    formData.append('stock', values.stock || '0');
-    formData.append('low_stock_threshold', values.low_stock_threshold || '10');
-    formData.append('brand_id', values.brand_id);
-    formData.append('collection_id', values.collection_id);
-    formData.append('status', values.status || 'active');
-    formData.append('size', values.size);
-    formData.append('product_type', values.product_type);
-
-    // Handle file upload or URL - send as "image" field
-    if (selectedFirstFile) {
-      formData.append('image', selectedFirstFile);
-    } else if (imageUrl) {
-      formData.append('image', imageUrl);
-    } else if (!isEdit) {
-      toast.error('Please provide a product image (file or URL)');
+    // Validate main image URL
+    if (!values.image && !isEdit) {
+      toast.error('Please provide a product image URL');
       return;
     }
 
-    handleRequest(formData, setError, reset);
+    const payload = {
+      title: values.title,
+      description: values.description,
+      sku: values.sku || undefined,
+      image: values.image,
+      images: values.images || [],
+      price: values.price,
+      stock: values.stock || '0',
+      low_stock_threshold: values.low_stock_threshold || '10',
+      brand_id: values.brand_id,
+      collection_id: values.collection_id,
+      status: values.status || 'active',
+      size: values.size,
+      product_type: values.product_type
+    };
+
+    handleRequest(payload, setError, reset);
   };
 
   const statusOptions = [
@@ -91,14 +88,12 @@ const ProductAddEditForm = ({ initialValues, handleRequest, onClose, isEdit }: P
     { value: 'unstitched', label: 'Unstitched' }
   ];
 
-  // Prepare collection options from API
   const collectionOptions =
     collectionsData?.data?.map((collection: any) => ({
       label: collection.title,
       value: collection.collection_id.toString(),
     })) || [];
 
-  // Prepare brand options from API
   const brandOptions =
     brandsData?.data?.map((brand: any) => ({
       label: brand.name,
@@ -121,6 +116,13 @@ const ProductAddEditForm = ({ initialValues, handleRequest, onClose, isEdit }: P
                   rules={formRules.title}
                   placeholder="Enter product title"
                   required
+                />
+                <FormInput
+                  name="sku"
+                  label="SKU"
+                  control={control}
+                  placeholder="Auto-generated if left empty"
+                  disabled={isEdit}
                 />
                 <FormTextarea
                   name="description"
@@ -212,10 +214,10 @@ const ProductAddEditForm = ({ initialValues, handleRequest, onClose, isEdit }: P
             </CrudFormSection>
           </div>
 
-          {/* Right Section - Product Image (1 column) */}
+          {/* Right Section - Product Images (1 column) */}
           <div className="space-y-6">
             <CrudFormSection title="Product Image">
-              <ProductsAddEditMedia isEdit={isEdit} />
+              <ProductsAddEditMedia />
             </CrudFormSection>
           </div>
         </div>
@@ -232,4 +234,3 @@ const ProductAddEditForm = ({ initialValues, handleRequest, onClose, isEdit }: P
 };
 
 export default ProductAddEditForm;
-

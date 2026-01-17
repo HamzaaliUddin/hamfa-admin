@@ -1,156 +1,191 @@
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { UPLOAD_IMAGE_TYPES } from '@/utils/File.util';
 import { isValidUrl } from '@/utils/General.util';
-import { isEmpty, isString } from 'lodash';
-import { Upload } from 'lucide-react';
+import { X, Plus, Link, Eye } from 'lucide-react';
+import Image from 'next/image';
 import { useState } from 'react';
-import { Controller, useFormContext } from 'react-hook-form';
-import { ProductsAddEditExistingMedia, ProductsAddEditNewMedia } from './ProductsAddEditMediaView';
+import { Controller, useFormContext, useWatch } from 'react-hook-form';
 
-const ProductsAddEditMedia = ({ isEdit }: { isEdit?: boolean }) => {
-  const {
-    watch,
-    setValue,
-    control,
-    formState: { errors },
-  } = useFormContext();
-  const [useImageUrl, setUseImageUrl] = useState(false);
+const ProductsAddEditMedia = () => {
+  const { setValue, control } = useFormContext();
+  const [newImageUrl, setNewImageUrl] = useState('');
 
-  const existingFile = watch('existing_image');
-  const selectedFile = watch('image');
-  const imageUrl = watch('image_url');
-  const handleRemove = () => {
-    setValue('existing_image', null);
-    setValue('image', null);
-    setValue('image_url', '');
-  };
+  // Use useWatch for reactive updates on additional images
+  const additionalImages: string[] = useWatch({ control, name: 'images' }) || [];
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (files && files.length > 0) {
-      const fileArray = Array.from(files);
-      setValue('image', fileArray);
-      setValue('image_url', ''); // Clear URL when file is selected
+  // Handle adding additional image URL
+  const handleAddAdditionalImage = () => {
+    if (newImageUrl && isValidUrl(newImageUrl)) {
+      setValue('images', [...additionalImages, newImageUrl], { shouldDirty: true });
+      setNewImageUrl('');
     }
   };
 
-  const handleToggleChange = (checked: boolean) => {
-    setUseImageUrl(checked);
-    // Clear both inputs when toggling
-    setValue('image', null);
-    setValue('image_url', '');
+  // Handle removing additional image
+  const handleRemoveAdditionalImage = (index: number) => {
+    const updated = additionalImages.filter((_, i) => i !== index);
+    setValue('images', updated, { shouldDirty: true });
   };
 
-  const isAlreadyAdded =
-    isEdit &&
-    existingFile &&
-    isString(existingFile) &&
-    (isValidUrl(existingFile) || existingFile.startsWith('data:'));
-  const newFile = selectedFile && selectedFile?.[0];
-  const hasUrlPreview = useImageUrl && imageUrl && isValidUrl(imageUrl);
-
-  // Show upload UI only when there's no preview of any kind
-  const showUpload = !hasUrlPreview && !newFile && !isAlreadyAdded;
+  // Handle key press for adding image on Enter
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddAdditionalImage();
+    }
+  };
 
   return (
-    <div className="space-y-4">
-      {/* Toggle between Upload and URL - Always show unless there's a preview */}
-      {!hasUrlPreview && !newFile && !isAlreadyAdded && (
-        <div className="flex items-center justify-between rounded-lg border p-3">
-          <div className="flex items-center gap-2">
-            <Upload className="text-muted-foreground h-4 w-4" />
-            <Label htmlFor="image-toggle" className="cursor-pointer text-sm font-normal">
-              {useImageUrl ? 'Enter Image URL' : 'Upload from Device'}
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-muted-foreground text-xs">URL</span>
-            <Switch id="image-toggle" checked={useImageUrl} onCheckedChange={handleToggleChange} />
-          </div>
-        </div>
-      )}
+    <div className="space-y-6">
+      {/* Main Product Image */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">Main Image URL *</Label>
 
-      {/* Priority 1: New URL preview (highest priority) */}
-      {hasUrlPreview ? (
-        <ProductsAddEditExistingMedia url={imageUrl} handleClear={handleRemove} />
-      ) : /* Priority 2: New file preview */
-      newFile || !isEmpty(selectedFile) ? (
-        <ProductsAddEditNewMedia
-          file={newFile ? newFile : selectedFile}
-          handleClear={handleRemove}
+        <Controller
+          name="image"
+          control={control}
+          render={({ field }) => {
+            const fieldValue = field.value || '';
+            const isValid = fieldValue && isValidUrl(fieldValue);
+
+            return (
+              <>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Link className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+                    <Input
+                      value={fieldValue}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                      placeholder="https://example.com/product-image.jpg"
+                      className="pl-9"
+                    />
+                  </div>
+                  {isValid && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => field.onChange('')}
+                      className="shrink-0"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+
+                {/* Main Image Preview */}
+                {isValid && (
+                  <div className="relative aspect-square w-full overflow-hidden rounded-lg border bg-muted/30">
+                    <Image
+                      src={fieldValue}
+                      alt="Main product"
+                      fill
+                      unoptimized
+                      className="object-contain"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                      }}
+                    />
+                    <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/60 px-2 py-1 text-xs text-white">
+                      <Eye className="h-3 w-3" />
+                      Preview
+                    </div>
+                  </div>
+                )}
+              </>
+            );
+          }}
         />
-      ) : /* Priority 3: Existing image (fallback) */
-      isAlreadyAdded ? (
-        <ProductsAddEditExistingMedia url={existingFile} handleClear={handleRemove} />
-      ) : null}
+      </div>
 
-      {/* Image URL Input - Show when URL toggle is ON */}
-      {useImageUrl && (
-        <div className="grid gap-2">
-          <Label htmlFor="image_url">Image URL</Label>
-          <Controller
-            name="image_url"
-            control={control}
-            render={({ field }) => (
-              <Input
-                {...field}
-                id="image_url"
-                type="url"
-                placeholder="https://example.com/product-image.jpg"
-                className={errors.image_url ? 'border-red-500' : ''}
-                onChange={e => {
-                  field.onChange(e);
-                  // Clear file when typing URL
-                  setValue('image', null);
-                }}
-              />
-            )}
-          />
-          {errors.image_url && (
-            <p className="text-sm text-red-500">{errors.image_url?.message as string}</p>
-          )}
-          <p className="text-muted-foreground text-xs">Enter a valid image URL</p>
-        </div>
-      )}
+      {/* Additional Images */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">Additional Images</Label>
 
-      {/* File Upload - Show when URL toggle is OFF */}
-      {!useImageUrl && showUpload && (
-        <div className="grid gap-2">
-          <Label htmlFor="image">Upload Image</Label>
-          <div className="relative">
-            <label
-              htmlFor="image"
-              className={`hover:bg-accent flex aspect-square w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed ${
-                errors.image ? 'border-red-500' : ''
-              }`}
-            >
-              <Upload className="text-muted-foreground h-8 w-8" />
-              <span className="text-muted-foreground px-4 text-center text-sm">
-                Click to browse or drag and drop a file here
-              </span>
-              <span className="text-muted-foreground px-4 text-center text-xs">
-                Upload a product image
-              </span>
-              <span className="text-muted-foreground text-xs">
-                <strong>Recommended:</strong> 800x800px or larger
-              </span>
-            </label>
-            <input
-              id="image"
-              type="file"
-              accept={UPLOAD_IMAGE_TYPES.join(',')}
-              className="hidden"
-              onChange={handleFileChange}
-              multiple={false}
+        {/* Input for adding new image URL */}
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <Link className="text-muted-foreground absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2" />
+            <Input
+              value={newImageUrl}
+              onChange={(e) => setNewImageUrl(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Add image URL and press Enter"
+              className="pl-9"
             />
           </div>
-          {errors.image && (
-            <p className="text-sm text-red-500">{errors.image?.message as string}</p>
-          )}
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={handleAddAdditionalImage}
+            disabled={!newImageUrl || !isValidUrl(newImageUrl)}
+            className="shrink-0"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
         </div>
-      )}
+
+        {/* Preview of URL being typed */}
+        {newImageUrl && isValidUrl(newImageUrl) && (
+          <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-dashed border-primary/50 bg-muted/30">
+            <Image
+              src={newImageUrl}
+              alt="Preview"
+              fill
+              unoptimized
+              className="object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            <div className="absolute bottom-2 left-2 flex items-center gap-1 rounded bg-black/60 px-2 py-1 text-xs text-white">
+              <Eye className="h-3 w-3" />
+              Preview - Press Enter or + to add
+            </div>
+          </div>
+        )}
+
+        {/* Grid of additional images with preview */}
+        {additionalImages.length > 0 && (
+          <div className="grid grid-cols-3 gap-2">
+            {additionalImages.map((url: string, index: number) => (
+              <div key={`img-${index}`} className="group relative aspect-square overflow-hidden rounded-md border bg-muted/30">
+                <Image
+                  src={url}
+                  alt={`Product ${index + 1}`}
+                  fill
+                  unoptimized
+                  className="object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveAdditionalImage(index)}
+                  className="absolute right-1 top-1 z-10 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity hover:bg-red-600 group-hover:opacity-100"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+                <div className="absolute bottom-0 left-0 right-0 truncate bg-black/60 px-1 py-0.5 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
+                  {index + 1}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {additionalImages.length === 0 && (
+          <p className="text-muted-foreground text-center text-xs py-4 border-2 border-dashed rounded-lg">
+            No additional images added yet
+          </p>
+        )}
+      </div>
     </div>
   );
 };
